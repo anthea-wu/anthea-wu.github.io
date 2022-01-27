@@ -34,22 +34,22 @@
 
 <div id="app">
     <div class="container my-5">
-        <div class="row my-5 align-items-center justify-content-center">
+        <div class="row my-5 align-items-center justify-content-center" v-show="!showInfo">
             <div class="col-md-4 col-12 mb-4">
                 <div class="card text-white bg-dark">
                     <div class="card-body row">
-                        <div class=" col-12 d-flex justify-content-center">
+                        <div class="col-12 d-flex justify-content-center">
                             <div class="person-icon"></div>
                         </div>
-                        <h4 class="mb-0 p-4 col-12 d-flex align-items-center flex-column">
+                        <h4 class="mb-0 p-4 col-12 d-flex align-items-center flex-column" style="color: #ffe7e5;">
                             Anthea
                             <small><span class="mb-0 badge" style="color: #ffd3e5;">#NEVER-STOP-IMPROVING</span></small>
                         </h4>
                         <div class="d-flex flex-row">
-                            <div class="col-md-3 col-12 d-flex justify-content-center"><i class="bi bi-github" style="font-size: 2rem; color: #bcd3ff;"></i></div>
-                            <div class="col-md-3 col-12 d-flex justify-content-center"><i class="bi bi-file-earmark-medical-fill" style="font-size: 2rem; color: #c6d3ff;"></i></div>
-                            <div class="col-md-3 col-12 d-flex justify-content-center"><i class="bi bi-pen" style="font-size: 2rem; color: #d0d3ff;"></i></div>
-                            <div class="col-md-3 col-12 d-flex justify-content-center"><i class="bi bi-person-circle" style="font-size: 2rem; color: #dad3ff;"></i></div>
+                            <div class="col-md-3 col-12 d-flex justify-content-center"><a href="#"><i class="bi bi-person-circle" style="font-size: 2rem; color: #bcd3ff;" @click.prevent="showInfo = !showInfo"></i></a></div>
+                            <div class="col-md-3 col-12 d-flex justify-content-center"><a href="https://github.com/anthea-wu"><i class="bi bi-github" style="font-size: 2rem; color: #c6d3ff;"></i></a></div>
+                            <div class="col-md-3 col-12 d-flex justify-content-center"><a href="https://www.linkedin.com/in/wu-anthea-401250230"><i class="bi bi-linkedin" style="font-size: 2rem; color: #d0d3ff;"></i></a></div>
+                            <div class="col-md-3 col-12 d-flex justify-content-center"><a href="https://hackmd.io/@anthea-wu"><i class="bi bi-file-earmark-text-fill" style="font-size: 2rem; color: #dad3ff;"></i></a></div>
                         </div>
                     </div>
                     <div class="card-body row">
@@ -58,6 +58,65 @@
                             <div class="col-md-auto col-12 d-flex justify-content-center badge"><span class="mb-0" style="color: #cbd3ff;">#ENJOI-DEBUG</span></div>
                             <div class="col-md-auto col-12 d-flex justify-content-center badge"><span class="mb-0" style="color: #d5d3ff;">#CURIOSITY</span></div>
                         </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row my-5 align-items-center justify-content-center">
+            <div class="col-md-4 col-12 mb-4">
+                <div class="card text-white bg-dark my-4 p-4 pt-5">
+                    <div class="card-body row">
+                        <div class="col-12 row" style="color: #eacaae">
+                            <div class="col-4">2020-06</div>
+                            <div class="col-8" style="border-left: 1px solid">逢甲大學財金系畢業<br><small><small>#Explore</small></small></div>
+                        </div>
+                        <div class="col-12 row mt-3" style="color: #ead4ae">
+                            <div class="col-4">2020-11</div>
+                            <div class="col-8" style="border-left: 1px solid">產業新尖兵程式設計班結訓<br><small><small>#WebLearning</small></small></div>
+                        </div>
+                        <div class="col-12 row mt-3" style="color: #eadeae">
+                            <div class="col-4">2021-01</div>
+                            <div class="col-8" style="border-left: 1px solid">新加坡商鈦坦科技股份有限公司<br><small>Product Developer<br><small>#Scrum</small></small></div>
+                        </div>
+                        <div class="col-12 row mt-3" style="color: #eae8ae">
+                            <div class="col-4">2021-06</div>
+                            <div class="col-8" style="border-left: 1px solid">宸訊科技有限公司<br><small>GIS 後端工程師<br><small>#NeverStopImproving</small></small></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card text-white bg-dark mt-4 pb-5">
+                    <div class="card-body row">
+                        <div class="d-flex flex-row">
+                            <div class="col-md-3 col-12 d-flex justify-content-center"><a href="#"><i class="bi bi-person-circle" style="font-size: 2rem; color: #eaf272;" @click.prevent="showInfo = !showInfo"></i></a></div>
+                            <div class="col-md-3 col-12 d-flex justify-content-center"><a href="https://github.com/anthea-wu"><i class="bi bi-github" style="font-size: 2rem; color: #eaf286;"></i></a></div>
+                            <div class="col-md-3 col-12 d-flex justify-content-center"><a href="https://www.linkedin.com/in/wu-anthea-401250230"><i class="bi bi-linkedin" style="font-size: 2rem; color: #eaf29a;"></i></a></div>
+                            <div class="col-md-3 col-12 d-flex justify-content-center"><a href="https://hackmd.io/@anthea-wu"><i class="bi bi-file-earmark-text-fill" style="font-size: 2rem; color: #eaf2ae;"></i></a></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 col-12">
+                <div class="card text-white bg-dark">
+                    <div class="card-body row">
+                        <h3 style="color: #eacaae">Anthea Wu</h3>
+                        <p style="color: #ead4ae">
+                            來自台北，畢業於逢甲大學，喜歡團隊合作的氣氛勝過於單打獨鬥的成就。<br>
+                            目前任職於宸訊科技有限公司，擔任GIS工程師，負責API及資料維護。
+                        </p>
+                        <h3 style="color: #eadeae">Finance >>> Web Engineer</h3>
+                        <p style="color: #eae8ae">
+                            就讀財金系並非為了就業，而是想學習有關金融的基本知識，關於程式也是。<br>
+                            參加於逢甲大學舉辦的產業新尖兵試辦計畫，學會使用flack進行基礎的網頁製作，結訓後進入鈦坦科技，
+                            體驗過職場和興趣的差別、敏捷環境的衝擊，幸運的被如今任職的公司接納，繼續往轉職的路上邁進。
+                        </p>
+                        <h3 style="color: #eaf2ae">Agile Mindset</h3>
+                        <p class="mb-0" style="color: #eafcae">
+                            <span class="fw-bold">PM又要改需求了。</span>這是在鈦坦幾乎不會聽到的一句話。<br>
+                            我想這就是一個 Engineer 和 Product Developer 最大的不同：身為一個產品的開發者，我們的任務不是完成客戶的需求，而是幫助客戶了解他們的需求。<br>
+                            儘管離開了敏捷的環境，在有決定權的細節上，比起說好，我更喜歡問為甚麼，因為我相信理解一個工項的核心需求，才有可能藉由我們的專業知識判斷出最合適的解決方案。<br>
+                            因此，需求改變對我來說，是一項很有趣的挑戰：審視我的設計是否具有彈性，意識到自己對於需求的想像和設計與現實的衝突，在每一次產出與迭代的過程中，透過不斷的自省，都能有所成長。<br>
+                            擁抱改變，熱衷改變，就是我對敏捷的定義。
+                        </p>
                     </div>
                 </div>
             </div>
@@ -75,7 +134,7 @@
     const app = Vue.createApp({
         data(){
             return{
-                
+                showInfo: false,
             }
         },
         methods:{
