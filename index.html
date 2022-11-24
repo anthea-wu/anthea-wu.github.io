@@ -44,56 +44,49 @@
                         Anthea
                         <small><span class="mb-0 badge" style="color: #ffd3e5;">#NEVER-STOP-IMPROVING</span></small>
                     </h4>
-                    <div class="d-flex flex-row">
-                        <div class="col-md-3 col-12 d-flex justify-content-center"><a href="#"><i class="bi bi-person-circle" style="font-size: 2rem; color: #bcd3ff;" @click.prevent="showInfo = !showInfo"></i></a></div>
-                        <div class="col-md-3 col-12 d-flex justify-content-center"><a href="https://github.com/anthea-wu"><i class="bi bi-github" style="font-size: 2rem; color: #c6d3ff;"></i></a></div>
-                        <div class="col-md-3 col-12 d-flex justify-content-center"><a href="https://www.linkedin.com/in/wu-anthea-401250230"><i class="bi bi-linkedin" style="font-size: 2rem; color: #d0d3ff;"></i></a></div>
-                        <div class="col-md-3 col-12 d-flex justify-content-center"><a href="https://hackmd.io/@anthea-wu"><i class="bi bi-file-earmark-text-fill" style="font-size: 2rem; color: #dad3ff;"></i></a></div>
-                    </div>
-                </div>
-                <div class="card-body row">
-                    <div class="d-flex flex-row">
-                        <div class="col-md-auto col-12 d-flex justify-content-center badge"><span class="mb-0" style="color: #c1d3ff;">#SOFTWARE-ENGINEER</span></div>
-                        <div class="col-md-auto col-12 d-flex justify-content-center badge"><span class="mb-0" style="color: #cbd3ff;">#ENJOI-DEBUG</span></div>
-                        <div class="col-md-auto col-12 d-flex justify-content-center badge"><span class="mb-0" style="color: #d5d3ff;">#CURIOSITY</span></div>
+                    <div class="col-12 d-flex justify-content-evenly">
+                        <a href="#"><i class="bi bi-person-circle" style="font-size: 2rem; color: #bcd3ff;" @click.prevent="showInfo = !showInfo"></i></a>
+                        <a href="https://github.com/anthea-wu"><i class="bi bi-github" style="font-size: 2rem; color: #c6d3ff;"></i></a>
+                        <a href="https://www.linkedin.com/in/wu-anthea-401250230"><i class="bi bi-linkedin" style="font-size: 2rem; color: #d0d3ff;"></i></a>
+                        <a href="https://hackmd.io/@anthea-wu"><i class="bi bi-file-earmark-text-fill" style="font-size: 2rem; color: #dad3ff;"></i></a>
                     </div>
                 </div>
             </div>
         </div>
-        <div v-else class="row align-items-center justify-content-center">
-            <div class="col-md-4 col-12 mb-4">
-                <div class="card text-white bg-dark my-4 p-4 pt-5">
+        <div v-else class="row align-items-center justify-content-center my-4">
+            <div class="col-xl-4 col-12" :class="isUseRwd ? 'mb-4' : ''">
+                <div class="card text-white bg-dark mb-4 p-4 pt-5" v-show="!isUseRwd">
                     <div class="card-body row">
-                        <div class="col-12 row" style="color: #eacaae">
+                        <div class="col-12 d-flex" style="color: #eacaae">
                             <div class="col-4 text-center">2020-06</div>
-                            <div class="col-8" style="border-left: 1px solid">逢甲大學財金系畢業<br><small><small>#Explore</small></small></div>
+                            <div class="col-8 ps-2" style="border-left: 1px solid">逢甲大學財金系畢業<br><small><small>#Explore</small></small></div>
                         </div>
-                        <div class="col-12 row mt-3" style="color: #ead4ae">
+                        <div class="col-12 d-flex mt-3" style="color: #ead4ae">
                             <div class="col-4 text-center">2020-08<br>｜<br>2020-11</div>
-                            <div class="col-8" style="border-left: 1px solid">產業新尖兵程式設計班結訓<br><small><small>#WebLearning</small></small></div>
+                            <div class="col-8 ps-2" style="border-left: 1px solid">產業新尖兵程式設計班結訓<br><small><small>#WebLearning</small></small></div>
                         </div>
-                        <div class="col-12 row mt-3" style="color: #eadeae">
+                        <div class="col-12 d-flex mt-3" style="color: #eadeae">
                             <div class="col-4 text-center">2021-01<br>｜<br>2021-03</div>
-                            <div class="col-8" style="border-left: 1px solid">新加坡商鈦坦科技股份有限公司<br><small>Product Developer<br><small>#Scrum</small></small></div>
+                            <div class="col-8 ps-2" style="border-left: 1px solid">新加坡商鈦坦科技股份有限公司<br><small>Product Developer<br><small>#Scrum</small></small></div>
                         </div>
-                        <div class="col-12 row mt-3" style="color: #eae8ae">
+                        <div class="col-12 d-flex mt-3" style="color: #eae8ae">
                             <div class="col-4 text-center">2021-06</div>
-                            <div class="col-8" style="border-left: 1px solid">宸訊科技有限公司<br><small>GIS 後端工程師<br><small>#NeverStopImproving</small></small></div>
+                            <div class="col-8 ps-2" style="border-left: 1px solid">宸訊科技有限公司<br><small>GIS 後端工程師<br><small>#NeverStopImproving</small></small></div>
                         </div>
                     </div>
                 </div>
                 <div class="card text-white bg-dark mt-3 py-3">
                     <div class="card-body row">
-                        <div class="d-flex flex-row">
-                            <div class="col-md-3 col-12 d-flex justify-content-center"><a href="#"><i class="bi bi-person-circle" style="font-size: 2rem; color: #eaf272;" @click.prevent="showInfo = !showInfo"></i></a></div>
-                            <div class="col-md-3 col-12 d-flex justify-content-center"><a href="https://github.com/anthea-wu"><i class="bi bi-github" style="font-size: 2rem; color: #eaf286;"></i></a></div>
-                            <div class="col-md-3 col-12 d-flex justify-content-center"><a href="https://www.linkedin.com/in/wu-anthea-401250230"><i class="bi bi-linkedin" style="font-size: 2rem; color: #eaf29a;"></i></a></div>
-                            <div class="col-md-3 col-12 d-flex justify-content-center"><a href="https://hackmd.io/@anthea-wu"><i class="bi bi-file-earmark-text-fill" style="font-size: 2rem; color: #eaf2ae;"></i></a></div>
+                        <div class="col-12 d-flex justify-content-evenly">
+                            <a href="#"><i class="bi bi-person-circle" style="font-size: 2rem; color: #eaf272;" @click.prevent="showInfo = !showInfo"></i></a>
+                            <a href="https://github.com/anthea-wu"><i class="bi bi-github" style="font-size: 2rem; color: #eaf286;"></i></a>
+                            <a href="https://www.linkedin.com/in/wu-anthea-401250230"><i class="bi bi-linkedin" style="font-size: 2rem; color: #eaf29a;"></i></a>
+                            <a href="https://hackmd.io/@anthea-wu"><i class="bi bi-file-earmark-text-fill" style="font-size: 2rem; color: #eaf2ae;"></i></a>
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="col-md-6 col-12">
+            <div class="col-xl-6 col-12">
                 <div class="card text-white bg-dark">
                     <div class="card-body row">
                         <h3 style="color: #eacaae">Anthea Wu</h3>
@@ -132,14 +125,32 @@
     const app = Vue.createApp({
         data(){
             return{
-                showInfo: false,
+                showInfo: true,
+                currentWidth: 0
             }
         },
-        methods:{
-            
+        computed:{
+            isUseRwd(){
+                if (this.currentWidth < 1200){
+                    console.log(this.currentWidth)
+                    return true;
+                }else{
+                    console.log('large !')
+                    return false;
+                }
+            },
         },
-        mounted: function () {
-            
+        watch:{
+            currentWidth(){
+                // console.log(this.currentWidth);
+            },
+        },
+        mounted(){
+            this.currentWidth = window.innerWidth;
+            window.onresize = () => {
+                this.currentWidth = window.innerWidth;
+            };
+            console.log(this.currentWidth);
         }
     });
     app.mount('#app')
