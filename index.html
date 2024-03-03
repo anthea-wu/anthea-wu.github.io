@@ -127,38 +127,33 @@
         crossorigin="anonymous"></script>
 
 <script>
-    const app = Vue.createApp({
-        data(){
-            return{
-                showInfo: false,
-                currentWidth: 0
-            }
-        },
-        computed:{
-            isUseRwd(){
-                if (this.currentWidth < 1200){
-                    console.log(this.currentWidth)
-                    return true;
-                }else{
-                    console.log('large !')
-                    return false;
-                }
-            },
-        },
-        watch:{
-            currentWidth(){
-                // console.log(this.currentWidth);
-            },
-        },
-        mounted(){
-            this.currentWidth = window.innerWidth;
+    const { createApp, ref, computed } = Vue
+
+    createApp({
+        setup() {
+            const showInfo = ref(false);
+
+            const currentWidth = ref(window.innerWidth);
             window.onresize = () => {
-                this.currentWidth = window.innerWidth;
-            };
-            console.log(this.currentWidth);
+                currentWidth.value = window.innerWidth;
+            }
+
+            const isUseRwd = computed(() => {
+                if (currentWidth.value < 1200) {
+                    console.log(currentWidth.value);
+                    return true;
+                }
+                console.log('large!')
+                return false;
+            })
+
+            return {
+                showInfo,
+                currentWidth,
+                isUseRwd,
+            }
         }
-    });
-    app.mount('#app')
+    }).mount('#app');
 </script>
 </body>
 </html>
