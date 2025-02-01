@@ -1,134 +1,95 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
-    <channel>
-        <title>Debug on Anthea&#39;s Blog</title>
-        <link>https://anthea-wu.github.io/categories/debug/</link>
-        <description>Recent content in Debug on Anthea&#39;s Blog</description>
-        <generator>Hugo -- gohugo.io</generator>
-        <language>en</language>
-        <lastBuildDate>Tue, 03 May 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://anthea-wu.github.io/categories/debug/index.xml" rel="self" type="application/rss+xml" /><item>
-        <title>不常見的遠端主機已強制關閉連線</title>
-        <link>https://anthea-wu.github.io/post/%E4%B8%8D%E5%B8%B8%E8%A6%8B%E7%9A%84%E9%81%A0%E7%AB%AF%E4%B8%BB%E6%A9%9F%E5%B7%B2%E5%BC%B7%E5%88%B6%E9%97%9C%E9%96%89%E9%80%A3%E7%B7%9A/</link>
-        <pubDate>Tue, 03 May 2022 00:00:00 +0000</pubDate>
-        
-        <guid>https://anthea-wu.github.io/post/%E4%B8%8D%E5%B8%B8%E8%A6%8B%E7%9A%84%E9%81%A0%E7%AB%AF%E4%B8%BB%E6%A9%9F%E5%B7%B2%E5%BC%B7%E5%88%B6%E9%97%9C%E9%96%89%E9%80%A3%E7%B7%9A/</guid>
-        <description>&lt;h2 id=&#34;遠端主機已強制關閉一個現存的連線&#34;&gt;遠端主機已強制關閉一個現存的連線
-&lt;/h2&gt;&lt;p&gt;Server A 一直有一隻運行的很正常的 API 提供給 Server B 和 Server C 呼叫，在某一天忽然 Server B 就呼叫失敗了，同一時間 Server C 以及我的 local 環境仍然可以正常使用那隻 API。查看 Server B log 後發現顯示的錯誤是：&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
-&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
-&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
-&lt;td class=&#34;lntd&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;基礎連接已關閉: 傳送時發生未預期錯誤，遠端主機已強制關閉一個現存的連線。
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;The underlying connection was closed: An unexpected error occurred on a send.
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-&lt;/div&gt;
-&lt;/div&gt;&lt;p&gt;由於是比較古老的服務了，最近一段時間都沒有修改過兩邊的程式碼，所以先排除了改壞了的可能性。把錯誤訊息拿去 google 後，看到通常是因為終止 TLS 1.0、1.1 的服務所導致，只要加上這段程式碼就可以運行了：&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
-&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
-&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
-&lt;td class=&#34;lntd&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;ServicePointManager.SecurityProtocol = SecurityProtocolType.Ssl3 | SecurityProtocolType.Tls | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12;
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-&lt;/div&gt;
-&lt;/div&gt;&lt;h2 id=&#34;client-hello--server-hello&#34;&gt;Client Hello &amp;amp; Server Hello
-&lt;/h2&gt;&lt;p&gt;剛好最近重新拾起網路協定的相關書籍閱讀中，書裡有一些使用 Wireshark 的範例，抱持著將就試試看的心態，就打開了 Wireshark 來研究看看到底從我 local 端發送出去的請求和 Server B 到底有甚麼不同。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;https://anthea-wu.github.io/post/%E4%B8%8D%E5%B8%B8%E8%A6%8B%E7%9A%84%E9%81%A0%E7%AB%AF%E4%B8%BB%E6%A9%9F%E5%B7%B2%E5%BC%B7%E5%88%B6%E9%97%9C%E9%96%89%E9%80%A3%E7%B7%9A/Wireshark.png&#34;
-	width=&#34;910&#34;
-	height=&#34;270&#34;
-	srcset=&#34;https://anthea-wu.github.io/post/%E4%B8%8D%E5%B8%B8%E8%A6%8B%E7%9A%84%E9%81%A0%E7%AB%AF%E4%B8%BB%E6%A9%9F%E5%B7%B2%E5%BC%B7%E5%88%B6%E9%97%9C%E9%96%89%E9%80%A3%E7%B7%9A/Wireshark_hu_95d51d30a541fd84.png 480w, https://anthea-wu.github.io/post/%E4%B8%8D%E5%B8%B8%E8%A6%8B%E7%9A%84%E9%81%A0%E7%AB%AF%E4%B8%BB%E6%A9%9F%E5%B7%B2%E5%BC%B7%E5%88%B6%E9%97%9C%E9%96%89%E9%80%A3%E7%B7%9A/Wireshark_hu_8d0a0ab334d5a545.png 1024w&#34;
-	loading=&#34;lazy&#34;
-	
-		alt=&#34;左邊為 local 端，右邊為 Server B&#34;
-	
-	
-		class=&#34;gallery-image&#34; 
-		data-flex-grow=&#34;337&#34;
-		data-flex-basis=&#34;808px&#34;
-	
-&gt;&lt;/p&gt;
-&lt;p&gt;從上面這張截圖的比較可以看到，左邊 local 端有出現 Client Hello 和 Server Hello，但右邊 Server B 卻只出現了 Client Hello。但這兩個互相說哈囉的東西是什麼？&lt;/p&gt;
-&lt;h2 id=&#34;tls-交握&#34;&gt;TLS 交握
-&lt;/h2&gt;&lt;p&gt;在網際網路的事件中，應該很多人都聽說過三項交握，全名應該是 TCP 三項交握（TCP Three-Way Handshake），透過這個過程建立連線。&lt;/p&gt;
-&lt;p&gt;但是這個連線建立後是沒有加密的狀態，因此要透過 &lt;strong&gt;TLS 交握&lt;/strong&gt; 來確保雙方能安全地交換加密金鑰，並確定加密的協定版本和加密算法。詳細的步驟是：&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;客戶端發送 &lt;code&gt;ClientHello&lt;/code&gt; 訊息，告知伺服器客戶端這邊支援的 TLS 版本以及密碼套件。&lt;/li&gt;
-&lt;li&gt;伺服器回應 &lt;code&gt;ServerHello&lt;/code&gt; 訊息，選擇使用的加密算法和協定版本，並傳送伺服器證書等資訊來證明身份。&lt;/li&gt;
-&lt;li&gt;雙方交換加密金鑰和一些安全參數，完成加密通訊的準備。&lt;/li&gt;
-&lt;li&gt;客戶端和伺服器確認所有訊息交換無誤後，TLS 握手結束，通信開始進入加密的數據傳輸階段。&lt;/li&gt;
-&lt;/ol&gt;
-&lt;p&gt;由於 TLS 的目的就是確保資料在傳輸過程中的機密性、完整性及身份驗證，只要有一個步驟缺失就代表無法建立安全的連線，因此連線就被中斷。從剛剛的截圖可以看到 Server B 確實沒有等到 &lt;code&gt;ServerHello&lt;/code&gt; 的訊息，為了確定是不是這個問題，我決定要分別看看這三台 Server 的 TLS 版本以及密碼套件有哪些。&lt;/p&gt;
-&lt;h3 id=&#34;檢查允許的密碼套件qualys-labs&#34;&gt;檢查允許的密碼套件：Qualys Labs
-&lt;/h3&gt;&lt;p&gt;Qualys Labs 這個網站主要是針對 SSL 安全性做的掃描，掃描出的內容剛好包含我們所需要的密碼套件清單。操作的方式也很簡單：&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;https://anthea-wu.github.io/post/%E4%B8%8D%E5%B8%B8%E8%A6%8B%E7%9A%84%E9%81%A0%E7%AB%AF%E4%B8%BB%E6%A9%9F%E5%B7%B2%E5%BC%B7%E5%88%B6%E9%97%9C%E9%96%89%E9%80%A3%E7%B7%9A/Steps1.png&#34;
-	width=&#34;1103&#34;
-	height=&#34;833&#34;
-	srcset=&#34;https://anthea-wu.github.io/post/%E4%B8%8D%E5%B8%B8%E8%A6%8B%E7%9A%84%E9%81%A0%E7%AB%AF%E4%B8%BB%E6%A9%9F%E5%B7%B2%E5%BC%B7%E5%88%B6%E9%97%9C%E9%96%89%E9%80%A3%E7%B7%9A/Steps1_hu_68dfc2bd7a2dcb8e.png 480w, https://anthea-wu.github.io/post/%E4%B8%8D%E5%B8%B8%E8%A6%8B%E7%9A%84%E9%81%A0%E7%AB%AF%E4%B8%BB%E6%A9%9F%E5%B7%B2%E5%BC%B7%E5%88%B6%E9%97%9C%E9%96%89%E9%80%A3%E7%B7%9A/Steps1_hu_dc1797473200e3fb.png 1024w&#34;
-	loading=&#34;lazy&#34;
-	
-		alt=&#34;1. 點選 Test your server&#34;
-	
-	
-		class=&#34;gallery-image&#34; 
-		data-flex-grow=&#34;132&#34;
-		data-flex-basis=&#34;317px&#34;
-	
-&gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;https://anthea-wu.github.io/post/%E4%B8%8D%E5%B8%B8%E8%A6%8B%E7%9A%84%E9%81%A0%E7%AB%AF%E4%B8%BB%E6%A9%9F%E5%B7%B2%E5%BC%B7%E5%88%B6%E9%97%9C%E9%96%89%E9%80%A3%E7%B7%9A/Steps2.png&#34;
-	width=&#34;1099&#34;
-	height=&#34;788&#34;
-	srcset=&#34;https://anthea-wu.github.io/post/%E4%B8%8D%E5%B8%B8%E8%A6%8B%E7%9A%84%E9%81%A0%E7%AB%AF%E4%B8%BB%E6%A9%9F%E5%B7%B2%E5%BC%B7%E5%88%B6%E9%97%9C%E9%96%89%E9%80%A3%E7%B7%9A/Steps2_hu_3df450630311d5c0.png 480w, https://anthea-wu.github.io/post/%E4%B8%8D%E5%B8%B8%E8%A6%8B%E7%9A%84%E9%81%A0%E7%AB%AF%E4%B8%BB%E6%A9%9F%E5%B7%B2%E5%BC%B7%E5%88%B6%E9%97%9C%E9%96%89%E9%80%A3%E7%B7%9A/Steps2_hu_c0d62bb2162f1bd1.png 1024w&#34;
-	loading=&#34;lazy&#34;
-	
-		alt=&#34;2. 在中間的 Hostname 輸入你想測試的網站&#34;
-	
-	
-		class=&#34;gallery-image&#34; 
-		data-flex-grow=&#34;139&#34;
-		data-flex-basis=&#34;334px&#34;
-	
-&gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;https://anthea-wu.github.io/post/%E4%B8%8D%E5%B8%B8%E8%A6%8B%E7%9A%84%E9%81%A0%E7%AB%AF%E4%B8%BB%E6%A9%9F%E5%B7%B2%E5%BC%B7%E5%88%B6%E9%97%9C%E9%96%89%E9%80%A3%E7%B7%9A/Steps3.png&#34;
-	width=&#34;1103&#34;
-	height=&#34;639&#34;
-	srcset=&#34;https://anthea-wu.github.io/post/%E4%B8%8D%E5%B8%B8%E8%A6%8B%E7%9A%84%E9%81%A0%E7%AB%AF%E4%B8%BB%E6%A9%9F%E5%B7%B2%E5%BC%B7%E5%88%B6%E9%97%9C%E9%96%89%E9%80%A3%E7%B7%9A/Steps3_hu_90462bdf35f04fd4.png 480w, https://anthea-wu.github.io/post/%E4%B8%8D%E5%B8%B8%E8%A6%8B%E7%9A%84%E9%81%A0%E7%AB%AF%E4%B8%BB%E6%A9%9F%E5%B7%B2%E5%BC%B7%E5%88%B6%E9%97%9C%E9%96%89%E9%80%A3%E7%B7%9A/Steps3_hu_fb58499b3829eaff.png 1024w&#34;
-	loading=&#34;lazy&#34;
-	
-		alt=&#34;3. 選擇它掃描後的你的主機 IP，進去看報告&#34;
-	
-	
-		class=&#34;gallery-image&#34; 
-		data-flex-grow=&#34;172&#34;
-		data-flex-basis=&#34;414px&#34;
-	
-&gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;https://anthea-wu.github.io/post/%E4%B8%8D%E5%B8%B8%E8%A6%8B%E7%9A%84%E9%81%A0%E7%AB%AF%E4%B8%BB%E6%A9%9F%E5%B7%B2%E5%BC%B7%E5%88%B6%E9%97%9C%E9%96%89%E9%80%A3%E7%B7%9A/Steps4.png&#34;
-	width=&#34;962&#34;
-	height=&#34;806&#34;
-	srcset=&#34;https://anthea-wu.github.io/post/%E4%B8%8D%E5%B8%B8%E8%A6%8B%E7%9A%84%E9%81%A0%E7%AB%AF%E4%B8%BB%E6%A9%9F%E5%B7%B2%E5%BC%B7%E5%88%B6%E9%97%9C%E9%96%89%E9%80%A3%E7%B7%9A/Steps4_hu_976fef94f588ed77.png 480w, https://anthea-wu.github.io/post/%E4%B8%8D%E5%B8%B8%E8%A6%8B%E7%9A%84%E9%81%A0%E7%AB%AF%E4%B8%BB%E6%A9%9F%E5%B7%B2%E5%BC%B7%E5%88%B6%E9%97%9C%E9%96%89%E9%80%A3%E7%B7%9A/Steps4_hu_558cd966f292a70f.png 1024w&#34;
-	loading=&#34;lazy&#34;
-	
-		alt=&#34;4. 往下滑，找到 Cipher Suites 的區塊，這邊就是這台 server 可用的密碼套件清單&#34;
-	
-	
-		class=&#34;gallery-image&#34; 
-		data-flex-grow=&#34;119&#34;
-		data-flex-basis=&#34;286px&#34;
-	
-&gt;&lt;/p&gt;
-&lt;p&gt;透過這個網站的比對，我確定了這次 Server B 遇到的問題：由於那陣子剛做完弱點掃描，Server A 被掃出了 Weak SSL Protocol 的問題，所以我使用 IIS Crypto 把一些不安全的過時協議關閉，但 Server B 太過古老，沒辦法支援新的協議，這就導致了這次的問題，Server B 只能使用不安全的密碼套件，但 Server A 不允許使用，在沒辦法挑出可用套件的情況下，自然也就沒辦法回覆 &lt;code&gt;ServerHello&lt;/code&gt; 的訊息。&lt;/p&gt;
-&lt;blockquote&gt;
-    &lt;p&gt;&lt;p&gt;參考資料&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;&lt;a class=&#34;link&#34; href=&#34;https://www.cloudflare.com/zh-tw/learning/ssl/what-happens-in-a-tls-handshake/&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
-    &gt;TLS 握手中發生了甚麼事？&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a class=&#34;link&#34; href=&#34;https://medium.com/@clu1022/%E9%82%A3%E4%BA%9B%E9%97%9C%E6%96%BCssl-tls%E7%9A%84%E4%BA%8C%E4%B8%89%E4%BA%8B-%E4%B9%9D-ssl-communication-31a2a8a888a6&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
-    &gt;那些關於SSL/TLS的二三事&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;&lt;/p&gt;&lt;/blockquote&gt;
-</description>
-        </item>
-        
-    </channel>
-</rss>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Debug on Anthea's Blog</title><link>https://anthea-wu.github.io/categories/debug/</link><description>Recent content in Debug on Anthea's Blog</description><generator>Hugo -- gohugo.io</generator><language>en</language><lastBuildDate>Tue, 03 May 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://anthea-wu.github.io/categories/debug/index.xml" rel="self" type="application/rss+xml"/><item><title>不常見的遠端主機已強制關閉連線</title><link>https://anthea-wu.github.io/post/%E4%B8%8D%E5%B8%B8%E8%A6%8B%E7%9A%84%E9%81%A0%E7%AB%AF%E4%B8%BB%E6%A9%9F%E5%B7%B2%E5%BC%B7%E5%88%B6%E9%97%9C%E9%96%89%E9%80%A3%E7%B7%9A/</link><pubDate>Tue, 03 May 2022 00:00:00 +0000</pubDate><guid>https://anthea-wu.github.io/post/%E4%B8%8D%E5%B8%B8%E8%A6%8B%E7%9A%84%E9%81%A0%E7%AB%AF%E4%B8%BB%E6%A9%9F%E5%B7%B2%E5%BC%B7%E5%88%B6%E9%97%9C%E9%96%89%E9%80%A3%E7%B7%9A/</guid><description>&lt;h2 id="遠端主機已強制關閉一個現存的連線">遠端主機已強制關閉一個現存的連線
+&lt;/h2>&lt;p>Server A 一直有一隻運行的很正常的 API 提供給 Server B 和 Server C 呼叫，在某一天忽然 Server B 就呼叫失敗了，同一時間 Server C 以及我的 local 環境仍然可以正常使用那隻 API。查看 Server B log 後發現顯示的錯誤是：&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;span class="lnt">2
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-fallback" data-lang="fallback">&lt;span class="line">&lt;span class="cl">基礎連接已關閉: 傳送時發生未預期錯誤，遠端主機已強制關閉一個現存的連線。
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">The underlying connection was closed: An unexpected error occurred on a send.
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>由於是比較古老的服務了，最近一段時間都沒有修改過兩邊的程式碼，所以先排除了改壞了的可能性。把錯誤訊息拿去 google 後，看到通常是因為終止 TLS 1.0、1.1 的服務所導致，只要加上這段程式碼就可以運行了：&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-fallback" data-lang="fallback">&lt;span class="line">&lt;span class="cl">ServicePointManager.SecurityProtocol = SecurityProtocolType.Ssl3 | SecurityProtocolType.Tls | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12;
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;h2 id="client-hello--server-hello">Client Hello &amp;amp; Server Hello
+&lt;/h2>&lt;p>剛好最近重新拾起網路協定的相關書籍閱讀中，書裡有一些使用 Wireshark 的範例，抱持著將就試試看的心態，就打開了 Wireshark 來研究看看到底從我 local 端發送出去的請求和 Server B 到底有甚麼不同。&lt;/p>
+&lt;p>&lt;img src="https://anthea-wu.github.io/post/%E4%B8%8D%E5%B8%B8%E8%A6%8B%E7%9A%84%E9%81%A0%E7%AB%AF%E4%B8%BB%E6%A9%9F%E5%B7%B2%E5%BC%B7%E5%88%B6%E9%97%9C%E9%96%89%E9%80%A3%E7%B7%9A/Wireshark.png"
+width="910"
+height="270"
+srcset="https://anthea-wu.github.io/post/%E4%B8%8D%E5%B8%B8%E8%A6%8B%E7%9A%84%E9%81%A0%E7%AB%AF%E4%B8%BB%E6%A9%9F%E5%B7%B2%E5%BC%B7%E5%88%B6%E9%97%9C%E9%96%89%E9%80%A3%E7%B7%9A/Wireshark_hu_95d51d30a541fd84.png 480w, https://anthea-wu.github.io/post/%E4%B8%8D%E5%B8%B8%E8%A6%8B%E7%9A%84%E9%81%A0%E7%AB%AF%E4%B8%BB%E6%A9%9F%E5%B7%B2%E5%BC%B7%E5%88%B6%E9%97%9C%E9%96%89%E9%80%A3%E7%B7%9A/Wireshark_hu_8d0a0ab334d5a545.png 1024w"
+loading="lazy"
+alt="左邊為 local 端，右邊為 Server B"
+class="gallery-image"
+data-flex-grow="337"
+data-flex-basis="808px"
+>&lt;/p>
+&lt;p>從上面這張截圖的比較可以看到，左邊 local 端有出現 Client Hello 和 Server Hello，但右邊 Server B 卻只出現了 Client Hello。但這兩個互相說哈囉的東西是什麼？&lt;/p>
+&lt;h2 id="tls-交握">TLS 交握
+&lt;/h2>&lt;p>在網際網路的事件中，應該很多人都聽說過三項交握，全名應該是 TCP 三項交握（TCP Three-Way Handshake），透過這個過程建立連線。&lt;/p>
+&lt;p>但是這個連線建立後是沒有加密的狀態，因此要透過 &lt;strong>TLS 交握&lt;/strong> 來確保雙方能安全地交換加密金鑰，並確定加密的協定版本和加密算法。詳細的步驟是：&lt;/p>
+&lt;ol>
+&lt;li>客戶端發送 &lt;code>ClientHello&lt;/code> 訊息，告知伺服器客戶端這邊支援的 TLS 版本以及密碼套件。&lt;/li>
+&lt;li>伺服器回應 &lt;code>ServerHello&lt;/code> 訊息，選擇使用的加密算法和協定版本，並傳送伺服器證書等資訊來證明身份。&lt;/li>
+&lt;li>雙方交換加密金鑰和一些安全參數，完成加密通訊的準備。&lt;/li>
+&lt;li>客戶端和伺服器確認所有訊息交換無誤後，TLS 握手結束，通信開始進入加密的數據傳輸階段。&lt;/li>
+&lt;/ol>
+&lt;p>由於 TLS 的目的就是確保資料在傳輸過程中的機密性、完整性及身份驗證，只要有一個步驟缺失就代表無法建立安全的連線，因此連線就被中斷。從剛剛的截圖可以看到 Server B 確實沒有等到 &lt;code>ServerHello&lt;/code> 的訊息，為了確定是不是這個問題，我決定要分別看看這三台 Server 的 TLS 版本以及密碼套件有哪些。&lt;/p>
+&lt;h3 id="檢查允許的密碼套件qualys-labs">檢查允許的密碼套件：Qualys Labs
+&lt;/h3>&lt;p>Qualys Labs 這個網站主要是針對 SSL 安全性做的掃描，掃描出的內容剛好包含我們所需要的密碼套件清單。操作的方式也很簡單：&lt;/p>
+&lt;p>&lt;img src="https://anthea-wu.github.io/post/%E4%B8%8D%E5%B8%B8%E8%A6%8B%E7%9A%84%E9%81%A0%E7%AB%AF%E4%B8%BB%E6%A9%9F%E5%B7%B2%E5%BC%B7%E5%88%B6%E9%97%9C%E9%96%89%E9%80%A3%E7%B7%9A/Steps1.png"
+width="1103"
+height="833"
+srcset="https://anthea-wu.github.io/post/%E4%B8%8D%E5%B8%B8%E8%A6%8B%E7%9A%84%E9%81%A0%E7%AB%AF%E4%B8%BB%E6%A9%9F%E5%B7%B2%E5%BC%B7%E5%88%B6%E9%97%9C%E9%96%89%E9%80%A3%E7%B7%9A/Steps1_hu_68dfc2bd7a2dcb8e.png 480w, https://anthea-wu.github.io/post/%E4%B8%8D%E5%B8%B8%E8%A6%8B%E7%9A%84%E9%81%A0%E7%AB%AF%E4%B8%BB%E6%A9%9F%E5%B7%B2%E5%BC%B7%E5%88%B6%E9%97%9C%E9%96%89%E9%80%A3%E7%B7%9A/Steps1_hu_dc1797473200e3fb.png 1024w"
+loading="lazy"
+alt="1. 點選 Test your server"
+class="gallery-image"
+data-flex-grow="132"
+data-flex-basis="317px"
+>&lt;/p>
+&lt;p>&lt;img src="https://anthea-wu.github.io/post/%E4%B8%8D%E5%B8%B8%E8%A6%8B%E7%9A%84%E9%81%A0%E7%AB%AF%E4%B8%BB%E6%A9%9F%E5%B7%B2%E5%BC%B7%E5%88%B6%E9%97%9C%E9%96%89%E9%80%A3%E7%B7%9A/Steps2.png"
+width="1099"
+height="788"
+srcset="https://anthea-wu.github.io/post/%E4%B8%8D%E5%B8%B8%E8%A6%8B%E7%9A%84%E9%81%A0%E7%AB%AF%E4%B8%BB%E6%A9%9F%E5%B7%B2%E5%BC%B7%E5%88%B6%E9%97%9C%E9%96%89%E9%80%A3%E7%B7%9A/Steps2_hu_3df450630311d5c0.png 480w, https://anthea-wu.github.io/post/%E4%B8%8D%E5%B8%B8%E8%A6%8B%E7%9A%84%E9%81%A0%E7%AB%AF%E4%B8%BB%E6%A9%9F%E5%B7%B2%E5%BC%B7%E5%88%B6%E9%97%9C%E9%96%89%E9%80%A3%E7%B7%9A/Steps2_hu_c0d62bb2162f1bd1.png 1024w"
+loading="lazy"
+alt="2. 在中間的 Hostname 輸入你想測試的網站"
+class="gallery-image"
+data-flex-grow="139"
+data-flex-basis="334px"
+>&lt;/p>
+&lt;p>&lt;img src="https://anthea-wu.github.io/post/%E4%B8%8D%E5%B8%B8%E8%A6%8B%E7%9A%84%E9%81%A0%E7%AB%AF%E4%B8%BB%E6%A9%9F%E5%B7%B2%E5%BC%B7%E5%88%B6%E9%97%9C%E9%96%89%E9%80%A3%E7%B7%9A/Steps3.png"
+width="1103"
+height="639"
+srcset="https://anthea-wu.github.io/post/%E4%B8%8D%E5%B8%B8%E8%A6%8B%E7%9A%84%E9%81%A0%E7%AB%AF%E4%B8%BB%E6%A9%9F%E5%B7%B2%E5%BC%B7%E5%88%B6%E9%97%9C%E9%96%89%E9%80%A3%E7%B7%9A/Steps3_hu_90462bdf35f04fd4.png 480w, https://anthea-wu.github.io/post/%E4%B8%8D%E5%B8%B8%E8%A6%8B%E7%9A%84%E9%81%A0%E7%AB%AF%E4%B8%BB%E6%A9%9F%E5%B7%B2%E5%BC%B7%E5%88%B6%E9%97%9C%E9%96%89%E9%80%A3%E7%B7%9A/Steps3_hu_fb58499b3829eaff.png 1024w"
+loading="lazy"
+alt="3. 選擇它掃描後的你的主機 IP，進去看報告"
+class="gallery-image"
+data-flex-grow="172"
+data-flex-basis="414px"
+>&lt;/p>
+&lt;p>&lt;img src="https://anthea-wu.github.io/post/%E4%B8%8D%E5%B8%B8%E8%A6%8B%E7%9A%84%E9%81%A0%E7%AB%AF%E4%B8%BB%E6%A9%9F%E5%B7%B2%E5%BC%B7%E5%88%B6%E9%97%9C%E9%96%89%E9%80%A3%E7%B7%9A/Steps4.png"
+width="962"
+height="806"
+srcset="https://anthea-wu.github.io/post/%E4%B8%8D%E5%B8%B8%E8%A6%8B%E7%9A%84%E9%81%A0%E7%AB%AF%E4%B8%BB%E6%A9%9F%E5%B7%B2%E5%BC%B7%E5%88%B6%E9%97%9C%E9%96%89%E9%80%A3%E7%B7%9A/Steps4_hu_976fef94f588ed77.png 480w, https://anthea-wu.github.io/post/%E4%B8%8D%E5%B8%B8%E8%A6%8B%E7%9A%84%E9%81%A0%E7%AB%AF%E4%B8%BB%E6%A9%9F%E5%B7%B2%E5%BC%B7%E5%88%B6%E9%97%9C%E9%96%89%E9%80%A3%E7%B7%9A/Steps4_hu_558cd966f292a70f.png 1024w"
+loading="lazy"
+alt="4. 往下滑，找到 Cipher Suites 的區塊，這邊就是這台 server 可用的密碼套件清單"
+class="gallery-image"
+data-flex-grow="119"
+data-flex-basis="286px"
+>&lt;/p>
+&lt;p>透過這個網站的比對，我確定了這次 Server B 遇到的問題：由於那陣子剛做完弱點掃描，Server A 被掃出了 Weak SSL Protocol 的問題，所以我使用 IIS Crypto 把一些不安全的過時協議關閉，但 Server B 太過古老，沒辦法支援新的協議，這就導致了這次的問題，Server B 只能使用不安全的密碼套件，但 Server A 不允許使用，在沒辦法挑出可用套件的情況下，自然也就沒辦法回覆 &lt;code>ServerHello&lt;/code> 的訊息。&lt;/p>
+&lt;blockquote>
+&lt;p>&lt;p>參考資料&lt;/p>
+&lt;ul>
+&lt;li>&lt;a class="link" href="https://www.cloudflare.com/zh-tw/learning/ssl/what-happens-in-a-tls-handshake/" target="_blank" rel="noopener"
+>TLS 握手中發生了甚麼事？&lt;/a>&lt;/li>
+&lt;li>&lt;a class="link" href="https://medium.com/@clu1022/%E9%82%A3%E4%BA%9B%E9%97%9C%E6%96%BCssl-tls%E7%9A%84%E4%BA%8C%E4%B8%89%E4%BA%8B-%E4%B9%9D-ssl-communication-31a2a8a888a6" target="_blank" rel="noopener"
+>那些關於SSL/TLS的二三事&lt;/a>&lt;/li>
+&lt;/ul>&lt;/p>&lt;/blockquote></description></item></channel></rss>

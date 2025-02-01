@@ -1,0 +1,161 @@
+<!doctype html><html lang=en dir=ltr><head><meta charset=utf-8><meta name=viewport content='width=device-width,initial-scale=1'><meta name=description content="中文亂碼"><title>GDAL 操作 ShapeFile (2)</title>
+<link rel=canonical href=https://anthea-wu.github.io/post/gdal-shapefile-2/><link rel=stylesheet href=/scss/style.min.663803bebe609202d5b39d848f2d7c2dc8b598a2d879efa079fa88893d29c49c.css><meta property='og:title' content="GDAL 操作 ShapeFile (2)"><meta property='og:description' content="中文亂碼"><meta property='og:url' content='https://anthea-wu.github.io/post/gdal-shapefile-2/'><meta property='og:site_name' content="Anthea's Blog"><meta property='og:type' content='article'><meta property='article:section' content='Post'><meta property='article:tag' content='.NET'><meta property='article:tag' content='GDAL'><meta property='article:published_time' content='2022-07-24T23:58:59+08:00'><meta property='article:modified_time' content='2022-07-24T23:58:59+08:00'><meta name=twitter:title content="GDAL 操作 ShapeFile (2)"><meta name=twitter:description content="中文亂碼"></head><body class=article-page><script>(function(){const e="StackColorScheme";localStorage.getItem(e)||localStorage.setItem(e,"auto")})()</script><script>(function(){const t="StackColorScheme",e=localStorage.getItem(t),n=window.matchMedia("(prefers-color-scheme: dark)").matches===!0;e=="dark"||e==="auto"&&n?document.documentElement.dataset.scheme="dark":document.documentElement.dataset.scheme="light"})()</script><div class="container main-container flex on-phone--column extended"><aside class="sidebar left-sidebar sticky"><button class="hamburger hamburger--spin" type=button id=toggle-menu aria-label="Toggle Menu">
+<span class=hamburger-box><span class=hamburger-inner></span></span></button><header><figure class=site-avatar><a href=/><img src=/img/avatar_hu_d8c2fe4d260f28d7.png width=300 height=300 class=site-logo loading=lazy alt=Avatar></a></figure><div class=site-meta><h1 class=site-name><a href=/>Anthea's Blog</a></h1><h2 class=site-description>Titansoft / Product Developer</h2></div></header><ol class=menu-social><li><a href=https://github.com/anthea-wu target=_blank title=GitHub rel=me><svg class="icon icon-tabler icon-tabler-brand-github" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M9 19c-4.3 1.4-4.3-2.5-6-3m12 5v-3.5c0-1 .1-1.4-.5-2 2.8-.3 5.5-1.4 5.5-6a4.6 4.6.0 00-1.3-3.2 4.2 4.2.0 00-.1-3.2s-1.1-.3-3.5 1.3a12.3 12.3.0 00-6.2.0C6.5 2.8 5.4 3.1 5.4 3.1a4.2 4.2.0 00-.1 3.2A4.6 4.6.0 004 9.5c0 4.6 2.7 5.7 5.5 6-.6.6-.6 1.2-.5 2V21"/></svg></a></li></ol><ol class=menu id=main-menu><li><a href=/><svg class="icon icon-tabler icon-tabler-home" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><polyline points="5 12 3 12 12 3 21 12 19 12"/><path d="M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7"/><path d="M9 21v-6a2 2 0 012-2h2a2 2 0 012 2v6"/></svg>
+<span>Home</span></a></li><li><a href=/page/about/><svg class="icon icon-tabler icon-tabler-user" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="7" r="4"/><path d="M6 21v-2a4 4 0 014-4h4a4 4 0 014 4v2"/></svg>
+<span>About</span></a></li><li><a href=/books target=_blank><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-book"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M3 19a9 9 0 019 0 9 9 0 019 0"/><path d="M3 6a9 9 0 019 0 9 9 0 019 0"/><path d="M3 6v13"/><path d="M12 6v13"/><path d="M21 6v13"/></svg>
+<span>Books</span></a></li><li class=menu-bottom-section><ol class=menu><li id=dark-mode-toggle><svg class="icon icon-tabler icon-tabler-toggle-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="8" cy="12" r="2"/><rect x="2" y="6" width="20" height="12" rx="6"/></svg>
+<svg class="icon icon-tabler icon-tabler-toggle-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="16" cy="12" r="2"/><rect x="2" y="6" width="20" height="12" rx="6"/></svg>
+<span>Dark Mode</span></li></ol></li></ol></aside><main class="main full-width"><article class=main-article><header class=article-header><div class=article-details><header class=article-category><a href=/categories/technical/>Technical
+</a><a href=/categories/gis/>GIS</a></header><div class=article-title-wrapper><h2 class=article-title><a href=/post/gdal-shapefile-2/>GDAL 操作 ShapeFile (2)</a></h2><h3 class=article-subtitle>中文亂碼</h3></div><footer class=article-time><div><svg class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M11.795 21H5a2 2 0 01-2-2V7a2 2 0 012-2h12a2 2 0 012 2v4"/><circle cx="18" cy="18" r="4"/><path d="M15 3v4"/><path d="M7 3v4"/><path d="M3 11h16"/><path d="M18 16.496V18l1 1"/></svg>
+<time class=article-time--published>2022/07/24</time></div><div><svg class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/></svg>
+<time class=article-time--reading>2 minute read</time></div></footer></div></header><section class=article-content><p><img src=/post/gdal-shapefile-2/ShpError1.png width=1100 height=219 srcset="/post/gdal-shapefile-2/ShpError1_hu_51f775485a0e3464.png 480w, /post/gdal-shapefile-2/ShpError1_hu_8345583c9332df9d.png 1024w" loading=lazy class=gallery-image data-flex-grow=502 data-flex-basis=1205px></p><p><a class=link href=../gdal-shapefile-1>上一篇</a>提到，輸出的結果中，欄位的名稱可以正常顯示，內容的值卻會變成亂碼。</p><h2 id=問題出在哪>問題出在哪</h2><p>上網找解法的時候發現有人遇到相似的狀況，但不同的是，我和對方的亂碼顯示是相反的：他的亂碼會出現在欄位名稱，內容的值反而是正常的。</p><p>雖然狀況有點不相同，但他在閱讀了原始碼後提出了一個觀點：</p><blockquote><p>對比 <code>GetName</code> 和 <code>GetFieldAsString</code> 兩個函數可以很明顯看出來，<code>GetFieldAsString</code> 通過調用 <code>Ogr.Utf8BytesToString</code> 將返回的 UTF8 編碼的位元組數組以 UTF8 方式解碼為字元串，所以能夠正常顯示；而 <code>GetName</code> 則直接返回字元串（實際上編譯器隱性調用了 <code>Encoding.Default.GetString</code> 解碼為字元串），由於沒有使用 UTF8 解碼導致顯示為亂碼。</p><span class=cite><span>― </span><span>gis0911178, </span><a href=https://www.cnblogs.com/litou/p/15035790.html><cite>CSDN / CC 4.0 BY-SA 協議</cite></a></span></blockquote><h3 id=觀察原始碼>觀察原始碼</h3><p>為了證明，我利用反編譯的工具來檢視 <code>Gdal.Core.dll</code>，可以看到像下面這樣的內容：</p><p><img src=/post/gdal-shapefile-2/GetName.png width=588 height=235 srcset="/post/gdal-shapefile-2/GetName_hu_8a1e34a65a922f86.png 480w, /post/gdal-shapefile-2/GetName_hu_271357c2755130c4.png 1024w" loading=lazy class=gallery-image data-flex-grow=250 data-flex-basis=600px></p><p><img src=/post/gdal-shapefile-2/GetFieldAsString.png width=964 height=233 srcset="/post/gdal-shapefile-2/GetFieldAsString_hu_6ab1757c16500b8d.png 480w, /post/gdal-shapefile-2/GetFieldAsString_hu_742e405414d2a63a.png 1024w" loading=lazy class=gallery-image data-flex-grow=413 data-flex-basis=992px></p><p>從這兩張圖中可以看到，讀取內容值，調用 <code>Feature.GetFieldAsString()</code> 的時候，會將結果進行轉換，<code>Utf8BytesToString()</code> 的內容包含：</p><p><img src=/post/gdal-shapefile-2/Utf8BytesToString.png width=603 height=328 srcset="/post/gdal-shapefile-2/Utf8BytesToString_hu_ec2b9af15538287f.png 480w, /post/gdal-shapefile-2/Utf8BytesToString_hu_2360a6a9a6d71dce.png 1024w" loading=lazy class=gallery-image data-flex-grow=183 data-flex-basis=441px></p><p>所以從結論來看，他的情況應該是正常的，只是不知道為甚麼我會是相反的狀況：有用 UTF8 解碼的內容，反而會是亂碼 😕</p><h3 id=gdalcore--maxrevgdalcore><code>Gdal.Core</code> → <code>MaxRev.Gdal.Core</code></h3><p>所以，按照他的假設，應該是要在取得欄位名稱的時候多調用 <code>Utf8BytesToString()</code> 來讓字串正確顯示，但對於我的狀況來說，反而是要把 <code>Utf8BytesToString()</code> 拿掉 😢 但我對於 dll 相關的技能樹是未開通的狀態，所以選擇放棄 <code>Gdal.Core</code> 這個套件，轉而使用另外一個同樣使用 Gdal，但專門開發給 .NET Core 使用的套件－－ <code>MaxRev.Gdal.Core</code>。</p><p>套件的使用方法和原本的 <code>Gdal.Core</code> 一模一樣，只是要在原本的 <code>Gdal.AllRegister();</code> 之前，加上 <code>GdalBase.ConfigureAll();</code> 就可以了。更改套件之後運行的結果如下：</p><p><img src=/post/gdal-shapefile-2/ShpError2.png width=1100 height=214 srcset="/post/gdal-shapefile-2/ShpError2_hu_99d79016c4df38a9.png 480w, /post/gdal-shapefile-2/ShpError2_hu_4e81d79ccd7f1354.png 1024w" loading=lazy alt="終於是正常的 Bug 了 (?) 🎊" class=gallery-image data-flex-grow=514 data-flex-basis=1233px></p><hr><h2 id=修正中文亂碼>修正中文亂碼</h2><p>將情境還原之後就可以針對他所提出的方法進行修正了。我選擇最快也最好處理的方法－－直接調用原本 dll 中的方法再另外包一層 UTF8 解碼，完整的程式碼如下：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span><span class=lnt>28
+</span><span class=lnt>29
+</span><span class=lnt>30
+</span><span class=lnt>31
+</span><span class=lnt>32
+</span><span class=lnt>33
+</span><span class=lnt>34
+</span><span class=lnt>35
+</span><span class=lnt>36
+</span><span class=lnt>37
+</span><span class=lnt>38
+</span><span class=lnt>39
+</span><span class=lnt>40
+</span><span class=lnt>41
+</span><span class=lnt>42
+</span><span class=lnt>43
+</span><span class=lnt>44
+</span><span class=lnt>45
+</span><span class=lnt>46
+</span><span class=lnt>47
+</span><span class=lnt>48
+</span><span class=lnt>49
+</span><span class=lnt>50
+</span><span class=lnt>51
+</span><span class=lnt>52
+</span><span class=lnt>53
+</span><span class=lnt>54
+</span><span class=lnt>55
+</span><span class=lnt>56
+</span><span class=lnt>57
+</span><span class=lnt>58
+</span><span class=lnt>59
+</span><span class=lnt>60
+</span><span class=lnt>61
+</span><span class=lnt>62
+</span><span class=lnt>63
+</span><span class=lnt>64
+</span><span class=lnt>65
+</span><span class=lnt>66
+</span><span class=lnt>67
+</span><span class=lnt>68
+</span><span class=lnt>69
+</span><span class=lnt>70
+</span><span class=lnt>71
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-C# data-lang=C#><span class=line><span class=cl><span class=c1>// 註冊 MaxRev.Gdal.Core</span>
+</span></span><span class=line><span class=cl><span class=n>GdalBase</span><span class=p>.</span><span class=n>ConfigureAll</span><span class=p>();</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1>// 註冊 GDAL</span>
+</span></span><span class=line><span class=cl><span class=n>Gdal</span><span class=p>.</span><span class=n>SetConfigOption</span><span class=p>(</span><span class=s>&#34;SHAPE_ENCODING&#34;</span><span class=p>,</span> <span class=s>&#34;big5&#34;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl><span class=n>Gdal</span><span class=p>.</span><span class=n>AllRegister</span><span class=p>();</span>
+</span></span><span class=line><span class=cl><span class=n>Ogr</span><span class=p>.</span><span class=n>RegisterAll</span><span class=p>();</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1>// 開啟 SHP 檔案（0 - 讀取、1 - 讀寫）</span>
+</span></span><span class=line><span class=cl><span class=kt>var</span> <span class=n>source</span> <span class=p>=</span> <span class=n>Ogr</span><span class=p>.</span><span class=n>Open</span><span class=p>(</span><span class=s>&#34;files/simple/test.shp&#34;</span><span class=p>,</span> <span class=p>(</span><span class=kt>int</span><span class=p>)</span><span class=n>EnumShapefileOpen</span><span class=p>.</span><span class=n>ReadOnly</span><span class=p>);</span>
+</span></span><span class=line><span class=cl><span class=kt>var</span> <span class=n>layerCount</span> <span class=p>=</span> <span class=n>source</span><span class=p>.</span><span class=n>GetLayerCount</span><span class=p>();</span>
+</span></span><span class=line><span class=cl><span class=k>for</span> <span class=p>(</span><span class=kt>var</span> <span class=n>i</span> <span class=p>=</span> <span class=m>0</span><span class=p>;</span> <span class=n>i</span> <span class=p>&lt;</span> <span class=n>layerCount</span><span class=p>;</span> <span class=n>i</span><span class=p>++)</span>
+</span></span><span class=line><span class=cl><span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=c1>// 讀取圖層 Layer 資訊</span>
+</span></span><span class=line><span class=cl>    <span class=kt>var</span> <span class=n>layer</span> <span class=p>=</span> <span class=n>source</span><span class=p>.</span><span class=n>GetLayerByIndex</span><span class=p>(</span><span class=n>i</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>    <span class=kt>var</span> <span class=n>fieldCount</span> <span class=p>=</span> <span class=n>layer</span><span class=p>.</span><span class=n>GetLayerDefn</span><span class=p>().</span><span class=n>GetFieldCount</span><span class=p>();</span>
+</span></span><span class=line><span class=cl>    <span class=k>for</span> <span class=p>(</span><span class=kt>var</span> <span class=n>j</span> <span class=p>=</span> <span class=m>0</span><span class=p>;</span> <span class=n>j</span> <span class=p>&lt;</span> <span class=n>fieldCount</span><span class=p>;</span> <span class=n>j</span><span class=p>++)</span>
+</span></span><span class=line><span class=cl>    <span class=p>{</span>
+</span></span><span class=line><span class=cl>        <span class=kt>var</span> <span class=n>field</span> <span class=p>=</span> <span class=n>layer</span><span class=p>.</span><span class=n>GetLayerDefn</span><span class=p>().</span><span class=n>GetFieldDefn</span><span class=p>(</span><span class=n>j</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>        <span class=kt>var</span> <span class=n>fieldName</span> <span class=p>=</span> <span class=n>GetFieldDfnName</span><span class=p>(</span><span class=n>field</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>        <span class=n>Console</span><span class=p>.</span><span class=n>WriteLine</span><span class=p>(</span><span class=s>$&#34;欄位{j + 1}. {fieldName}&#34;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl>    
+</span></span><span class=line><span class=cl>    <span class=c1>// 讀取要素 Feature</span>
+</span></span><span class=line><span class=cl>    <span class=n>Feature</span> <span class=n>feature</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>    <span class=k>while</span> <span class=p>((</span><span class=n>feature</span> <span class=p>=</span> <span class=n>layer</span><span class=p>.</span><span class=n>GetNextFeature</span><span class=p>())</span> <span class=p>!=</span> <span class=kc>null</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>    <span class=p>{</span>
+</span></span><span class=line><span class=cl>        <span class=kt>var</span> <span class=n>id</span> <span class=p>=</span> <span class=n>feature</span><span class=p>.</span><span class=n>GetFieldAsInteger</span><span class=p>(</span><span class=m>0</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>        <span class=n>Console</span><span class=p>.</span><span class=n>WriteLine</span><span class=p>(</span><span class=s>$&#34;內容1. {id}&#34;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>        
+</span></span><span class=line><span class=cl>        <span class=kt>var</span> <span class=n>name</span> <span class=p>=</span> <span class=n>feature</span><span class=p>.</span><span class=n>GetFieldAsString</span><span class=p>(</span><span class=m>1</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>        <span class=n>Console</span><span class=p>.</span><span class=n>WriteLine</span><span class=p>(</span><span class=s>$&#34;內容2. {name}&#34;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>        
+</span></span><span class=line><span class=cl>        <span class=kt>var</span> <span class=n>area</span> <span class=p>=</span> <span class=n>feature</span><span class=p>.</span><span class=n>GetFieldAsInteger64</span><span class=p>(</span><span class=m>2</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>        <span class=n>Console</span><span class=p>.</span><span class=n>WriteLine</span><span class=p>(</span><span class=s>$&#34;內容3. {area}&#34;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>        
+</span></span><span class=line><span class=cl>        <span class=kt>var</span> <span class=n>geometry</span> <span class=p>=</span> <span class=n>feature</span><span class=p>.</span><span class=n>GetGeometryRef</span><span class=p>();</span>
+</span></span><span class=line><span class=cl>        <span class=n>geometry</span><span class=p>.</span><span class=n>ExportToWkt</span><span class=p>(</span><span class=k>out</span> <span class=kt>var</span> <span class=n>wkt</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>        <span class=n>Console</span><span class=p>.</span><span class=n>WriteLine</span><span class=p>(</span><span class=s>$&#34;- WKT: {wkt}&#34;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=kd>static</span> <span class=kt>string?</span> <span class=n>Utf8BytesToString</span><span class=p>(</span><span class=n>IntPtr</span> <span class=n>ptr</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=k>if</span> <span class=p>(</span><span class=n>ptr</span> <span class=p>==</span> <span class=n>IntPtr</span><span class=p>.</span><span class=n>Zero</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>        <span class=k>return</span> <span class=kc>null</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=kt>var</span> <span class=n>ms</span> <span class=p>=</span> <span class=k>new</span> <span class=n>MemoryStream</span><span class=p>();</span>
+</span></span><span class=line><span class=cl>    <span class=kt>byte</span> <span class=n>b</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>    <span class=kt>var</span> <span class=n>ofs</span> <span class=p>=</span> <span class=m>0</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>    <span class=k>while</span> <span class=p>((</span><span class=n>b</span> <span class=p>=</span> <span class=n>Marshal</span><span class=p>.</span><span class=n>ReadByte</span><span class=p>(</span><span class=n>ptr</span><span class=p>,</span> <span class=n>ofs</span><span class=p>++))</span> <span class=p>!=</span> <span class=m>0</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>    <span class=p>{</span>
+</span></span><span class=line><span class=cl>        <span class=n>ms</span><span class=p>.</span><span class=n>WriteByte</span><span class=p>(</span><span class=n>b</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl>    <span class=k>return</span> <span class=n>Encoding</span><span class=p>.</span><span class=n>UTF8</span><span class=p>.</span><span class=n>GetString</span><span class=p>(</span><span class=n>ms</span><span class=p>.</span><span class=n>ToArray</span><span class=p>());</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1>// Dll 的位置要注意</span>
+</span></span><span class=line><span class=cl><span class=na>[DllImport(&#34;gdal/x64/gdal305.dll&#34;, EntryPoint = &#34;OGR_Fld_GetNameRef&#34;, CallingConvention = CallingConvention.Cdecl)]</span>
+</span></span><span class=line><span class=cl><span class=kd>static</span> <span class=kd>extern</span> <span class=n>IntPtr</span> <span class=n>OGR_Fld_GetNameRef</span><span class=p>(</span><span class=n>HandleRef</span> <span class=n>handle</span><span class=p>);</span>
+</span></span><span class=line><span class=cl><span class=kd>static</span> <span class=kt>string</span> <span class=n>GetFieldDfnName</span><span class=p>(</span><span class=n>FieldDefn</span> <span class=n>fieldDefn</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=n>HandleRef</span> <span class=n>handle</span> <span class=p>=</span> <span class=n>FieldDefn</span><span class=p>.</span><span class=n>getCPtr</span><span class=p>(</span><span class=n>fieldDefn</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>    <span class=n>IntPtr</span> <span class=n>ptr</span> <span class=p>=</span> <span class=n>OGR_Fld_GetNameRef</span><span class=p>(</span><span class=n>handle</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>    <span class=k>return</span> <span class=n>Utf8BytesToString</span><span class=p>(</span><span class=n>ptr</span><span class=p>);</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=kd>public</span> <span class=kd>enum</span> <span class=n>EnumShapefileOpen</span>
+</span></span><span class=line><span class=cl><span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=n>ReadOnly</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span></code></pre></td></tr></table></div></div><p>執行之後就可以看到我們把這個亂碼修好啦！</p><p><img src=/post/gdal-shapefile-2/Success.png width=1100 height=214 srcset="/post/gdal-shapefile-2/Success_hu_47e26f00e5077cce.png 480w, /post/gdal-shapefile-2/Success_hu_7798435b3350d197.png 1024w" loading=lazy class=gallery-image data-flex-grow=514 data-flex-basis=1233px></p><blockquote><p><p>參考文章</p><ul><li><a class=link href=https://www.cnblogs.com/litou/p/15035790.html target=_blank rel=noopener>C#中使用GDAL3（二）：Windows下读写Shape文件及超详细解决中文乱码问题</a></li></ul></p></blockquote></section><footer class=article-footer><section class=article-tags><a href=/tags/.net/>.NET</a>
+<a href=/tags/gdal/>GDAL</a></section></footer></article><aside class=related-content--wrapper><h2 class=section-title>Related content</h2><div class=related-content><div class="flex article-list--tile"><article><a href=/post/gdal-shapefile-1/><div class=article-details><h2 class=article-title>GDAL 操作 ShapeFile (1)</h2></div></a></article><article><a href=/post/%E5%90%8C%E4%B8%80%E5%80%8B%E4%BB%8B%E9%9D%A2%E5%A4%9A%E5%80%8B%E5%AF%A6%E4%BD%9C%E7%9A%84%E8%A8%BB%E5%86%8A/><div class=article-details><h2 class=article-title>同一個介面多個實作的註冊</h2></div></a></article><article><a href=/post/google-calendar-api/><div class=article-details><h2 class=article-title>Google Calendar API</h2></div></a></article></div></div></aside><footer class=site-footer><section class=copyright>&copy;
+2022 -
+2025 Anthea's Blog</section><section class=powerby>Built with <a href=https://gohugo.io/ target=_blank rel=noopener>Hugo</a><br>Theme <b><a href=https://github.com/CaiJimmy/hugo-theme-stack target=_blank rel=noopener data-version=3.30.0>Stack</a></b> designed by <a href=https://jimmycai.com target=_blank rel=noopener>Jimmy</a></section></footer><div class=pswp tabindex=-1 role=dialog aria-hidden=true><div class=pswp__bg></div><div class=pswp__scroll-wrap><div class=pswp__container><div class=pswp__item></div><div class=pswp__item></div><div class=pswp__item></div></div><div class="pswp__ui pswp__ui--hidden"><div class=pswp__top-bar><div class=pswp__counter></div><button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+<button class="pswp__button pswp__button--share" title=Share></button>
+<button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+<button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button><div class=pswp__preloader><div class=pswp__preloader__icn><div class=pswp__preloader__cut><div class=pswp__preloader__donut></div></div></div></div></div><div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap"><div class=pswp__share-tooltip></div></div><button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+</button>
+<button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)"></button><div class=pswp__caption><div class=pswp__caption__center></div></div></div></div></div><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo=" crossorigin=anonymous defer></script><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU=" crossorigin=anonymous defer></script><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css crossorigin=anonymous><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css crossorigin=anonymous></main></div><script src=https://cdn.jsdelivr.net/npm/node-vibrant@3.1.6/dist/vibrant.min.js integrity="sha256-awcR2jno4kI5X0zL8ex0vi2z+KMkF24hUW8WePSA9HM=" crossorigin=anonymous></script><script type=text/javascript src=/ts/main.1e9a3bafd846ced4c345d084b355fb8c7bae75701c338f8a1f8a82c780137826.js defer></script><script>(function(){const e=document.createElement("link");e.href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap",e.type="text/css",e.rel="stylesheet",document.head.appendChild(e)})()</script></body></html>

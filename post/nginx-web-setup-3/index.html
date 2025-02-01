@@ -1,0 +1,159 @@
+<!doctype html><html lang=en dir=ltr><head><meta charset=utf-8><meta name=viewport content='width=device-width,initial-scale=1'><meta name=description content="把 Nginx 設定為 Proxy Server"><title>Nginx 從入門開始的網站架設 (3)</title>
+<link rel=canonical href=https://anthea-wu.github.io/post/nginx-web-setup-3/><link rel=stylesheet href=/scss/style.min.663803bebe609202d5b39d848f2d7c2dc8b598a2d879efa079fa88893d29c49c.css><meta property='og:title' content="Nginx 從入門開始的網站架設 (3)"><meta property='og:description' content="把 Nginx 設定為 Proxy Server"><meta property='og:url' content='https://anthea-wu.github.io/post/nginx-web-setup-3/'><meta property='og:site_name' content="Anthea's Blog"><meta property='og:type' content='article'><meta property='article:section' content='Post'><meta property='article:tag' content='Nginx'><meta property='article:tag' content='Windows'><meta property='article:tag' content='Nginx 從入門開始的網站架設'><meta property='article:published_time' content='2022-06-23T23:15:50+08:00'><meta property='article:modified_time' content='2022-06-23T23:15:50+08:00'><meta name=twitter:title content="Nginx 從入門開始的網站架設 (3)"><meta name=twitter:description content="把 Nginx 設定為 Proxy Server"></head><body class=article-page><script>(function(){const e="StackColorScheme";localStorage.getItem(e)||localStorage.setItem(e,"auto")})()</script><script>(function(){const t="StackColorScheme",e=localStorage.getItem(t),n=window.matchMedia("(prefers-color-scheme: dark)").matches===!0;e=="dark"||e==="auto"&&n?document.documentElement.dataset.scheme="dark":document.documentElement.dataset.scheme="light"})()</script><div class="container main-container flex on-phone--column extended"><aside class="sidebar left-sidebar sticky"><button class="hamburger hamburger--spin" type=button id=toggle-menu aria-label="Toggle Menu">
+<span class=hamburger-box><span class=hamburger-inner></span></span></button><header><figure class=site-avatar><a href=/><img src=/img/avatar_hu_d8c2fe4d260f28d7.png width=300 height=300 class=site-logo loading=lazy alt=Avatar></a></figure><div class=site-meta><h1 class=site-name><a href=/>Anthea's Blog</a></h1><h2 class=site-description>Titansoft / Product Developer</h2></div></header><ol class=menu-social><li><a href=https://github.com/anthea-wu target=_blank title=GitHub rel=me><svg class="icon icon-tabler icon-tabler-brand-github" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M9 19c-4.3 1.4-4.3-2.5-6-3m12 5v-3.5c0-1 .1-1.4-.5-2 2.8-.3 5.5-1.4 5.5-6a4.6 4.6.0 00-1.3-3.2 4.2 4.2.0 00-.1-3.2s-1.1-.3-3.5 1.3a12.3 12.3.0 00-6.2.0C6.5 2.8 5.4 3.1 5.4 3.1a4.2 4.2.0 00-.1 3.2A4.6 4.6.0 004 9.5c0 4.6 2.7 5.7 5.5 6-.6.6-.6 1.2-.5 2V21"/></svg></a></li></ol><ol class=menu id=main-menu><li><a href=/><svg class="icon icon-tabler icon-tabler-home" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><polyline points="5 12 3 12 12 3 21 12 19 12"/><path d="M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7"/><path d="M9 21v-6a2 2 0 012-2h2a2 2 0 012 2v6"/></svg>
+<span>Home</span></a></li><li><a href=/page/about/><svg class="icon icon-tabler icon-tabler-user" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="7" r="4"/><path d="M6 21v-2a4 4 0 014-4h4a4 4 0 014 4v2"/></svg>
+<span>About</span></a></li><li><a href=/books target=_blank><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-book"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M3 19a9 9 0 019 0 9 9 0 019 0"/><path d="M3 6a9 9 0 019 0 9 9 0 019 0"/><path d="M3 6v13"/><path d="M12 6v13"/><path d="M21 6v13"/></svg>
+<span>Books</span></a></li><li class=menu-bottom-section><ol class=menu><li id=dark-mode-toggle><svg class="icon icon-tabler icon-tabler-toggle-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="8" cy="12" r="2"/><rect x="2" y="6" width="20" height="12" rx="6"/></svg>
+<svg class="icon icon-tabler icon-tabler-toggle-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="16" cy="12" r="2"/><rect x="2" y="6" width="20" height="12" rx="6"/></svg>
+<span>Dark Mode</span></li></ol></li></ol></aside><main class="main full-width"><article class=main-article><header class=article-header><div class=article-details><header class=article-category><a href=/categories/technical/>Technical</a></header><div class=article-title-wrapper><h2 class=article-title><a href=/post/nginx-web-setup-3/>Nginx 從入門開始的網站架設 (3)</a></h2><h3 class=article-subtitle>把 Nginx 設定為 Proxy Server</h3></div><footer class=article-time><div><svg class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M11.795 21H5a2 2 0 01-2-2V7a2 2 0 012-2h12a2 2 0 012 2v4"/><circle cx="18" cy="18" r="4"/><path d="M15 3v4"/><path d="M7 3v4"/><path d="M3 11h16"/><path d="M18 16.496V18l1 1"/></svg>
+<time class=article-time--published>2022/06/23</time></div><div><svg class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/></svg>
+<time class=article-time--reading>2 minute read</time></div></footer></div></header><section class=article-content><p><a class=link href=../nginx-web-setup-2>上一篇文章</a> 中我們用最簡單的設定建立起一個靜態服務了，接下來要提到的是 Nginx 最廣為人知的其中一種功能－－代理伺服器（Proxy Server）。</p><h2 id=proxy-server-代理伺服器>Proxy Server 代理伺服器</h2><p>有一陣子募資平台很流行，當你有想法但是沒有資金的時候，你可以透過這些平台把你的計劃放上去，吸引一般民眾投入資金，接著拿這些錢去實際生產你的產品，並給當初提供你資金的民眾一些回饋。在這個過程中，募資平台所扮演的角色就是代理：你只能看到資金提供者的提供的寄件資訊，甚至完全不知道他們的身分，但你會負責把你的產品或回饋透過平台提供出去。</p><p>以網路來說，Client（一般民眾）透過代理伺服器（募資平台）發送請求給 Server（你），Server 基本上不會有 Client 的資料，而這就是 Proxy 的好處之一：隱藏 Client 的真實身分。</p><p>其他的好處還有很多，但今天我只想看這次客戶最主要的目的：Load Balance（負載平衡）。</p><h3 id=load-balance-負載平衡>Load Balance 負載平衡</h3><p>Load Balance 的主要目的在於分散伺服器端的壓力，讓伺服器的回應速度和其他效能可以得到提升，使用者能擁有更好的體驗。而要做到這個程度一般來說都會需要依賴剛剛所提到的 proxy 做為中繼站，去判斷現在接收到的這個 request 要被分配到哪一台 server 上。</p><hr><h2 id=nginx-設定>Nginx 設定</h2><p>稍微了解 Proxy Server 和 Load Balance 的用途之後，接下來開始試著用 Nginx 來進行設定吧。</p><h3 id=proxy>Proxy</h3><p>首先設定好 <code>nginx.conf</code> ：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span><span class=lnt>28
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>events {
+</span></span><span class=line><span class=cl>    worker_connections  1024;
+</span></span><span class=line><span class=cl>}
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>http {
+</span></span><span class=line><span class=cl>    server {
+</span></span><span class=line><span class=cl>        listen       8081;
+</span></span><span class=line><span class=cl>        server_name  localhost;
+</span></span><span class=line><span class=cl>		
+</span></span><span class=line><span class=cl>        # 以 &#39;/&#39; 開頭的 url 會向 &#39;/data/www&#39; 發送請求
+</span></span><span class=line><span class=cl>        location / {
+</span></span><span class=line><span class=cl>	          # 設定要導向的路徑
+</span></span><span class=line><span class=cl>            # 如果 IIS 上有設定 8082 port 的站台就會被導向那個站台
+</span></span><span class=line><span class=cl>            proxy_pass http://localhost:8082;
+</span></span><span class=line><span class=cl>        }
+</span></span><span class=line><span class=cl>    }
+</span></span><span class=line><span class=cl>  
+</span></span><span class=line><span class=cl>    # IIS 上沒有的站台，設定 8082 port 的內容
+</span></span><span class=line><span class=cl>    server {
+</span></span><span class=line><span class=cl>        listen       8082;
+</span></span><span class=line><span class=cl>        server_name  localhost;
+</span></span><span class=line><span class=cl>		
+</span></span><span class=line><span class=cl>        # 以 &#39;/&#39; 開頭的 url 會向 &#39;/data/www2&#39; 發送請求
+</span></span><span class=line><span class=cl>        location / {
+</span></span><span class=line><span class=cl>	          root data/www2;
+</span></span><span class=line><span class=cl>        }
+</span></span><span class=line><span class=cl>    }
+</span></span><span class=line><span class=cl>}
+</span></span></code></pre></td></tr></table></div></div><p>接著到 <code>/data/www2</code> 底下新增一個新的 <code>index.html</code>，這時候 <code>www</code> 和 <code>www2</code> 的資料夾內各有一個 <code>index.html</code>，上一篇文章中我們會看到 <code>www</code> 內的 <code>index.html</code>，這一次的設定預期會出現的應該是 <code>www2</code> 內的 <code>index.html</code>。</p><p>儲存修改好的 config 之後，<code>nginx -s reload</code> 重新載入檔案，在瀏覽器中輸入 <code>http://localhost:8081</code> 應該就可以看到 <code>www2</code> 中 <code>index.html</code> 的內容囉。</p><h3 id=load-balance>Load Balance</h3><p>要在 Nginx 中使用 Load Balance 需要在 http 中加入 upstream 這組設定，加好之後你的 <code>nginx.conf</code> 應該會長這樣：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span><span class=lnt>28
+</span><span class=lnt>29
+</span><span class=lnt>30
+</span><span class=lnt>31
+</span><span class=lnt>32
+</span><span class=lnt>33
+</span><span class=lnt>34
+</span><span class=lnt>35
+</span><span class=lnt>36
+</span><span class=lnt>37
+</span><span class=lnt>38
+</span><span class=lnt>39
+</span><span class=lnt>40
+</span><span class=lnt>41
+</span><span class=lnt>42
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>events {
+</span></span><span class=line><span class=cl>    worker_connections  1024;
+</span></span><span class=line><span class=cl>}
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>http {
+</span></span><span class=line><span class=cl>    # &#39;localhost&#39; 是這組 upstream 的名稱
+</span></span><span class=line><span class=cl>    upstream localhost {
+</span></span><span class=line><span class=cl>        # 利用 &#39;weight&#39; 來設定權重
+</span></span><span class=line><span class=cl>        server localhost:8082 weight=1;
+</span></span><span class=line><span class=cl>        server localhost:8083 weight=2;
+</span></span><span class=line><span class=cl>    }
+</span></span><span class=line><span class=cl>	
+</span></span><span class=line><span class=cl>    server {
+</span></span><span class=line><span class=cl>        listen              8081;
+</span></span><span class=line><span class=cl>        server_name         localhost;
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>        location / {
+</span></span><span class=line><span class=cl>            # 這裡要改成 upstream 的名稱
+</span></span><span class=line><span class=cl>            proxy_pass       http://localhost;
+</span></span><span class=line><span class=cl>        }
+</span></span><span class=line><span class=cl>    }
+</span></span><span class=line><span class=cl>	
+</span></span><span class=line><span class=cl>    server {
+</span></span><span class=line><span class=cl>        listen              8082;
+</span></span><span class=line><span class=cl>        server_name         localhost;
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>        location / {
+</span></span><span class=line><span class=cl>            # 在 nginx.exe 同一層的資料夾 data 裡面新增一個資料夾 www 和 index.html
+</span></span><span class=line><span class=cl>            root            data/www;
+</span></span><span class=line><span class=cl>        }
+</span></span><span class=line><span class=cl>    }
+</span></span><span class=line><span class=cl>	
+</span></span><span class=line><span class=cl>    server {
+</span></span><span class=line><span class=cl>        listen              8083;
+</span></span><span class=line><span class=cl>        server_name         localhost;
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>        location / {
+</span></span><span class=line><span class=cl>            # 在 nginx.exe 同一層的資料夾 data 裡面新增一個資料夾 www2 和 index.html
+</span></span><span class=line><span class=cl>            root            data/www2;
+</span></span><span class=line><span class=cl>        }
+</span></span><span class=line><span class=cl>    }
+</span></span><span class=line><span class=cl>}
+</span></span></code></pre></td></tr></table></div></div><p>設定好之後 <code>nginx -s reload</code>，瀏覽器打開 <code>http://localhost:8081</code>，持續重新整理，就可以看到交替出現的兩個 <code>index.html</code> 囉~</p><p><img src=/post/nginx-web-setup-3/Index1.png width=515 height=202 srcset="/post/nginx-web-setup-3/Index1_hu_f14ae67f5c331a6d.png 480w, /post/nginx-web-setup-3/Index1_hu_a80fb3fdcd691604.png 1024w" loading=lazy alt="位於 8083 中 www2 的 index.html" class=gallery-image data-flex-grow=254 data-flex-basis=611px></p><p><img src=/post/nginx-web-setup-3/index2.png width=521 height=198 srcset="/post/nginx-web-setup-3/index2_hu_b42fff8b9d1c0c03.png 480w, /post/nginx-web-setup-3/index2_hu_8931d83e05f7ca1b.png 1024w" loading=lazy alt="位於 8082 中 www 的 index.html" class=gallery-image data-flex-grow=263 data-flex-basis=631px></p><blockquote><p><p>參考資料：</p><ul><li><a class=link href=https://www.zhihu.com/question/24723688 target=_blank rel=noopener>反向代理與正向代理</a></li><li><a class=link href=https://ithelp.ithome.com.tw/articles/10188498 target=_blank rel=noopener>俄羅斯不愧是戰鬥民族：nginx</a></li></ul></p></blockquote></section><footer class=article-footer><section class=article-tags><a href=/tags/nginx/>Nginx</a>
+<a href=/tags/windows/>Windows</a>
+<a href=/tags/nginx-%E5%BE%9E%E5%85%A5%E9%96%80%E9%96%8B%E5%A7%8B%E7%9A%84%E7%B6%B2%E7%AB%99%E6%9E%B6%E8%A8%AD/>Nginx 從入門開始的網站架設</a></section></footer></article><aside class=related-content--wrapper><h2 class=section-title>Related content</h2><div class=related-content><div class="flex article-list--tile"><article><a href=/post/nginx-web-setup-2/><div class=article-details><h2 class=article-title>Nginx 從入門開始的網站架設 (2)</h2></div></a></article><article><a href=/post/nginx-web-setup-1/><div class=article-details><h2 class=article-title>Nginx 從入門開始的網站架設 (1)</h2></div></a></article></div></div></aside><footer class=site-footer><section class=copyright>&copy;
+2022 -
+2025 Anthea's Blog</section><section class=powerby>Built with <a href=https://gohugo.io/ target=_blank rel=noopener>Hugo</a><br>Theme <b><a href=https://github.com/CaiJimmy/hugo-theme-stack target=_blank rel=noopener data-version=3.30.0>Stack</a></b> designed by <a href=https://jimmycai.com target=_blank rel=noopener>Jimmy</a></section></footer><div class=pswp tabindex=-1 role=dialog aria-hidden=true><div class=pswp__bg></div><div class=pswp__scroll-wrap><div class=pswp__container><div class=pswp__item></div><div class=pswp__item></div><div class=pswp__item></div></div><div class="pswp__ui pswp__ui--hidden"><div class=pswp__top-bar><div class=pswp__counter></div><button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+<button class="pswp__button pswp__button--share" title=Share></button>
+<button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+<button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button><div class=pswp__preloader><div class=pswp__preloader__icn><div class=pswp__preloader__cut><div class=pswp__preloader__donut></div></div></div></div></div><div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap"><div class=pswp__share-tooltip></div></div><button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+</button>
+<button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)"></button><div class=pswp__caption><div class=pswp__caption__center></div></div></div></div></div><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo=" crossorigin=anonymous defer></script><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU=" crossorigin=anonymous defer></script><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css crossorigin=anonymous><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css crossorigin=anonymous></main></div><script src=https://cdn.jsdelivr.net/npm/node-vibrant@3.1.6/dist/vibrant.min.js integrity="sha256-awcR2jno4kI5X0zL8ex0vi2z+KMkF24hUW8WePSA9HM=" crossorigin=anonymous></script><script type=text/javascript src=/ts/main.1e9a3bafd846ced4c345d084b355fb8c7bae75701c338f8a1f8a82c780137826.js defer></script><script>(function(){const e=document.createElement("link");e.href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap",e.type="text/css",e.rel="stylesheet",document.head.appendChild(e)})()</script></body></html>

@@ -1,0 +1,466 @@
+<!doctype html><html lang=en dir=ltr><head><meta charset=utf-8><meta name=viewport content='width=device-width,initial-scale=1'><meta name=description content="多個 bootstrap-select 連動應用與關鍵字搜尋"><title>可以查詢的下拉式選單 (2)</title>
+<link rel=canonical href=https://anthea-wu.github.io/post/vue-selected-dropdown-2/><link rel=stylesheet href=/scss/style.min.663803bebe609202d5b39d848f2d7c2dc8b598a2d879efa079fa88893d29c49c.css><meta property='og:title' content="可以查詢的下拉式選單 (2)"><meta property='og:description' content="多個 bootstrap-select 連動應用與關鍵字搜尋"><meta property='og:url' content='https://anthea-wu.github.io/post/vue-selected-dropdown-2/'><meta property='og:site_name' content="Anthea's Blog"><meta property='og:type' content='article'><meta property='article:section' content='Post'><meta property='article:tag' content='Vue'><meta property='article:tag' content='bootstrap-select'><meta property='article:published_time' content='2022-08-14T01:13:23+08:00'><meta property='article:modified_time' content='2022-08-14T01:13:23+08:00'><meta name=twitter:title content="可以查詢的下拉式選單 (2)"><meta name=twitter:description content="多個 bootstrap-select 連動應用與關鍵字搜尋"></head><body class=article-page><script>(function(){const e="StackColorScheme";localStorage.getItem(e)||localStorage.setItem(e,"auto")})()</script><script>(function(){const t="StackColorScheme",e=localStorage.getItem(t),n=window.matchMedia("(prefers-color-scheme: dark)").matches===!0;e=="dark"||e==="auto"&&n?document.documentElement.dataset.scheme="dark":document.documentElement.dataset.scheme="light"})()</script><div class="container main-container flex on-phone--column extended"><aside class="sidebar left-sidebar sticky"><button class="hamburger hamburger--spin" type=button id=toggle-menu aria-label="Toggle Menu">
+<span class=hamburger-box><span class=hamburger-inner></span></span></button><header><figure class=site-avatar><a href=/><img src=/img/avatar_hu_d8c2fe4d260f28d7.png width=300 height=300 class=site-logo loading=lazy alt=Avatar></a></figure><div class=site-meta><h1 class=site-name><a href=/>Anthea's Blog</a></h1><h2 class=site-description>Titansoft / Product Developer</h2></div></header><ol class=menu-social><li><a href=https://github.com/anthea-wu target=_blank title=GitHub rel=me><svg class="icon icon-tabler icon-tabler-brand-github" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M9 19c-4.3 1.4-4.3-2.5-6-3m12 5v-3.5c0-1 .1-1.4-.5-2 2.8-.3 5.5-1.4 5.5-6a4.6 4.6.0 00-1.3-3.2 4.2 4.2.0 00-.1-3.2s-1.1-.3-3.5 1.3a12.3 12.3.0 00-6.2.0C6.5 2.8 5.4 3.1 5.4 3.1a4.2 4.2.0 00-.1 3.2A4.6 4.6.0 004 9.5c0 4.6 2.7 5.7 5.5 6-.6.6-.6 1.2-.5 2V21"/></svg></a></li></ol><ol class=menu id=main-menu><li><a href=/><svg class="icon icon-tabler icon-tabler-home" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><polyline points="5 12 3 12 12 3 21 12 19 12"/><path d="M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7"/><path d="M9 21v-6a2 2 0 012-2h2a2 2 0 012 2v6"/></svg>
+<span>Home</span></a></li><li><a href=/page/about/><svg class="icon icon-tabler icon-tabler-user" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="7" r="4"/><path d="M6 21v-2a4 4 0 014-4h4a4 4 0 014 4v2"/></svg>
+<span>About</span></a></li><li><a href=/books target=_blank><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-book"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M3 19a9 9 0 019 0 9 9 0 019 0"/><path d="M3 6a9 9 0 019 0 9 9 0 019 0"/><path d="M3 6v13"/><path d="M12 6v13"/><path d="M21 6v13"/></svg>
+<span>Books</span></a></li><li class=menu-bottom-section><ol class=menu><li id=dark-mode-toggle><svg class="icon icon-tabler icon-tabler-toggle-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="8" cy="12" r="2"/><rect x="2" y="6" width="20" height="12" rx="6"/></svg>
+<svg class="icon icon-tabler icon-tabler-toggle-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="16" cy="12" r="2"/><rect x="2" y="6" width="20" height="12" rx="6"/></svg>
+<span>Dark Mode</span></li></ol></li></ol></aside><aside class="sidebar right-sidebar sticky"><section class="widget archives"><div class=widget-icon><svg class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><line x1="5" y1="9" x2="19" y2="9"/><line x1="5" y1="15" x2="19" y2="15"/><line x1="11" y1="4" x2="7" y2="20"/><line x1="17" y1="4" x2="13" y2="20"/></svg></div><h2 class="widget-title section-title">Table of contents</h2><div class=widget--toc><nav id=TableOfContents><ul><li><a href=#事前準備>事前準備</a><ul><li><a href=#簡單的-api>簡單的 API</a></li><li><a href=#套用-bootstrap-select>套用 bootstrap-select</a></li></ul></li><li><a href=#refresh-ui>Refresh UI</a><ul><li><a href=#用-destoy-修正>用 Destoy 修正</a></li></ul></li></ul></nav></div></section></aside><main class="main full-width"><article class=main-article><header class=article-header><div class=article-details><header class=article-category><a href=/categories/technical/>Technical</a></header><div class=article-title-wrapper><h2 class=article-title><a href=/post/vue-selected-dropdown-2/>可以查詢的下拉式選單 (2)</a></h2><h3 class=article-subtitle>多個 bootstrap-select 連動應用與關鍵字搜尋</h3></div><footer class=article-time><div><svg class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M11.795 21H5a2 2 0 01-2-2V7a2 2 0 012-2h12a2 2 0 012 2v4"/><circle cx="18" cy="18" r="4"/><path d="M15 3v4"/><path d="M7 3v4"/><path d="M3 11h16"/><path d="M18 16.496V18l1 1"/></svg>
+<time class=article-time--published>2022/08/14</time></div><div><svg class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/></svg>
+<time class=article-time--reading>4 minute read</time></div></footer></div></header><section class=article-content><p><a class=link href=../vue-selected-dropdown-1>上一篇</a>提到基本的下拉式選單應用之後，接下來要記錄的是多個選單彼此連動時的應用。</p><p>以前一篇工作上的例子來說，通常把資料用縣市、鄉鎮市區、地段這三種層級區分開來，所以當我選到台北市的時候，鄉鎮市區的選單裡就不應該會出現西屯區的項目，這個就是我所謂的連動 — — 當其中一個選項的值改變，就會讓其他的選單內容也跟著不同。</p><h2 id=事前準備>事前準備</h2><h3 id=簡單的-api>簡單的 API</h3><p>清單來源一樣是<a class=link href=https://easymap.land.moi.gov.tw/Home target=_blank rel=noopener>地籍圖資網路便民服務系統</a>，我只整理了台中市的西屯區和西區這兩個行政區底下的段名作為範例。</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span><span class=lnt>28
+</span><span class=lnt>29
+</span><span class=lnt>30
+</span><span class=lnt>31
+</span><span class=lnt>32
+</span><span class=lnt>33
+</span><span class=lnt>34
+</span><span class=lnt>35
+</span><span class=lnt>36
+</span><span class=lnt>37
+</span><span class=lnt>38
+</span><span class=lnt>39
+</span><span class=lnt>40
+</span><span class=lnt>41
+</span><span class=lnt>42
+</span><span class=lnt>43
+</span><span class=lnt>44
+</span><span class=lnt>45
+</span><span class=lnt>46
+</span><span class=lnt>47
+</span><span class=lnt>48
+</span><span class=lnt>49
+</span><span class=lnt>50
+</span><span class=lnt>51
+</span><span class=lnt>52
+</span><span class=lnt>53
+</span><span class=lnt>54
+</span><span class=lnt>55
+</span><span class=lnt>56
+</span><span class=lnt>57
+</span><span class=lnt>58
+</span><span class=lnt>59
+</span><span class=lnt>60
+</span><span class=lnt>61
+</span><span class=lnt>62
+</span><span class=lnt>63
+</span><span class=lnt>64
+</span><span class=lnt>65
+</span><span class=lnt>66
+</span><span class=lnt>67
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-C# data-lang=C#><span class=line><span class=cl><span class=k>using</span> <span class=nn>Microsoft.AspNetCore.Mvc</span><span class=p>;</span>
+</span></span><span class=line><span class=cl><span class=k>using</span> <span class=nn>Newtonsoft.Json</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=k>namespace</span> <span class=nn>bootstrap_selected_sample.Controllers</span><span class=p>;</span>
+</span></span><span class=line><span class=cl><span class=na>
+</span></span></span><span class=line><span class=cl><span class=na>[ApiController]</span>
+</span></span><span class=line><span class=cl><span class=na>[Route(&#34;api/[controller]</span><span class=s>&#34;)]
+</span></span></span><span class=line><span class=cl><span class=s></span><span class=kd>public</span> <span class=k>class</span> <span class=nc>CodeController</span> <span class=p>:</span> <span class=n>ControllerBase</span>
+</span></span><span class=line><span class=cl><span class=p>{</span>
+</span></span><span class=line><span class=cl><span class=na>    [HttpGet]</span>
+</span></span><span class=line><span class=cl>    <span class=kd>public</span> <span class=n>IActionResult</span> <span class=n>Counties</span><span class=p>()</span>
+</span></span><span class=line><span class=cl>    <span class=p>{</span>
+</span></span><span class=line><span class=cl>        <span class=kt>var</span> <span class=n>path</span> <span class=p>=</span> <span class=s>&#34;files/county.json&#34;</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>        <span class=kt>var</span> <span class=n>json</span> <span class=p>=</span> <span class=n>ReadFromJson</span><span class=p>(</span><span class=n>path</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>        <span class=kt>var</span> <span class=n>info</span> <span class=p>=</span> <span class=n>JsonConvert</span><span class=p>.</span><span class=n>DeserializeObject</span><span class=p>&lt;</span><span class=n>List</span><span class=p>&lt;</span><span class=n>SimpleInfo</span><span class=p>&gt;&gt;(</span><span class=n>json</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>        <span class=k>return</span> <span class=n>Ok</span><span class=p>(</span><span class=n>info</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=na>
+</span></span></span><span class=line><span class=cl><span class=na>    [HttpGet(&#34;{county}&#34;)]</span>
+</span></span><span class=line><span class=cl>    <span class=kd>public</span> <span class=n>IActionResult</span> <span class=n>Towns</span><span class=p>(</span><span class=kt>string</span> <span class=n>county</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>    <span class=p>{</span>
+</span></span><span class=line><span class=cl>        <span class=kt>var</span> <span class=n>path</span> <span class=p>=</span> <span class=n>county</span><span class=p>.</span><span class=n>ToUpper</span><span class=p>()</span> <span class=k>switch</span>
+</span></span><span class=line><span class=cl>        <span class=p>{</span>
+</span></span><span class=line><span class=cl>            <span class=s>&#34;B&#34;</span> <span class=p>=&gt;</span> <span class=s>&#34;files/taichung.json&#34;</span>
+</span></span><span class=line><span class=cl>        <span class=p>};</span>
+</span></span><span class=line><span class=cl>        <span class=kt>var</span> <span class=n>json</span> <span class=p>=</span> <span class=n>ReadFromJson</span><span class=p>(</span><span class=n>path</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>        <span class=kt>var</span> <span class=n>info</span> <span class=p>=</span> <span class=n>JsonConvert</span><span class=p>.</span><span class=n>DeserializeObject</span><span class=p>&lt;</span><span class=n>List</span><span class=p>&lt;</span><span class=n>SimpleInfo</span><span class=p>&gt;&gt;(</span><span class=n>json</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>        <span class=k>return</span> <span class=n>Ok</span><span class=p>(</span><span class=n>info</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=na>
+</span></span></span><span class=line><span class=cl><span class=na>    [HttpGet(&#34;{county}/{town}&#34;)]</span>
+</span></span><span class=line><span class=cl>    <span class=kd>public</span> <span class=n>IActionResult</span> <span class=n>Sections</span><span class=p>(</span><span class=kt>string</span> <span class=n>county</span><span class=p>,</span> <span class=kt>string</span> <span class=n>town</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>    <span class=p>{</span>
+</span></span><span class=line><span class=cl>        <span class=kt>var</span> <span class=n>path</span> <span class=p>=</span> <span class=s>&#34;&#34;</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>        <span class=k>switch</span> <span class=p>(</span><span class=n>county</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>        <span class=p>{</span>
+</span></span><span class=line><span class=cl>            <span class=k>case</span> <span class=s>&#34;B&#34;</span> <span class=n>when</span> <span class=n>town</span> <span class=p>==</span> <span class=s>&#34;06&#34;</span><span class=p>:</span>
+</span></span><span class=line><span class=cl>                <span class=n>path</span> <span class=p>=</span> <span class=s>&#34;files/xitun.json&#34;</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>                <span class=k>break</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>            <span class=k>case</span> <span class=s>&#34;B&#34;</span> <span class=n>when</span> <span class=n>town</span> <span class=p>==</span> <span class=s>&#34;04&#34;</span><span class=p>:</span>
+</span></span><span class=line><span class=cl>                <span class=n>path</span> <span class=p>=</span> <span class=s>&#34;files/xi.json&#34;</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>                <span class=k>break</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>        <span class=p>}</span>
+</span></span><span class=line><span class=cl>        
+</span></span><span class=line><span class=cl>        <span class=kt>var</span> <span class=n>json</span> <span class=p>=</span> <span class=n>ReadFromJson</span><span class=p>(</span><span class=n>path</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>        <span class=kt>var</span> <span class=n>info</span> <span class=p>=</span> <span class=n>JsonConvert</span><span class=p>.</span><span class=n>DeserializeObject</span><span class=p>&lt;</span><span class=n>List</span><span class=p>&lt;</span><span class=n>ComplexInfo</span><span class=p>&gt;&gt;(</span><span class=n>json</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>        <span class=k>return</span> <span class=n>Ok</span><span class=p>(</span><span class=n>info</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=kd>private</span> <span class=kt>string</span> <span class=n>ReadFromJson</span><span class=p>(</span><span class=kt>string</span> <span class=n>path</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>    <span class=p>{</span>
+</span></span><span class=line><span class=cl>        <span class=kt>var</span> <span class=n>reader</span> <span class=p>=</span> <span class=k>new</span> <span class=n>StreamReader</span><span class=p>(</span><span class=n>path</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>        <span class=kt>var</span> <span class=n>readToEnd</span> <span class=p>=</span> <span class=n>reader</span><span class=p>.</span><span class=n>ReadToEnd</span><span class=p>().</span><span class=n>Replace</span><span class=p>(</span><span class=s>&#34;\r&#34;</span><span class=p>,</span> <span class=s>&#34;&#34;</span><span class=p>).</span><span class=n>Replace</span><span class=p>(</span><span class=s>&#34;\n&#34;</span><span class=p>,</span> <span class=s>&#34;&#34;</span><span class=p>).</span><span class=n>Replace</span><span class=p>(</span><span class=s>&#34; &#34;</span><span class=p>,</span> <span class=s>&#34;&#34;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>        <span class=k>return</span> <span class=n>readToEnd</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=kd>public</span> <span class=k>class</span> <span class=nc>SimpleInfo</span>
+</span></span><span class=line><span class=cl><span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=kd>public</span> <span class=kt>string</span> <span class=n>Id</span> <span class=p>{</span> <span class=k>get</span><span class=p>;</span> <span class=k>set</span><span class=p>;</span> <span class=p>}</span>
+</span></span><span class=line><span class=cl>    <span class=kd>public</span> <span class=kt>string</span> <span class=n>Name</span> <span class=p>{</span> <span class=k>get</span><span class=p>;</span> <span class=k>set</span><span class=p>;</span> <span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=kd>public</span> <span class=k>class</span> <span class=nc>ComplexInfo</span> <span class=p>:</span> <span class=n>SimpleInfo</span>
+</span></span><span class=line><span class=cl><span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=kd>public</span> <span class=kt>string</span> <span class=n>OfficeCode</span> <span class=p>{</span> <span class=k>get</span><span class=p>;</span> <span class=k>set</span><span class=p>;</span> <span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span></code></pre></td></tr></table></div></div><h3 id=套用-bootstrap-select>套用 bootstrap-select</h3><p>首先，我們依照上次的方法，使用 <code>Vue.$nextTick()</code> 來試試看效果怎麼樣。</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span><span class=lnt>28
+</span><span class=lnt>29
+</span><span class=lnt>30
+</span><span class=lnt>31
+</span><span class=lnt>32
+</span><span class=lnt>33
+</span><span class=lnt>34
+</span><span class=lnt>35
+</span><span class=lnt>36
+</span><span class=lnt>37
+</span><span class=lnt>38
+</span><span class=lnt>39
+</span><span class=lnt>40
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-html data-lang=html><span class=line><span class=cl><span class=c>&lt;!-- sample.html --&gt;</span>
+</span></span><span class=line><span class=cl><span class=p>&lt;</span><span class=nt>div</span> <span class=na>id</span><span class=o>=</span><span class=s>&#34;app&#34;</span> <span class=na>class</span><span class=o>=</span><span class=s>&#34;container my-5&#34;</span><span class=p>&gt;</span>
+</span></span><span class=line><span class=cl>    <span class=p>&lt;</span><span class=nt>div</span> <span class=na>class</span><span class=o>=</span><span class=s>&#34;row&#34;</span><span class=p>&gt;</span>
+</span></span><span class=line><span class=cl>        <span class=p>&lt;</span><span class=nt>div</span> <span class=na>class</span><span class=o>=</span><span class=s>&#34;col-12 mt-5 row&#34;</span><span class=p>&gt;</span>
+</span></span><span class=line><span class=cl>            <span class=p>&lt;</span><span class=nt>form</span><span class=p>&gt;</span>
+</span></span><span class=line><span class=cl>                <span class=p>&lt;</span><span class=nt>div</span> <span class=na>class</span><span class=o>=</span><span class=s>&#34;row g-3 align-items-center&#34;</span><span class=p>&gt;</span>
+</span></span><span class=line><span class=cl>                    <span class=p>&lt;</span><span class=nt>div</span> <span class=na>class</span><span class=o>=</span><span class=s>&#34;col-auto&#34;</span><span class=p>&gt;</span>
+</span></span><span class=line><span class=cl>                        <span class=p>&lt;</span><span class=nt>label</span> <span class=na>for</span><span class=o>=</span><span class=s>&#34;county-select&#34;</span> <span class=na>class</span><span class=o>=</span><span class=s>&#34;col-form-label&#34;</span><span class=p>&gt;</span>縣市<span class=p>&lt;/</span><span class=nt>label</span><span class=p>&gt;</span>
+</span></span><span class=line><span class=cl>                    <span class=p>&lt;/</span><span class=nt>div</span><span class=p>&gt;</span>
+</span></span><span class=line><span class=cl>                    <span class=p>&lt;</span><span class=nt>div</span> <span class=na>class</span><span class=o>=</span><span class=s>&#34;col-auto&#34;</span><span class=p>&gt;</span>
+</span></span><span class=line><span class=cl>                        <span class=p>&lt;</span><span class=nt>select</span> <span class=na>id</span><span class=o>=</span><span class=s>&#34;county-select&#34;</span> <span class=na>v-model</span><span class=o>=</span><span class=s>&#34;selected.county&#34;</span><span class=p>&gt;</span>
+</span></span><span class=line><span class=cl>                            <span class=p>&lt;</span><span class=nt>option</span> <span class=na>v-for</span><span class=o>=</span><span class=s>&#34;c in code.county&#34;</span> <span class=na>:value</span><span class=o>=</span><span class=s>&#34;c&#34;</span><span class=p>&gt;</span>{{c.name}}<span class=p>&lt;/</span><span class=nt>option</span><span class=p>&gt;</span>
+</span></span><span class=line><span class=cl>                        <span class=p>&lt;/</span><span class=nt>select</span><span class=p>&gt;</span>
+</span></span><span class=line><span class=cl>                    <span class=p>&lt;/</span><span class=nt>div</span><span class=p>&gt;</span>
+</span></span><span class=line><span class=cl>                    <span class=p>&lt;</span><span class=nt>div</span> <span class=na>class</span><span class=o>=</span><span class=s>&#34;col-auto&#34;</span><span class=p>&gt;</span>
+</span></span><span class=line><span class=cl>                        <span class=p>&lt;</span><span class=nt>label</span> <span class=na>for</span><span class=o>=</span><span class=s>&#34;county-select&#34;</span> <span class=na>class</span><span class=o>=</span><span class=s>&#34;col-form-label&#34;</span><span class=p>&gt;</span>鄉鎮市區<span class=p>&lt;/</span><span class=nt>label</span><span class=p>&gt;</span>
+</span></span><span class=line><span class=cl>                    <span class=p>&lt;/</span><span class=nt>div</span><span class=p>&gt;</span>
+</span></span><span class=line><span class=cl>                    <span class=p>&lt;</span><span class=nt>div</span> <span class=na>class</span><span class=o>=</span><span class=s>&#34;col-auto&#34;</span><span class=p>&gt;</span>
+</span></span><span class=line><span class=cl>                        <span class=p>&lt;</span><span class=nt>select</span> <span class=na>id</span><span class=o>=</span><span class=s>&#34;town-select&#34;</span> <span class=na>v-model</span><span class=o>=</span><span class=s>&#34;selected.town&#34;</span><span class=p>&gt;</span>
+</span></span><span class=line><span class=cl>                            <span class=p>&lt;</span><span class=nt>option</span> <span class=na>v-for</span><span class=o>=</span><span class=s>&#34;t in code.town&#34;</span> <span class=na>:value</span><span class=o>=</span><span class=s>&#34;t&#34;</span><span class=p>&gt;</span>{{t.name}}<span class=p>&lt;/</span><span class=nt>option</span><span class=p>&gt;</span>
+</span></span><span class=line><span class=cl>                        <span class=p>&lt;/</span><span class=nt>select</span><span class=p>&gt;</span>
+</span></span><span class=line><span class=cl>                    <span class=p>&lt;/</span><span class=nt>div</span><span class=p>&gt;</span>
+</span></span><span class=line><span class=cl>                    <span class=p>&lt;</span><span class=nt>div</span> <span class=na>class</span><span class=o>=</span><span class=s>&#34;col-auto&#34;</span><span class=p>&gt;</span>
+</span></span><span class=line><span class=cl>                        <span class=p>&lt;</span><span class=nt>label</span> <span class=na>for</span><span class=o>=</span><span class=s>&#34;county-select&#34;</span> <span class=na>class</span><span class=o>=</span><span class=s>&#34;col-form-label&#34;</span><span class=p>&gt;</span>地段<span class=p>&lt;/</span><span class=nt>label</span><span class=p>&gt;</span>
+</span></span><span class=line><span class=cl>                    <span class=p>&lt;/</span><span class=nt>div</span><span class=p>&gt;</span>
+</span></span><span class=line><span class=cl>                    <span class=p>&lt;</span><span class=nt>div</span> <span class=na>class</span><span class=o>=</span><span class=s>&#34;col-auto&#34;</span><span class=p>&gt;</span>
+</span></span><span class=line><span class=cl>                        <span class=p>&lt;</span><span class=nt>select</span> <span class=na>id</span><span class=o>=</span><span class=s>&#34;section-select&#34;</span> <span class=na>v-model</span><span class=o>=</span><span class=s>&#34;selected.section&#34;</span><span class=p>&gt;</span>
+</span></span><span class=line><span class=cl>                            <span class=p>&lt;</span><span class=nt>option</span> <span class=na>v-for</span><span class=o>=</span><span class=s>&#34;s in code.section&#34;</span> <span class=na>:value</span><span class=o>=</span><span class=s>&#34;s&#34;</span><span class=p>&gt;</span>{{s.name}}<span class=p>&lt;/</span><span class=nt>option</span><span class=p>&gt;</span>
+</span></span><span class=line><span class=cl>                        <span class=p>&lt;/</span><span class=nt>select</span><span class=p>&gt;</span>
+</span></span><span class=line><span class=cl>                    <span class=p>&lt;/</span><span class=nt>div</span><span class=p>&gt;</span>
+</span></span><span class=line><span class=cl>                <span class=p>&lt;/</span><span class=nt>div</span><span class=p>&gt;</span>
+</span></span><span class=line><span class=cl>            <span class=p>&lt;/</span><span class=nt>form</span><span class=p>&gt;</span>
+</span></span><span class=line><span class=cl>        <span class=p>&lt;/</span><span class=nt>div</span><span class=p>&gt;</span>
+</span></span><span class=line><span class=cl>        <span class=p>&lt;</span><span class=nt>div</span> <span class=na>class</span><span class=o>=</span><span class=s>&#34;col-12 mt-3 row&#34;</span><span class=p>&gt;</span>
+</span></span><span class=line><span class=cl>            <span class=p>&lt;</span><span class=nt>div</span> <span class=na>class</span><span class=o>=</span><span class=s>&#34;col-4&#34;</span> <span class=na>v-if</span><span class=o>=</span><span class=s>&#34;selected.county !== null &amp;&amp; selected.town !== null &amp;&amp; selected.section !== null&#34;</span><span class=p>&gt;</span>
+</span></span><span class=line><span class=cl>                已經選擇：{{selected.county.name}} {{selected.town.name}} {{selected.section.name}}
+</span></span><span class=line><span class=cl>            <span class=p>&lt;/</span><span class=nt>div</span><span class=p>&gt;</span>
+</span></span><span class=line><span class=cl>        <span class=p>&lt;/</span><span class=nt>div</span><span class=p>&gt;</span>
+</span></span><span class=line><span class=cl>    <span class=p>&lt;/</span><span class=nt>div</span><span class=p>&gt;</span>
+</span></span><span class=line><span class=cl><span class=p>&lt;/</span><span class=nt>div</span><span class=p>&gt;</span>
+</span></span></code></pre></td></tr></table></div></div><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span><span class=lnt>28
+</span><span class=lnt>29
+</span><span class=lnt>30
+</span><span class=lnt>31
+</span><span class=lnt>32
+</span><span class=lnt>33
+</span><span class=lnt>34
+</span><span class=lnt>35
+</span><span class=lnt>36
+</span><span class=lnt>37
+</span><span class=lnt>38
+</span><span class=lnt>39
+</span><span class=lnt>40
+</span><span class=lnt>41
+</span><span class=lnt>42
+</span><span class=lnt>43
+</span><span class=lnt>44
+</span><span class=lnt>45
+</span><span class=lnt>46
+</span><span class=lnt>47
+</span><span class=lnt>48
+</span><span class=lnt>49
+</span><span class=lnt>50
+</span><span class=lnt>51
+</span><span class=lnt>52
+</span><span class=lnt>53
+</span><span class=lnt>54
+</span><span class=lnt>55
+</span><span class=lnt>56
+</span><span class=lnt>57
+</span><span class=lnt>58
+</span><span class=lnt>59
+</span><span class=lnt>60
+</span><span class=lnt>61
+</span><span class=lnt>62
+</span><span class=lnt>63
+</span><span class=lnt>64
+</span><span class=lnt>65
+</span><span class=lnt>66
+</span><span class=lnt>67
+</span><span class=lnt>68
+</span><span class=lnt>69
+</span><span class=lnt>70
+</span><span class=lnt>71
+</span><span class=lnt>72
+</span><span class=lnt>73
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-js data-lang=js><span class=line><span class=cl><span class=c1>// sample.js
+</span></span></span><span class=line><span class=cl><span class=c1></span><span class=kr>const</span> <span class=nx>app</span> <span class=o>=</span> <span class=nx>Vue</span><span class=p>.</span><span class=nx>createApp</span><span class=p>({</span>
+</span></span><span class=line><span class=cl>    <span class=nx>data</span><span class=p>(){</span>
+</span></span><span class=line><span class=cl>        <span class=k>return</span><span class=p>{</span>
+</span></span><span class=line><span class=cl>            <span class=nx>code</span><span class=o>:</span><span class=p>{</span>
+</span></span><span class=line><span class=cl>                <span class=nx>county</span><span class=o>:</span> <span class=p>[],</span>
+</span></span><span class=line><span class=cl>                <span class=nx>town</span><span class=o>:</span> <span class=p>[],</span>
+</span></span><span class=line><span class=cl>                <span class=nx>section</span><span class=o>:</span> <span class=p>[]</span>
+</span></span><span class=line><span class=cl>            <span class=p>},</span>
+</span></span><span class=line><span class=cl>            <span class=nx>selected</span><span class=o>:</span><span class=p>{</span>
+</span></span><span class=line><span class=cl>                <span class=nx>county</span><span class=o>:</span> <span class=kc>null</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>                <span class=nx>town</span><span class=o>:</span> <span class=kc>null</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>                <span class=nx>section</span><span class=o>:</span> <span class=kc>null</span>
+</span></span><span class=line><span class=cl>            <span class=p>}</span>
+</span></span><span class=line><span class=cl>        <span class=p>}</span>
+</span></span><span class=line><span class=cl>    <span class=p>},</span>
+</span></span><span class=line><span class=cl>    <span class=nx>methods</span><span class=o>:</span><span class=p>{</span>
+</span></span><span class=line><span class=cl>        <span class=nx>getCounties</span><span class=p>(){</span>
+</span></span><span class=line><span class=cl>            <span class=k>this</span><span class=p>.</span><span class=nx>selected</span><span class=p>.</span><span class=nx>county</span> <span class=o>=</span> <span class=kc>null</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>            <span class=k>this</span><span class=p>.</span><span class=nx>selected</span><span class=p>.</span><span class=nx>town</span> <span class=o>=</span> <span class=kc>null</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>            <span class=k>this</span><span class=p>.</span><span class=nx>selected</span><span class=p>.</span><span class=nx>section</span> <span class=o>=</span> <span class=kc>null</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>            <span class=nx>axios</span><span class=p>({</span>
+</span></span><span class=line><span class=cl>                <span class=nx>method</span><span class=o>:</span> <span class=s1>&#39;get&#39;</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>                <span class=nx>url</span><span class=o>:</span> <span class=s1>&#39;./api/code&#39;</span>
+</span></span><span class=line><span class=cl>            <span class=p>}).</span><span class=nx>then</span><span class=p>(</span><span class=nx>res</span> <span class=p>=&gt;</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>                <span class=k>this</span><span class=p>.</span><span class=nx>code</span><span class=p>.</span><span class=nx>county</span> <span class=o>=</span> <span class=nx>res</span><span class=p>.</span><span class=nx>data</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>                <span class=nx>Vue</span><span class=p>.</span><span class=nx>nextTick</span><span class=p>(()</span> <span class=p>=&gt;</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>                    <span class=nx>$</span><span class=p>(</span><span class=s1>&#39;#county-select&#39;</span><span class=p>).</span><span class=nx>selectpicker</span><span class=p>();</span>
+</span></span><span class=line><span class=cl>                <span class=p>})</span>
+</span></span><span class=line><span class=cl>            <span class=p>})</span>
+</span></span><span class=line><span class=cl>        <span class=p>},</span>
+</span></span><span class=line><span class=cl>        <span class=nx>getTowns</span><span class=p>(){</span>
+</span></span><span class=line><span class=cl>            <span class=k>this</span><span class=p>.</span><span class=nx>selected</span><span class=p>.</span><span class=nx>town</span> <span class=o>=</span> <span class=kc>null</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>            <span class=k>this</span><span class=p>.</span><span class=nx>selected</span><span class=p>.</span><span class=nx>section</span> <span class=o>=</span> <span class=kc>null</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>            <span class=nx>axios</span><span class=p>({</span>
+</span></span><span class=line><span class=cl>                <span class=nx>method</span><span class=o>:</span> <span class=s1>&#39;get&#39;</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>                <span class=nx>url</span><span class=o>:</span> <span class=sb>`./api/code/</span><span class=si>${</span><span class=k>this</span><span class=p>.</span><span class=nx>selected</span><span class=p>.</span><span class=nx>county</span><span class=p>.</span><span class=nx>id</span><span class=si>}</span><span class=sb>`</span>
+</span></span><span class=line><span class=cl>            <span class=p>}).</span><span class=nx>then</span><span class=p>(</span><span class=nx>res</span> <span class=p>=&gt;</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>                <span class=k>this</span><span class=p>.</span><span class=nx>code</span><span class=p>.</span><span class=nx>town</span> <span class=o>=</span> <span class=nx>res</span><span class=p>.</span><span class=nx>data</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>                <span class=nx>Vue</span><span class=p>.</span><span class=nx>nextTick</span><span class=p>(()</span> <span class=p>=&gt;</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>                    <span class=nx>$</span><span class=p>(</span><span class=s1>&#39;#town-select&#39;</span><span class=p>).</span><span class=nx>selectpicker</span><span class=p>();</span>
+</span></span><span class=line><span class=cl>                <span class=p>})</span>
+</span></span><span class=line><span class=cl>            <span class=p>})</span>
+</span></span><span class=line><span class=cl>        <span class=p>},</span>
+</span></span><span class=line><span class=cl>        <span class=nx>getSections</span><span class=p>(){</span>
+</span></span><span class=line><span class=cl>            <span class=k>this</span><span class=p>.</span><span class=nx>selected</span><span class=p>.</span><span class=nx>section</span> <span class=o>=</span> <span class=kc>null</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>            <span class=nx>axios</span><span class=p>({</span>
+</span></span><span class=line><span class=cl>                <span class=nx>method</span><span class=o>:</span> <span class=s1>&#39;get&#39;</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>                <span class=nx>url</span><span class=o>:</span> <span class=sb>`./api/code/</span><span class=si>${</span><span class=k>this</span><span class=p>.</span><span class=nx>selected</span><span class=p>.</span><span class=nx>county</span><span class=p>.</span><span class=nx>id</span><span class=si>}</span><span class=sb>/</span><span class=si>${</span><span class=k>this</span><span class=p>.</span><span class=nx>selected</span><span class=p>.</span><span class=nx>town</span><span class=p>.</span><span class=nx>id</span><span class=si>}</span><span class=sb>`</span>
+</span></span><span class=line><span class=cl>            <span class=p>}).</span><span class=nx>then</span><span class=p>(</span><span class=nx>res</span> <span class=p>=&gt;</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>                <span class=k>this</span><span class=p>.</span><span class=nx>code</span><span class=p>.</span><span class=nx>section</span> <span class=o>=</span> <span class=nx>res</span><span class=p>.</span><span class=nx>data</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>                <span class=nx>Vue</span><span class=p>.</span><span class=nx>nextTick</span><span class=p>(()</span> <span class=p>=&gt;</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>                    <span class=nx>$</span><span class=p>(</span><span class=s1>&#39;#section-select&#39;</span><span class=p>).</span><span class=nx>selectpicker</span><span class=p>();</span>
+</span></span><span class=line><span class=cl>                <span class=p>})</span>
+</span></span><span class=line><span class=cl>            <span class=p>})</span>
+</span></span><span class=line><span class=cl>        <span class=p>},</span>
+</span></span><span class=line><span class=cl>    <span class=p>},</span>
+</span></span><span class=line><span class=cl>    <span class=nx>watch</span><span class=o>:</span><span class=p>{</span>
+</span></span><span class=line><span class=cl>        <span class=s1>&#39;selected.county&#39;</span><span class=o>:</span> <span class=kd>function</span> <span class=p>(</span><span class=nx>newVal</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>            <span class=k>if</span> <span class=p>(</span><span class=nx>newVal</span> <span class=o>===</span> <span class=s1>&#39;&#39;</span> <span class=o>||</span> <span class=nx>newVal</span> <span class=o>===</span> <span class=kc>null</span><span class=p>)</span> <span class=k>return</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>            <span class=k>this</span><span class=p>.</span><span class=nx>getTowns</span><span class=p>();</span>
+</span></span><span class=line><span class=cl>        <span class=p>},</span>
+</span></span><span class=line><span class=cl>        <span class=s1>&#39;selected.town&#39;</span><span class=o>:</span> <span class=kd>function</span> <span class=p>(</span><span class=nx>newVal</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>            <span class=k>if</span> <span class=p>(</span><span class=nx>newVal</span> <span class=o>===</span> <span class=s1>&#39;&#39;</span> <span class=o>||</span> <span class=nx>newVal</span> <span class=o>===</span> <span class=kc>null</span><span class=p>)</span> <span class=k>return</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>            <span class=nx>console</span><span class=p>.</span><span class=nx>log</span><span class=p>(</span><span class=nx>newVal</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>            <span class=k>this</span><span class=p>.</span><span class=nx>getSections</span><span class=p>();</span>
+</span></span><span class=line><span class=cl>        <span class=p>},</span>
+</span></span><span class=line><span class=cl>    <span class=p>},</span>
+</span></span><span class=line><span class=cl>    <span class=nx>mounted</span><span class=p>(){</span>
+</span></span><span class=line><span class=cl>        <span class=k>this</span><span class=p>.</span><span class=nx>getCounties</span><span class=p>();</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=p>});</span>
+</span></span><span class=line><span class=cl><span class=nx>app</span><span class=p>.</span><span class=nx>mount</span><span class=p>(</span><span class=s1>&#39;#app&#39;</span><span class=p>);</span>
+</span></span></code></pre></td></tr></table></div></div><p><img src=/vue-selected-dropdown-2/Bug1.gif loading=lazy></p><p>執行之後你應該可以發現兩個問題：還沒有初始化過的選單會長的很醜，和我們預期的樣式不太一樣，以及，我明明資料內容更新了，但為甚麼畫面上仍然是舊的資料呢？我的資料又去哪裡了 😠</p><hr><h2 id=refresh-ui>Refresh UI</h2><p>在官方文件 Methods 的頁面中，可以看到有一個叫做 refresh 的方法，這個方法可以讓我們更新畫面上的 UI 呈現：</p><p><img src=/post/vue-selected-dropdown-2/Refresh.png width=1100 height=107 srcset="/post/vue-selected-dropdown-2/Refresh_hu_f356c17556c4a3ac.png 480w, /post/vue-selected-dropdown-2/Refresh_hu_d9c6029128547ff7.png 1024w" loading=lazy class=gallery-image data-flex-grow=1028 data-flex-basis=2467px></p><p>既然官方都提供了這個用法，那我們就依照建議修改一下程式碼吧：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span><span class=lnt>28
+</span><span class=lnt>29
+</span><span class=lnt>30
+</span><span class=lnt>31
+</span><span class=lnt>32
+</span><span class=lnt>33
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-js data-lang=js><span class=line><span class=cl><span class=c1>// sample.js
+</span></span></span><span class=line><span class=cl><span class=c1></span><span class=kr>const</span> <span class=nx>app</span> <span class=o>=</span> <span class=nx>Vue</span><span class=p>.</span><span class=nx>createApp</span><span class=p>({</span>
+</span></span><span class=line><span class=cl>    <span class=nx>data</span><span class=p>(){...},</span>
+</span></span><span class=line><span class=cl>    <span class=nx>methods</span><span class=o>:</span><span class=p>{</span>
+</span></span><span class=line><span class=cl>        <span class=nx>getCounties</span><span class=p>(){</span>
+</span></span><span class=line><span class=cl>            <span class=nx>axios</span><span class=p>({</span>
+</span></span><span class=line><span class=cl>                <span class=nx>method</span><span class=o>:</span> <span class=s1>&#39;get&#39;</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>                <span class=nx>url</span><span class=o>:</span> <span class=s1>&#39;./api/code&#39;</span>
+</span></span><span class=line><span class=cl>            <span class=p>}).</span><span class=nx>then</span><span class=p>(</span><span class=nx>res</span> <span class=p>=&gt;</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>                <span class=k>this</span><span class=p>.</span><span class=nx>code</span><span class=p>.</span><span class=nx>county</span> <span class=o>=</span> <span class=nx>res</span><span class=p>.</span><span class=nx>data</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>                
+</span></span><span class=line><span class=cl>                <span class=c1>// 記得要包在 Vue.nextTick() 中才有效喔
+</span></span></span><span class=line><span class=cl><span class=c1></span>                <span class=nx>Vue</span><span class=p>.</span><span class=nx>nextTick</span><span class=p>(()</span> <span class=p>=&gt;</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>                    <span class=nx>$</span><span class=p>(</span><span class=s1>&#39;#county-select&#39;</span><span class=p>).</span><span class=nx>selectpicker</span><span class=p>(</span><span class=s1>&#39;refresh&#39;</span><span class=p>);</span>     <span class=c1>// 更新 county
+</span></span></span><span class=line><span class=cl><span class=c1></span>                    <span class=nx>$</span><span class=p>(</span><span class=s1>&#39;#town-select&#39;</span><span class=p>).</span><span class=nx>selectpicker</span><span class=p>(</span><span class=s1>&#39;refresh&#39;</span><span class=p>);</span>       <span class=c1>// 更新 town
+</span></span></span><span class=line><span class=cl><span class=c1></span>                    <span class=nx>$</span><span class=p>(</span><span class=s1>&#39;#section-select&#39;</span><span class=p>).</span><span class=nx>selectpicker</span><span class=p>(</span><span class=s1>&#39;refresh&#39;</span><span class=p>);</span>    <span class=c1>// 更新 section
+</span></span></span><span class=line><span class=cl><span class=c1></span>                <span class=p>})</span>
+</span></span><span class=line><span class=cl>            <span class=p>})</span>
+</span></span><span class=line><span class=cl>        <span class=p>},</span>
+</span></span><span class=line><span class=cl>        <span class=nx>getTowns</span><span class=p>(){...},</span>
+</span></span><span class=line><span class=cl>        <span class=nx>getSections</span><span class=p>(){...},</span>
+</span></span><span class=line><span class=cl>    <span class=p>},</span>
+</span></span><span class=line><span class=cl>    <span class=nx>watch</span><span class=o>:</span><span class=p>{...},</span>
+</span></span><span class=line><span class=cl>    <span class=nx>mounted</span><span class=p>(){</span>
+</span></span><span class=line><span class=cl>        <span class=k>this</span><span class=p>.</span><span class=nx>getCounties</span><span class=p>();</span>
+</span></span><span class=line><span class=cl>        
+</span></span><span class=line><span class=cl>        <span class=c1>// 一次全部初始化
+</span></span></span><span class=line><span class=cl><span class=c1></span>        <span class=nx>Vue</span><span class=p>.</span><span class=nx>nextTick</span><span class=p>(()</span> <span class=p>=&gt;</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>            <span class=nx>$</span><span class=p>(</span><span class=s1>&#39;select&#39;</span><span class=p>).</span><span class=nx>selectpicker</span><span class=p>();</span>
+</span></span><span class=line><span class=cl>        <span class=p>})</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=p>});</span>
+</span></span><span class=line><span class=cl><span class=nx>app</span><span class=p>.</span><span class=nx>mount</span><span class=p>(</span><span class=s1>&#39;#app&#39;</span><span class=p>);</span>
+</span></span></code></pre></td></tr></table></div></div><p><img src=/vue-selected-dropdown-2/Bug2.gif loading=lazy></p><p>資料看起來有被正確的更新到 UI 上了，但為甚麼我的清單看起來還是怪怪的咧 😵</p><p>其實，在官方的完整範例中，是先找到要刪除的選項，移除之後才進行 refresh，但不曉得為甚麼，就算按照官方的範例我也無法正常移除 😵</p><p><img src=/post/vue-selected-dropdown-2/RefreshExample.png width=1100 height=525 srcset="/post/vue-selected-dropdown-2/RefreshExample_hu_d45709ec1473acda.png 480w, /post/vue-selected-dropdown-2/RefreshExample_hu_6965d350c4f022d8.png 1024w" loading=lazy alt="官方文件上關於 refresh 的使用範例" class=gallery-image data-flex-grow=209 data-flex-basis=502px></p><h3 id=用-destoy-修正>用 Destoy 修正</h3><p>所以最後我採用的方法，是直接把整個元件 destroy 掉，更新資料的時候再重新建立一個。</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-js data-lang=js><span class=line><span class=cl><span class=nx>Vue</span><span class=p>.</span><span class=nx>nextTick</span><span class=p>(()</span> <span class=p>=&gt;</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=c1>// 先銷毀再重建
+</span></span></span><span class=line><span class=cl><span class=c1></span>    <span class=nx>$</span><span class=p>(</span><span class=s1>&#39;#county-select&#39;</span><span class=p>).</span><span class=nx>selectpicker</span><span class=p>(</span><span class=s1>&#39;destroy&#39;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>    <span class=nx>$</span><span class=p>(</span><span class=s1>&#39;#county-select&#39;</span><span class=p>).</span><span class=nx>selectpicker</span><span class=p>();</span>
+</span></span><span class=line><span class=cl>    
+</span></span><span class=line><span class=cl>    <span class=nx>$</span><span class=p>(</span><span class=s1>&#39;#town-select&#39;</span><span class=p>).</span><span class=nx>selectpicker</span><span class=p>(</span><span class=s1>&#39;destroy&#39;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>    <span class=nx>$</span><span class=p>(</span><span class=s1>&#39;#town-select&#39;</span><span class=p>).</span><span class=nx>selectpicker</span><span class=p>();</span>
+</span></span><span class=line><span class=cl>    
+</span></span><span class=line><span class=cl>    <span class=nx>$</span><span class=p>(</span><span class=s1>&#39;#section-select&#39;</span><span class=p>).</span><span class=nx>selectpicker</span><span class=p>(</span><span class=s1>&#39;destroy&#39;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>    <span class=nx>$</span><span class=p>(</span><span class=s1>&#39;#section-select&#39;</span><span class=p>).</span><span class=nx>selectpicker</span><span class=p>();</span>
+</span></span><span class=line><span class=cl><span class=p>})</span>
+</span></span></code></pre></td></tr></table></div></div><p><img src=/vue-selected-dropdown-2/Bug3.gif loading=lazy></p><p>終於可以看到正確的資料有被好好地呈現在 UI 上了 🎊</p><blockquote><p>參考文章</p><ul><li><a class=link href=https://developer.snapappointments.com/bootstrap-select/examples/ target=_blank rel=noopener>bootstrap-select 官方文件</a></li></ul></blockquote></section><footer class=article-footer><section class=article-tags><a href=/tags/vue/>Vue</a>
+<a href=/tags/bootstrap-select/>Bootstrap-Select</a></section></footer></article><aside class=related-content--wrapper><h2 class=section-title>Related content</h2><div class=related-content><div class="flex article-list--tile"><article><a href=/post/vue-selected-dropdown-1/><div class=article-details><h2 class=article-title>可以查詢的下拉式選單 (1)</h2></div></a></article></div></div></aside><footer class=site-footer><section class=copyright>&copy;
+2022 -
+2025 Anthea's Blog</section><section class=powerby>Built with <a href=https://gohugo.io/ target=_blank rel=noopener>Hugo</a><br>Theme <b><a href=https://github.com/CaiJimmy/hugo-theme-stack target=_blank rel=noopener data-version=3.30.0>Stack</a></b> designed by <a href=https://jimmycai.com target=_blank rel=noopener>Jimmy</a></section></footer><div class=pswp tabindex=-1 role=dialog aria-hidden=true><div class=pswp__bg></div><div class=pswp__scroll-wrap><div class=pswp__container><div class=pswp__item></div><div class=pswp__item></div><div class=pswp__item></div></div><div class="pswp__ui pswp__ui--hidden"><div class=pswp__top-bar><div class=pswp__counter></div><button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+<button class="pswp__button pswp__button--share" title=Share></button>
+<button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+<button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button><div class=pswp__preloader><div class=pswp__preloader__icn><div class=pswp__preloader__cut><div class=pswp__preloader__donut></div></div></div></div></div><div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap"><div class=pswp__share-tooltip></div></div><button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+</button>
+<button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)"></button><div class=pswp__caption><div class=pswp__caption__center></div></div></div></div></div><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo=" crossorigin=anonymous defer></script><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU=" crossorigin=anonymous defer></script><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css crossorigin=anonymous><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css crossorigin=anonymous></main></div><script src=https://cdn.jsdelivr.net/npm/node-vibrant@3.1.6/dist/vibrant.min.js integrity="sha256-awcR2jno4kI5X0zL8ex0vi2z+KMkF24hUW8WePSA9HM=" crossorigin=anonymous></script><script type=text/javascript src=/ts/main.1e9a3bafd846ced4c345d084b355fb8c7bae75701c338f8a1f8a82c780137826.js defer></script><script>(function(){const e=document.createElement("link");e.href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap",e.type="text/css",e.rel="stylesheet",document.head.appendChild(e)})()</script></body></html>

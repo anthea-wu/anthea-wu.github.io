@@ -1,589 +1,521 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
-    <channel>
-        <title>Windows on Anthea&#39;s Blog</title>
-        <link>https://anthea-wu.github.io/tags/windows/</link>
-        <description>Recent content in Windows on Anthea&#39;s Blog</description>
-        <generator>Hugo -- gohugo.io</generator>
-        <language>en</language>
-        <lastBuildDate>Sat, 02 Jul 2022 23:24:03 +0800</lastBuildDate><atom:link href="https://anthea-wu.github.io/tags/windows/index.xml" rel="self" type="application/rss+xml" /><item>
-        <title>Nginx 從入門開始的網站架設 (4)</title>
-        <link>https://anthea-wu.github.io/post/nginx-%E5%BE%9E%E5%85%A5%E9%96%80%E9%96%8B%E5%A7%8B%E7%9A%84%E7%B6%B2%E7%AB%99%E6%9E%B6%E8%A8%AD-4/</link>
-        <pubDate>Sat, 02 Jul 2022 23:24:03 +0800</pubDate>
-        
-        <guid>https://anthea-wu.github.io/post/nginx-%E5%BE%9E%E5%85%A5%E9%96%80%E9%96%8B%E5%A7%8B%E7%9A%84%E7%B6%B2%E7%AB%99%E6%9E%B6%E8%A8%AD-4/</guid>
-        <description>&lt;p&gt;一般在 IIS 上啟用 https 的步驟很簡單：先匯出憑證要求，接著在收到憑證之後完成憑證要求，在站台上設定新的繫結，將 443 指定到申請的憑證上的域名即可。&lt;/p&gt;
-&lt;p&gt;但是，利用 IIS 去向中華電信所申請到的憑證格式為 &lt;code&gt;.cer&lt;/code&gt;，在 Nginx 的官網中，使用的卻是 &lt;code&gt;.crt&lt;/code&gt; 格式，並且還多了一個一般流程中不會看到的 &lt;code&gt;.key&lt;/code&gt;。網路上的教學大多是直接使用 &lt;code&gt;openssl&lt;/code&gt; 去生產憑證，由於這個案子是已經有申請好的憑證，所以我們要透過一些方法來把申請到的憑證轉成 Nginx 可以使用的格式。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;https://anthea-wu.github.io/post/nginx-%E5%BE%9E%E5%85%A5%E9%96%80%E9%96%8B%E5%A7%8B%E7%9A%84%E7%B6%B2%E7%AB%99%E6%9E%B6%E8%A8%AD-4/NginxDoc.png&#34;
-	width=&#34;803&#34;
-	height=&#34;238&#34;
-	srcset=&#34;https://anthea-wu.github.io/post/nginx-%E5%BE%9E%E5%85%A5%E9%96%80%E9%96%8B%E5%A7%8B%E7%9A%84%E7%B6%B2%E7%AB%99%E6%9E%B6%E8%A8%AD-4/NginxDoc_hu_f17f5839a3187187.png 480w, https://anthea-wu.github.io/post/nginx-%E5%BE%9E%E5%85%A5%E9%96%80%E9%96%8B%E5%A7%8B%E7%9A%84%E7%B6%B2%E7%AB%99%E6%9E%B6%E8%A8%AD-4/NginxDoc_hu_882ae8773b9d80d6.png 1024w&#34;
-	loading=&#34;lazy&#34;
-	
-		alt=&#34;Nginx 官方文件對於 https 設定的說明&#34;
-	
-	
-		class=&#34;gallery-image&#34; 
-		data-flex-grow=&#34;337&#34;
-		data-flex-basis=&#34;809px&#34;
-	
-&gt;&lt;/p&gt;
-&lt;h2 id=&#34;在-nginx-中使用-cer-來設定-https&#34;&gt;在 Nginx 中使用 &lt;code&gt;cer&lt;/code&gt; 來設定 https
-&lt;/h2&gt;&lt;p&gt;可以在上面那張圖片中觀察到，有兩個地方的值是粗體的黑字：&lt;code&gt;ssl_certificate&lt;/code&gt; 和 &lt;code&gt;ssl_certificate_key&lt;/code&gt;，這兩個部分要放的就是憑證的檔案和憑證的私密金鑰。而在這裡會有兩個問題：&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;如果是利用 IIS 去產生憑證要求所申請到的憑證，會沒有辦法直接得到私密金鑰，因為他會是加密過後的內容，而 Nginx 要求是不能加密的檔案。&lt;/li&gt;
-&lt;li&gt;申請所得到的憑證 &lt;code&gt;.cer&lt;/code&gt; 沒有辦法直接使用在 Nginx 上。&lt;/li&gt;
-&lt;/ol&gt;
-&lt;p&gt;在看這些問題之前，要先了解一下這幾個檔案的用途和差別：&lt;/p&gt;
-&lt;table&gt;
-  &lt;thead&gt;
-      &lt;tr&gt;
-          &lt;th style=&#34;text-align: center&#34;&gt;名稱&lt;/th&gt;
-          &lt;th&gt;用途&lt;/th&gt;
-          &lt;th&gt;說明&lt;/th&gt;
-      &lt;/tr&gt;
-  &lt;/thead&gt;
-  &lt;tbody&gt;
-      &lt;tr&gt;
-          &lt;td style=&#34;text-align: center&#34;&gt;&lt;code&gt;crt&lt;/code&gt;&lt;/td&gt;
-          &lt;td&gt;憑證證書&lt;/td&gt;
-          &lt;td&gt;Lunix 系統上的檔案格式&lt;/td&gt;
-      &lt;/tr&gt;
-      &lt;tr&gt;
-          &lt;td style=&#34;text-align: center&#34;&gt;&lt;code&gt;cer&lt;/code&gt;&lt;/td&gt;
-          &lt;td&gt;憑證證書&lt;/td&gt;
-          &lt;td&gt;Windows 系統上的檔案格式&lt;/td&gt;
-      &lt;/tr&gt;
-      &lt;tr&gt;
-          &lt;td style=&#34;text-align: center&#34;&gt;&lt;code&gt;key&lt;/code&gt;&lt;/td&gt;
-          &lt;td&gt;金鑰&lt;/td&gt;
-          &lt;td&gt;存放公鑰或私鑰&lt;/td&gt;
-      &lt;/tr&gt;
-      &lt;tr&gt;
-          &lt;td style=&#34;text-align: center&#34;&gt;&lt;code&gt;pfx&lt;/code&gt;&lt;/td&gt;
-          &lt;td&gt;憑證證書及私鑰&lt;/td&gt;
-          &lt;td&gt;Windows 系統上會把 &lt;code&gt;crt&lt;/code&gt; 和私鑰 &lt;code&gt;key&lt;/code&gt; 放在同一個檔案內，需要有密碼才能提取&lt;/td&gt;
-      &lt;/tr&gt;
-  &lt;/tbody&gt;
-&lt;/table&gt;
-&lt;p&gt;了解了這幾種不同的名詞之後，接下來就是要把我們手上有的 &lt;code&gt;cer&lt;/code&gt; 憑證檔案轉換成 Nginx 可以接受的格式。&lt;/p&gt;
-&lt;h3 id=&#34;1-匯出-pfx-檔案&#34;&gt;1. 匯出 &lt;code&gt;pfx&lt;/code&gt; 檔案
-&lt;/h3&gt;&lt;p&gt;第一個步驟，是要藉由 &lt;code&gt;cer&lt;/code&gt; 來取得包含憑證證書和私鑰的 &lt;code&gt;pfx&lt;/code&gt; 檔案。&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;&lt;code&gt;Windows + R&lt;/code&gt; 開啟 執行，輸入 &lt;code&gt;mmc&lt;/code&gt;&lt;/li&gt;
-&lt;li&gt;&lt;code&gt;檔案 &amp;gt; 新增或移除嵌入式管理單元&lt;/code&gt;，拉到最底下找到 &lt;code&gt;憑證&lt;/code&gt;，點選後點擊中間的新增，會跳出另外一個視窗，選擇 &lt;code&gt;電腦帳戶 &amp;gt; 本機電腦&lt;/code&gt;，按下完成後視窗會回到 &lt;code&gt;嵌入式管理單元&lt;/code&gt; 這一層，確定憑證有被移動到右邊的視窗後就可以按下確定。&lt;/li&gt;
-&lt;/ol&gt;
-&lt;p&gt;&lt;img src=&#34;https://anthea-wu.github.io/post/nginx-%E5%BE%9E%E5%85%A5%E9%96%80%E9%96%8B%E5%A7%8B%E7%9A%84%E7%B6%B2%E7%AB%99%E6%9E%B6%E8%A8%AD-4/Pfx1.png&#34;
-	width=&#34;1028&#34;
-	height=&#34;619&#34;
-	srcset=&#34;https://anthea-wu.github.io/post/nginx-%E5%BE%9E%E5%85%A5%E9%96%80%E9%96%8B%E5%A7%8B%E7%9A%84%E7%B6%B2%E7%AB%99%E6%9E%B6%E8%A8%AD-4/Pfx1_hu_4f0f4a8cd1a7c9b7.png 480w, https://anthea-wu.github.io/post/nginx-%E5%BE%9E%E5%85%A5%E9%96%80%E9%96%8B%E5%A7%8B%E7%9A%84%E7%B6%B2%E7%AB%99%E6%9E%B6%E8%A8%AD-4/Pfx1_hu_9791949cfaf3b4a0.png 1024w&#34;
-	loading=&#34;lazy&#34;
-	
-	
-		class=&#34;gallery-image&#34; 
-		data-flex-grow=&#34;166&#34;
-		data-flex-basis=&#34;398px&#34;
-	
-&gt;&lt;/p&gt;
-&lt;ol start=&#34;3&#34;&gt;
-&lt;li&gt;在憑證的目錄底下選擇 &lt;code&gt;個人&amp;gt;憑證&lt;/code&gt;，如果有先在 IIS 完成憑證要求的話就可以看到原本匯入的憑證，沒有的話請先匯入。找到要匯出 &lt;code&gt;pfx&lt;/code&gt; 檔案的憑證對他點選 &lt;code&gt;右鍵 &amp;gt; 所有工作 &amp;gt; 匯出&lt;/code&gt;，選擇 &lt;code&gt;是，匯出私密金鑰&lt;/code&gt;，點選兩次下一步進入 &lt;code&gt;安全性&lt;/code&gt; 的頁面，輸入要存取 &lt;code&gt;pfx&lt;/code&gt; 時的密碼。下一步輸入檔名後按下儲存就可以得到 &lt;code&gt;pfx&lt;/code&gt; 檔案了。&lt;/li&gt;
-&lt;/ol&gt;
-&lt;p&gt;&lt;img src=&#34;https://anthea-wu.github.io/post/nginx-%E5%BE%9E%E5%85%A5%E9%96%80%E9%96%8B%E5%A7%8B%E7%9A%84%E7%B6%B2%E7%AB%99%E6%9E%B6%E8%A8%AD-4/Pfx2.png&#34;
-	width=&#34;1060&#34;
-	height=&#34;684&#34;
-	srcset=&#34;https://anthea-wu.github.io/post/nginx-%E5%BE%9E%E5%85%A5%E9%96%80%E9%96%8B%E5%A7%8B%E7%9A%84%E7%B6%B2%E7%AB%99%E6%9E%B6%E8%A8%AD-4/Pfx2_hu_e21c483d8f395dc0.png 480w, https://anthea-wu.github.io/post/nginx-%E5%BE%9E%E5%85%A5%E9%96%80%E9%96%8B%E5%A7%8B%E7%9A%84%E7%B6%B2%E7%AB%99%E6%9E%B6%E8%A8%AD-4/Pfx2_hu_fbba6a83a1419fd9.png 1024w&#34;
-	loading=&#34;lazy&#34;
-	
-	
-		class=&#34;gallery-image&#34; 
-		data-flex-grow=&#34;154&#34;
-		data-flex-basis=&#34;371px&#34;
-	
-&gt;&lt;/p&gt;
-&lt;h3 id=&#34;2-轉成-crt-檔案&#34;&gt;2. 轉成 &lt;code&gt;crt&lt;/code&gt; 檔案
-&lt;/h3&gt;&lt;p&gt;有了 &lt;code&gt;pfx&lt;/code&gt; 的下一步就是要轉換成 &lt;code&gt;crt&lt;/code&gt; 和 &lt;code&gt;key&lt;/code&gt;。轉換的方法很簡單，使用 &lt;code&gt;openssl&lt;/code&gt;，輸入下面的指令，就可以得到這兩個檔案了：&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
-&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;3
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;4
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;5
-&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
-&lt;td class=&#34;lntd&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-cmd&#34; data-lang=&#34;cmd&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;# 輸出 crt
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;openssl pkcs12 -in server.pfx -clcerts -nokeys -out server.crt
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;# 輸出 key
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;openssl pkcs12 -in server.pfx -nocerts -nodes -out server.rsa
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-&lt;/div&gt;
-&lt;/div&gt;&lt;h3 id=&#34;3-修改-nginxconf&#34;&gt;3. 修改 &lt;code&gt;nginx.conf&lt;/code&gt;
-&lt;/h3&gt;&lt;p&gt;產出兩個檔案之後就可以進入 &lt;code&gt;nginx.conf&lt;/code&gt; 的修改了。修改好記得要 &lt;code&gt;nginx -s reload&lt;/code&gt;，防火牆 443 port 的部分也要記得開：&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
-&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt; 1
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 2
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 3
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 4
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 5
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 6
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 7
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 8
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 9
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;10
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;11
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;12
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;13
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;14
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;15
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;16
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;17
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;18
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;19
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;20
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;21
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;22
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;23
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;24
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;25
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;26
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;27
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;28
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;29
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;30
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;31
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;32
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;33
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;34
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;35
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;36
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;37
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;38
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;39
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;40
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;41
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;42
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;43
-&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
-&lt;td class=&#34;lntd&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;events {
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    worker_connections  4096;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;}
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;http {
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    upstream www.abc.com {
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        server localhost:8082;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        server localhost:8083;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    }
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;	
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    server {
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        # 因為是正式的環境，防火牆也需要申請，所以改成監聽原本 IIS 監聽的 80 port
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        listen              80;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        server_name         www.abc.com;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;		
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        location / {
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;            # 將 http 轉導到 https
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;            return          301     https://$host$request_uri;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        }
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    }
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;	
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    server {
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;	listen              443 ssl;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        server_name         www.abc.com;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        ssl_certificate     server.crt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        ssl_certificate_key server.rsa;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        ssl_protocols       TLSv1 TLSv1.1 TLSv1.2;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        ssl_ciphers         HIGH:!aNULL:!MD5;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;	
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;	location / {
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;            proxy_pass                 http://guideapp.npm.gov.tw;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;            
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;            # 以下為 proxy 的詳細設置，可以參考下列網站的說明
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;            # https://www.cnblogs.com/kevingrace/p/8269955.html
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;            proxy_http_version         1.1;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;            proxy_set_header           Upgrade $http_upgrade;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;            proxy_set_header           Connection keep-alive;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;            proxy_set_header           Host $host;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;            proxy_cache_bypass         $http_upgrade;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;            proxy_set_header           X-Forwarded-For $proxy_add_x_forwarded_for;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        }
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    }
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;}
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-&lt;/div&gt;
-&lt;/div&gt;&lt;blockquote&gt;
-    &lt;p&gt;&lt;p&gt;參考資料&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;&lt;a class=&#34;link&#34; href=&#34;https://zhuanlan.zhihu.com/p/109225748&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
-    &gt;Nginx 中使用 PFX 格式的 SSL 证书&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a class=&#34;link&#34; href=&#34;https://blog.csdn.net/itworld123/article/details/115553346&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
-    &gt;crt、pem、pfx、cer、key 作用及區別&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;&lt;/p&gt;&lt;/blockquote&gt;
-</description>
-        </item>
-        <item>
-        <title>Nginx 從入門開始的網站架設 (3)</title>
-        <link>https://anthea-wu.github.io/post/nginx-%E5%BE%9E%E5%85%A5%E9%96%80%E9%96%8B%E5%A7%8B%E7%9A%84%E7%B6%B2%E7%AB%99%E6%9E%B6%E8%A8%AD-3/</link>
-        <pubDate>Thu, 23 Jun 2022 23:15:50 +0800</pubDate>
-        
-        <guid>https://anthea-wu.github.io/post/nginx-%E5%BE%9E%E5%85%A5%E9%96%80%E9%96%8B%E5%A7%8B%E7%9A%84%E7%B6%B2%E7%AB%99%E6%9E%B6%E8%A8%AD-3/</guid>
-        <description>&lt;p&gt;&lt;a class=&#34;link&#34; href=&#34;../nginx-web-setup-2&#34; &gt;上一篇文章&lt;/a&gt; 中我們用最簡單的設定建立起一個靜態服務了，接下來要提到的是 Nginx 最廣為人知的其中一種功能－－代理伺服器（Proxy Server）。&lt;/p&gt;
-&lt;h2 id=&#34;proxy-server-代理伺服器&#34;&gt;Proxy Server 代理伺服器
-&lt;/h2&gt;&lt;p&gt;有一陣子募資平台很流行，當你有想法但是沒有資金的時候，你可以透過這些平台把你的計劃放上去，吸引一般民眾投入資金，接著拿這些錢去實際生產你的產品，並給當初提供你資金的民眾一些回饋。在這個過程中，募資平台所扮演的角色就是代理：你只能看到資金提供者的提供的寄件資訊，甚至完全不知道他們的身分，但你會負責把你的產品或回饋透過平台提供出去。&lt;/p&gt;
-&lt;p&gt;以網路來說，Client（一般民眾）透過代理伺服器（募資平台）發送請求給 Server（你），Server 基本上不會有 Client 的資料，而這就是 Proxy 的好處之一：隱藏 Client 的真實身分。&lt;/p&gt;
-&lt;p&gt;其他的好處還有很多，但今天我只想看這次客戶最主要的目的：Load Balance（負載平衡）。&lt;/p&gt;
-&lt;h3 id=&#34;load-balance-負載平衡&#34;&gt;Load Balance 負載平衡
-&lt;/h3&gt;&lt;p&gt;Load Balance 的主要目的在於分散伺服器端的壓力，讓伺服器的回應速度和其他效能可以得到提升，使用者能擁有更好的體驗。而要做到這個程度一般來說都會需要依賴剛剛所提到的 proxy 做為中繼站，去判斷現在接收到的這個 request 要被分配到哪一台 server 上。&lt;/p&gt;
-&lt;hr&gt;
-&lt;h2 id=&#34;nginx-設定&#34;&gt;Nginx 設定
-&lt;/h2&gt;&lt;p&gt;稍微了解 Proxy Server 和 Load Balance 的用途之後，接下來開始試著用 Nginx 來進行設定吧。&lt;/p&gt;
-&lt;h3 id=&#34;proxy&#34;&gt;Proxy
-&lt;/h3&gt;&lt;p&gt;首先設定好 &lt;code&gt;nginx.conf&lt;/code&gt; ：&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
-&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt; 1
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 2
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 3
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 4
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 5
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 6
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 7
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 8
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 9
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;10
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;11
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;12
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;13
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;14
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;15
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;16
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;17
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;18
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;19
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;20
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;21
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;22
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;23
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;24
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;25
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;26
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;27
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;28
-&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
-&lt;td class=&#34;lntd&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;events {
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    worker_connections  1024;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;}
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;http {
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    server {
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        listen       8081;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        server_name  localhost;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;		
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        # 以 &amp;#39;/&amp;#39; 開頭的 url 會向 &amp;#39;/data/www&amp;#39; 發送請求
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        location / {
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;	          # 設定要導向的路徑
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;            # 如果 IIS 上有設定 8082 port 的站台就會被導向那個站台
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;            proxy_pass http://localhost:8082;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        }
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    }
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;  
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    # IIS 上沒有的站台，設定 8082 port 的內容
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    server {
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        listen       8082;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        server_name  localhost;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;		
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        # 以 &amp;#39;/&amp;#39; 開頭的 url 會向 &amp;#39;/data/www2&amp;#39; 發送請求
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        location / {
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;	          root data/www2;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        }
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    }
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;}
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-&lt;/div&gt;
-&lt;/div&gt;&lt;p&gt;接著到 &lt;code&gt;/data/www2&lt;/code&gt; 底下新增一個新的 &lt;code&gt;index.html&lt;/code&gt;，這時候 &lt;code&gt;www&lt;/code&gt; 和 &lt;code&gt;www2&lt;/code&gt; 的資料夾內各有一個 &lt;code&gt;index.html&lt;/code&gt;，上一篇文章中我們會看到 &lt;code&gt;www&lt;/code&gt; 內的 &lt;code&gt;index.html&lt;/code&gt;，這一次的設定預期會出現的應該是 &lt;code&gt;www2&lt;/code&gt; 內的 &lt;code&gt;index.html&lt;/code&gt;。&lt;/p&gt;
-&lt;p&gt;儲存修改好的 config 之後，&lt;code&gt;nginx -s reload&lt;/code&gt; 重新載入檔案，在瀏覽器中輸入 &lt;code&gt;http://localhost:8081&lt;/code&gt; 應該就可以看到 &lt;code&gt;www2&lt;/code&gt; 中 &lt;code&gt;index.html&lt;/code&gt; 的內容囉。&lt;/p&gt;
-&lt;h3 id=&#34;load-balance&#34;&gt;Load Balance
-&lt;/h3&gt;&lt;p&gt;要在 Nginx 中使用 Load Balance 需要在 http 中加入 upstream 這組設定，加好之後你的 &lt;code&gt;nginx.conf&lt;/code&gt; 應該會長這樣：&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
-&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt; 1
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 2
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 3
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 4
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 5
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 6
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 7
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 8
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 9
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;10
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;11
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;12
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;13
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;14
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;15
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;16
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;17
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;18
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;19
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;20
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;21
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;22
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;23
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;24
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;25
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;26
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;27
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;28
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;29
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;30
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;31
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;32
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;33
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;34
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;35
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;36
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;37
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;38
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;39
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;40
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;41
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;42
-&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
-&lt;td class=&#34;lntd&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;events {
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    worker_connections  1024;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;}
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;http {
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    # &amp;#39;localhost&amp;#39; 是這組 upstream 的名稱
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    upstream localhost {
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        # 利用 &amp;#39;weight&amp;#39; 來設定權重
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        server localhost:8082 weight=1;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        server localhost:8083 weight=2;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    }
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;	
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    server {
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        listen              8081;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        server_name         localhost;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        location / {
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;            # 這裡要改成 upstream 的名稱
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;            proxy_pass       http://localhost;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        }
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    }
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;	
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    server {
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        listen              8082;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        server_name         localhost;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        location / {
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;            # 在 nginx.exe 同一層的資料夾 data 裡面新增一個資料夾 www 和 index.html
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;            root            data/www;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        }
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    }
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;	
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    server {
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        listen              8083;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        server_name         localhost;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        location / {
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;            # 在 nginx.exe 同一層的資料夾 data 裡面新增一個資料夾 www2 和 index.html
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;            root            data/www2;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        }
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    }
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;}
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-&lt;/div&gt;
-&lt;/div&gt;&lt;p&gt;設定好之後 &lt;code&gt;nginx -s reload&lt;/code&gt;，瀏覽器打開 &lt;code&gt;http://localhost:8081&lt;/code&gt;，持續重新整理，就可以看到交替出現的兩個 &lt;code&gt;index.html&lt;/code&gt; 囉~&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;https://anthea-wu.github.io/post/nginx-%E5%BE%9E%E5%85%A5%E9%96%80%E9%96%8B%E5%A7%8B%E7%9A%84%E7%B6%B2%E7%AB%99%E6%9E%B6%E8%A8%AD-3/Index1.png&#34;
-	width=&#34;515&#34;
-	height=&#34;202&#34;
-	srcset=&#34;https://anthea-wu.github.io/post/nginx-%E5%BE%9E%E5%85%A5%E9%96%80%E9%96%8B%E5%A7%8B%E7%9A%84%E7%B6%B2%E7%AB%99%E6%9E%B6%E8%A8%AD-3/Index1_hu_f14ae67f5c331a6d.png 480w, https://anthea-wu.github.io/post/nginx-%E5%BE%9E%E5%85%A5%E9%96%80%E9%96%8B%E5%A7%8B%E7%9A%84%E7%B6%B2%E7%AB%99%E6%9E%B6%E8%A8%AD-3/Index1_hu_a80fb3fdcd691604.png 1024w&#34;
-	loading=&#34;lazy&#34;
-	
-		alt=&#34;位於 8083 中 www2 的 index.html&#34;
-	
-	
-		class=&#34;gallery-image&#34; 
-		data-flex-grow=&#34;254&#34;
-		data-flex-basis=&#34;611px&#34;
-	
-&gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;https://anthea-wu.github.io/post/nginx-%E5%BE%9E%E5%85%A5%E9%96%80%E9%96%8B%E5%A7%8B%E7%9A%84%E7%B6%B2%E7%AB%99%E6%9E%B6%E8%A8%AD-3/index2.png&#34;
-	width=&#34;521&#34;
-	height=&#34;198&#34;
-	srcset=&#34;https://anthea-wu.github.io/post/nginx-%E5%BE%9E%E5%85%A5%E9%96%80%E9%96%8B%E5%A7%8B%E7%9A%84%E7%B6%B2%E7%AB%99%E6%9E%B6%E8%A8%AD-3/index2_hu_b42fff8b9d1c0c03.png 480w, https://anthea-wu.github.io/post/nginx-%E5%BE%9E%E5%85%A5%E9%96%80%E9%96%8B%E5%A7%8B%E7%9A%84%E7%B6%B2%E7%AB%99%E6%9E%B6%E8%A8%AD-3/index2_hu_8931d83e05f7ca1b.png 1024w&#34;
-	loading=&#34;lazy&#34;
-	
-		alt=&#34;位於 8082 中 www 的 index.html&#34;
-	
-	
-		class=&#34;gallery-image&#34; 
-		data-flex-grow=&#34;263&#34;
-		data-flex-basis=&#34;631px&#34;
-	
-&gt;&lt;/p&gt;
-&lt;blockquote&gt;
-    &lt;p&gt;&lt;p&gt;參考資料：&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;&lt;a class=&#34;link&#34; href=&#34;https://www.zhihu.com/question/24723688&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
-    &gt;反向代理與正向代理&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a class=&#34;link&#34; href=&#34;https://ithelp.ithome.com.tw/articles/10188498&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
-    &gt;俄羅斯不愧是戰鬥民族：nginx&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;&lt;/p&gt;&lt;/blockquote&gt;
-</description>
-        </item>
-        <item>
-        <title>Nginx 從入門開始的網站架設 (2)</title>
-        <link>https://anthea-wu.github.io/post/nginx-%E5%BE%9E%E5%85%A5%E9%96%80%E9%96%8B%E5%A7%8B%E7%9A%84%E7%B6%B2%E7%AB%99%E6%9E%B6%E8%A8%AD-2/</link>
-        <pubDate>Fri, 17 Jun 2022 22:53:49 +0800</pubDate>
-        
-        <guid>https://anthea-wu.github.io/post/nginx-%E5%BE%9E%E5%85%A5%E9%96%80%E9%96%8B%E5%A7%8B%E7%9A%84%E7%B6%B2%E7%AB%99%E6%9E%B6%E8%A8%AD-2/</guid>
-        <description>&lt;p&gt;在&lt;a class=&#34;link&#34; href=&#34;../nginx-web-setup-1&#34; &gt;上一篇文章&lt;/a&gt;中我們簡單認識了 nginx 的操作，接下來我們要透過那些操作來建立一個靜態服務。&lt;/p&gt;
-&lt;h3 id=&#34;1-準備資料&#34;&gt;1. 準備資料
-&lt;/h3&gt;&lt;p&gt;假設我們的 &lt;code&gt;nginx.exe&lt;/code&gt; 位於 &lt;code&gt;nginx&lt;/code&gt; 底下，接著我們在這裡新增一個資料夾 &lt;code&gt;data&lt;/code&gt;，並在 &lt;code&gt;data&lt;/code&gt; 裡面再新增兩個資料夾，分別是 &lt;code&gt;www&lt;/code&gt; 和 &lt;code&gt;images&lt;/code&gt;，將 &lt;code&gt;index.html&lt;/code&gt; 放入 &lt;code&gt;www&lt;/code&gt; 資料夾中，將任意的圖片放到 &lt;code&gt;images&lt;/code&gt; 資料夾內，這時候你的資料夾結構會像這樣：&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
-&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;3
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;4
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;5
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;6
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;7
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;8
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;9
-&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
-&lt;td class=&#34;lntd&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;nginx
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt; |- nginx.exe 
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt; |- conf
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt; |- data
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt; |  |- www
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt; |  |   |- index.html
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt; |  |- images
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt; |  |   |- test.jpg
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt; |- ...
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-&lt;/div&gt;
-&lt;/div&gt;&lt;h3 id=&#34;2-修改-nginxconf&#34;&gt;2. 修改 &lt;code&gt;nginx.conf&lt;/code&gt;
-&lt;/h3&gt;&lt;p&gt;接著開啟你的 &lt;code&gt;nginx.conf&lt;/code&gt;，並用下面的內容取代掉原本的設定：&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
-&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt; 1
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 2
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 3
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 4
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 5
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 6
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 7
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 8
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 9
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;10
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;11
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;12
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;13
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;14
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;15
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;16
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;17
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;18
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;19
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;20
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;21
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;22
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;23
-&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
-&lt;td class=&#34;lntd&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;events {
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    worker_connections  1024;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;}
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;http {    
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    server {
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        # 如果電腦上有裝 IIS，預設會占用掉 80 port
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        # 當這裡沒有改成其他 port 號，就算運行了 nginx 也會被帶到 IIS 的畫面去
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;	listen       8081;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;	server_name  localhost;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;		
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        # 以 &amp;#39;/&amp;#39; 開頭的 url 會向 &amp;#39;/data/www&amp;#39; 發送請求
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        location / {
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;	    # 官方文件上是寫 &amp;#39;/data/www&amp;#39;，但測試過後無法執行
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;            root data/www;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        }
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        # 以 &amp;#39;/images/&amp;#39; 開頭的 url 會向 &amp;#39;/data&amp;#39; 發送請求
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        location /images/ {
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;            root data;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        }
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    }
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;}
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-&lt;/div&gt;
-&lt;/div&gt;&lt;p&gt;在設定 &lt;code&gt;location&lt;/code&gt; 的時候，如果一個 url 如果有多個相符的區塊，nginx 會選擇具有最長前綴的區塊來發送請求。以上面的例子來說，第一個區塊的前綴是 &lt;code&gt;/&lt;/code&gt;，長度為 1，因此當我輸入網址 &lt;code&gt;/books&lt;/code&gt; 時，nginx 會幫我從長度更長的 &lt;code&gt;/images&lt;/code&gt; 開始比對。這時候因為沒有其他相符的目的地了，所以他會走進最短的 &lt;code&gt;/&lt;/code&gt; 裡。&lt;/p&gt;
-&lt;h3 id=&#34;3-reload-nginxconf&#34;&gt;3. reload &lt;code&gt;nginx.conf&lt;/code&gt;
-&lt;/h3&gt;&lt;p&gt;將 &lt;code&gt;nginx.conf&lt;/code&gt; 儲存之後，開啟 cmd 將目錄切換到 nginx 的資料夾底下，如果已經啟動過 nginx，執行 &lt;code&gt;nginx -s reload&lt;/code&gt; 來重新載入改寫好的 &lt;code&gt;nginx.conf&lt;/code&gt;；如果還沒有，輸入 &lt;code&gt;start nginx&lt;/code&gt; 來啟動 nginx。&lt;/p&gt;
-&lt;p&gt;沒有出現任何錯誤的話，就可以打開瀏覽器，輸入 &lt;code&gt;localhost:8081&lt;/code&gt; 就可以看到我們剛剛新增在 &lt;code&gt;/data/www&lt;/code&gt; 底下的 &lt;code&gt;index.html&lt;/code&gt; 了。&lt;/p&gt;
-&lt;blockquote&gt;
-    &lt;p&gt;&lt;p&gt;參考資料&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;&lt;a class=&#34;link&#34; href=&#34;https://nginx.org/en/docs/beginners_guide.html&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
-    &gt;Beginner’s Guide&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;&lt;/p&gt;&lt;/blockquote&gt;
-</description>
-        </item>
-        <item>
-        <title>Nginx 從入門開始的網站架設 (1)</title>
-        <link>https://anthea-wu.github.io/post/nginx-%E5%BE%9E%E5%85%A5%E9%96%80%E9%96%8B%E5%A7%8B%E7%9A%84%E7%B6%B2%E7%AB%99%E6%9E%B6%E8%A8%AD-1/</link>
-        <pubDate>Fri, 17 Jun 2022 22:41:56 +0800</pubDate>
-        
-        <guid>https://anthea-wu.github.io/post/nginx-%E5%BE%9E%E5%85%A5%E9%96%80%E9%96%8B%E5%A7%8B%E7%9A%84%E7%B6%B2%E7%AB%99%E6%9E%B6%E8%A8%AD-1/</guid>
-        <description>&lt;p&gt;最近有個案子，客戶覺得我們第一次交上去的壓力測試結果太狼狽，要我們想辦法把數字做得更好，於是我們嘗試了 windows 內建的 Network Load Balance（NLB）來進行設定，礙於網路管理的基礎知識不足，遇到了非常多的阻礙 QQ&lt;/p&gt;
-&lt;p&gt;最後透過 Nginx 成功做到了 Load Balance，這個系列的文章就是來紀錄順便複習學習到的內容。&lt;/p&gt;
-&lt;h2 id=&#34;beginners-guide&#34;&gt;Beginner’s Guide
-&lt;/h2&gt;&lt;p&gt;從 Nginx 的官網上&lt;a class=&#34;link&#34; href=&#34;https://nginx.org/en/download.html&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
-    &gt;下載&lt;/a&gt;下來的檔案內容其實很簡單，只有一個 exe 執行檔和一些資料夾。&lt;/p&gt;
-&lt;p&gt;Nginx 的運作方式主要是靠 &lt;code&gt;nginx.conf&lt;/code&gt; 來決定的，這個檔案通常會在 &lt;code&gt;/usr/local/nginx/conf&lt;/code&gt; &lt;code&gt;/etc/nginx&lt;/code&gt; &lt;code&gt;/usr/local/etc/nginx&lt;/code&gt; 這幾個目錄底下。&lt;/p&gt;
-&lt;h3 id=&#34;啟動-nginx&#34;&gt;啟動 Nginx
-&lt;/h3&gt;&lt;ol&gt;
-&lt;li&gt;雙擊來執行 &lt;code&gt;nginx.exe&lt;/code&gt;&lt;/li&gt;
-&lt;li&gt;透過 cmd 切換到 nginx 的資料夾底下，執行 &lt;code&gt;start nginx&lt;/code&gt;&lt;/li&gt;
-&lt;/ol&gt;
-&lt;h3 id=&#34;對-nginx-進行操作&#34;&gt;對 Nginx 進行操作
-&lt;/h3&gt;&lt;p&gt;nginx 被執行起來後就需要以 &lt;code&gt;nginx -s &amp;lt;options&amp;gt;&lt;/code&gt; 的方式來控制：&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;https://anthea-wu.github.io/post/nginx-%E5%BE%9E%E5%85%A5%E9%96%80%E9%96%8B%E5%A7%8B%E7%9A%84%E7%B6%B2%E7%AB%99%E6%9E%B6%E8%A8%AD-1/NginxOption.png&#34;
-	width=&#34;422&#34;
-	height=&#34;247&#34;
-	srcset=&#34;https://anthea-wu.github.io/post/nginx-%E5%BE%9E%E5%85%A5%E9%96%80%E9%96%8B%E5%A7%8B%E7%9A%84%E7%B6%B2%E7%AB%99%E6%9E%B6%E8%A8%AD-1/NginxOption_hu_e396ffd7b823fb3a.png 480w, https://anthea-wu.github.io/post/nginx-%E5%BE%9E%E5%85%A5%E9%96%80%E9%96%8B%E5%A7%8B%E7%9A%84%E7%B6%B2%E7%AB%99%E6%9E%B6%E8%A8%AD-1/NginxOption_hu_7cddebe8d7468efd.png 1024w&#34;
-	loading=&#34;lazy&#34;
-	
-		alt=&#34;nginx -x  中 options 可以填入的內容和說明。&#34;
-	
-	
-		class=&#34;gallery-image&#34; 
-		data-flex-grow=&#34;170&#34;
-		data-flex-basis=&#34;410px&#34;
-	
-&gt;&lt;/p&gt;
-&lt;p&gt;其中 &lt;code&gt;nginx -s stop&lt;/code&gt; 和 &lt;code&gt;nginx -s quit&lt;/code&gt; 的差別在於：&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;&lt;code&gt;quit&lt;/code&gt; - 停止接收 request，等到手上這個 request 處理完之後，才會結束目前的服務&lt;/li&gt;
-&lt;li&gt;&lt;code&gt;stop&lt;/code&gt; - 立刻結束服務&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;另外， &lt;code&gt;nginx -s quit&lt;/code&gt; 只能由開啟 nginx 的使用者（帳號）執行。&lt;/p&gt;
-&lt;p&gt;除了 &lt;code&gt;nginx -s stop&lt;/code&gt; 之外，最常會用到的應該是 &lt;code&gt;nginx -s reload&lt;/code&gt;。&lt;/p&gt;
-&lt;p&gt;如果 &lt;code&gt;nginx.conf&lt;/code&gt; 有進行修改的話，執行 reload 後主程式才會吃到這個設定的更改。如果主程式設定成功，會通知其他舊有的程式，讓他們停止接收新的 request，將手上的 request 處理完之後結束服務，用新的設定開啟一個新的程式。如果主程式設定失敗的話，會把設定 rollback 成舊的設定並繼續執行。&lt;/p&gt;
-&lt;h3 id=&#34;config-檔案的名詞&#34;&gt;config 檔案的名詞
-&lt;/h3&gt;&lt;p&gt;在修改 &lt;code&gt;nginx.conf&lt;/code&gt; 之前，先來認識一下 config 檔案裏面基本的組成元素：&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;&lt;code&gt;simple directives&lt;/code&gt; - 包含指令名稱和參數，兩者之間用半形空白來區隔，並且以半形分號 &lt;code&gt;;&lt;/code&gt; 作為結尾&lt;/li&gt;
-&lt;li&gt;&lt;code&gt;block directive&lt;/code&gt; - 結構和 &lt;code&gt;simple directives&lt;/code&gt; 一樣，但他會被半形大括號 &lt;code&gt;{}&lt;/code&gt; 包起來&lt;/li&gt;
-&lt;li&gt;&lt;code&gt;context&lt;/code&gt; - 一個 &lt;code&gt;block directive&lt;/code&gt; 裡面有其他的 &lt;code&gt;directive&lt;/code&gt;，例如 &lt;code&gt;events&lt;/code&gt;  &lt;code&gt;http&lt;/code&gt; &lt;code&gt;server&lt;/code&gt; &lt;code&gt;location&lt;/code&gt; 都是屬於 &lt;code&gt;context&lt;/code&gt;&lt;/li&gt;
-&lt;/ul&gt;
-</description>
-        </item>
-        
-    </channel>
-</rss>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Windows on Anthea's Blog</title><link>https://anthea-wu.github.io/tags/windows/</link><description>Recent content in Windows on Anthea's Blog</description><generator>Hugo -- gohugo.io</generator><language>en</language><lastBuildDate>Sat, 02 Jul 2022 23:24:03 +0800</lastBuildDate><atom:link href="https://anthea-wu.github.io/tags/windows/index.xml" rel="self" type="application/rss+xml"/><item><title>Nginx 從入門開始的網站架設 (4)</title><link>https://anthea-wu.github.io/post/nginx-web-setup-4/</link><pubDate>Sat, 02 Jul 2022 23:24:03 +0800</pubDate><guid>https://anthea-wu.github.io/post/nginx-web-setup-4/</guid><description>&lt;p>一般在 IIS 上啟用 https 的步驟很簡單：先匯出憑證要求，接著在收到憑證之後完成憑證要求，在站台上設定新的繫結，將 443 指定到申請的憑證上的域名即可。&lt;/p>
+&lt;p>但是，利用 IIS 去向中華電信所申請到的憑證格式為 &lt;code>.cer&lt;/code>，在 Nginx 的官網中，使用的卻是 &lt;code>.crt&lt;/code> 格式，並且還多了一個一般流程中不會看到的 &lt;code>.key&lt;/code>。網路上的教學大多是直接使用 &lt;code>openssl&lt;/code> 去生產憑證，由於這個案子是已經有申請好的憑證，所以我們要透過一些方法來把申請到的憑證轉成 Nginx 可以使用的格式。&lt;/p>
+&lt;p>&lt;img src="https://anthea-wu.github.io/post/nginx-web-setup-4/NginxDoc.png"
+width="803"
+height="238"
+srcset="https://anthea-wu.github.io/post/nginx-web-setup-4/NginxDoc_hu_f17f5839a3187187.png 480w, https://anthea-wu.github.io/post/nginx-web-setup-4/NginxDoc_hu_882ae8773b9d80d6.png 1024w"
+loading="lazy"
+alt="Nginx 官方文件對於 https 設定的說明"
+class="gallery-image"
+data-flex-grow="337"
+data-flex-basis="809px"
+>&lt;/p>
+&lt;h2 id="在-nginx-中使用-cer-來設定-https">在 Nginx 中使用 &lt;code>cer&lt;/code> 來設定 https
+&lt;/h2>&lt;p>可以在上面那張圖片中觀察到，有兩個地方的值是粗體的黑字：&lt;code>ssl_certificate&lt;/code> 和 &lt;code>ssl_certificate_key&lt;/code>，這兩個部分要放的就是憑證的檔案和憑證的私密金鑰。而在這裡會有兩個問題：&lt;/p>
+&lt;ol>
+&lt;li>如果是利用 IIS 去產生憑證要求所申請到的憑證，會沒有辦法直接得到私密金鑰，因為他會是加密過後的內容，而 Nginx 要求是不能加密的檔案。&lt;/li>
+&lt;li>申請所得到的憑證 &lt;code>.cer&lt;/code> 沒有辦法直接使用在 Nginx 上。&lt;/li>
+&lt;/ol>
+&lt;p>在看這些問題之前，要先了解一下這幾個檔案的用途和差別：&lt;/p>
+&lt;table>
+&lt;thead>
+&lt;tr>
+&lt;th style="text-align: center">名稱&lt;/th>
+&lt;th>用途&lt;/th>
+&lt;th>說明&lt;/th>
+&lt;/tr>
+&lt;/thead>
+&lt;tbody>
+&lt;tr>
+&lt;td style="text-align: center">&lt;code>crt&lt;/code>&lt;/td>
+&lt;td>憑證證書&lt;/td>
+&lt;td>Lunix 系統上的檔案格式&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td style="text-align: center">&lt;code>cer&lt;/code>&lt;/td>
+&lt;td>憑證證書&lt;/td>
+&lt;td>Windows 系統上的檔案格式&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td style="text-align: center">&lt;code>key&lt;/code>&lt;/td>
+&lt;td>金鑰&lt;/td>
+&lt;td>存放公鑰或私鑰&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td style="text-align: center">&lt;code>pfx&lt;/code>&lt;/td>
+&lt;td>憑證證書及私鑰&lt;/td>
+&lt;td>Windows 系統上會把 &lt;code>crt&lt;/code> 和私鑰 &lt;code>key&lt;/code> 放在同一個檔案內，需要有密碼才能提取&lt;/td>
+&lt;/tr>
+&lt;/tbody>
+&lt;/table>
+&lt;p>了解了這幾種不同的名詞之後，接下來就是要把我們手上有的 &lt;code>cer&lt;/code> 憑證檔案轉換成 Nginx 可以接受的格式。&lt;/p>
+&lt;h3 id="1-匯出-pfx-檔案">1. 匯出 &lt;code>pfx&lt;/code> 檔案
+&lt;/h3>&lt;p>第一個步驟，是要藉由 &lt;code>cer&lt;/code> 來取得包含憑證證書和私鑰的 &lt;code>pfx&lt;/code> 檔案。&lt;/p>
+&lt;ol>
+&lt;li>&lt;code>Windows + R&lt;/code> 開啟 執行，輸入 &lt;code>mmc&lt;/code>&lt;/li>
+&lt;li>&lt;code>檔案 &amp;gt; 新增或移除嵌入式管理單元&lt;/code>，拉到最底下找到 &lt;code>憑證&lt;/code>，點選後點擊中間的新增，會跳出另外一個視窗，選擇 &lt;code>電腦帳戶 &amp;gt; 本機電腦&lt;/code>，按下完成後視窗會回到 &lt;code>嵌入式管理單元&lt;/code> 這一層，確定憑證有被移動到右邊的視窗後就可以按下確定。&lt;/li>
+&lt;/ol>
+&lt;p>&lt;img src="https://anthea-wu.github.io/post/nginx-web-setup-4/Pfx1.png"
+width="1028"
+height="619"
+srcset="https://anthea-wu.github.io/post/nginx-web-setup-4/Pfx1_hu_4f0f4a8cd1a7c9b7.png 480w, https://anthea-wu.github.io/post/nginx-web-setup-4/Pfx1_hu_9791949cfaf3b4a0.png 1024w"
+loading="lazy"
+class="gallery-image"
+data-flex-grow="166"
+data-flex-basis="398px"
+>&lt;/p>
+&lt;ol start="3">
+&lt;li>在憑證的目錄底下選擇 &lt;code>個人&amp;gt;憑證&lt;/code>，如果有先在 IIS 完成憑證要求的話就可以看到原本匯入的憑證，沒有的話請先匯入。找到要匯出 &lt;code>pfx&lt;/code> 檔案的憑證對他點選 &lt;code>右鍵 &amp;gt; 所有工作 &amp;gt; 匯出&lt;/code>，選擇 &lt;code>是，匯出私密金鑰&lt;/code>，點選兩次下一步進入 &lt;code>安全性&lt;/code> 的頁面，輸入要存取 &lt;code>pfx&lt;/code> 時的密碼。下一步輸入檔名後按下儲存就可以得到 &lt;code>pfx&lt;/code> 檔案了。&lt;/li>
+&lt;/ol>
+&lt;p>&lt;img src="https://anthea-wu.github.io/post/nginx-web-setup-4/Pfx2.png"
+width="1060"
+height="684"
+srcset="https://anthea-wu.github.io/post/nginx-web-setup-4/Pfx2_hu_e21c483d8f395dc0.png 480w, https://anthea-wu.github.io/post/nginx-web-setup-4/Pfx2_hu_fbba6a83a1419fd9.png 1024w"
+loading="lazy"
+class="gallery-image"
+data-flex-grow="154"
+data-flex-basis="371px"
+>&lt;/p>
+&lt;h3 id="2-轉成-crt-檔案">2. 轉成 &lt;code>crt&lt;/code> 檔案
+&lt;/h3>&lt;p>有了 &lt;code>pfx&lt;/code> 的下一步就是要轉換成 &lt;code>crt&lt;/code> 和 &lt;code>key&lt;/code>。轉換的方法很簡單，使用 &lt;code>openssl&lt;/code>，輸入下面的指令，就可以得到這兩個檔案了：&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;span class="lnt">2
+&lt;/span>&lt;span class="lnt">3
+&lt;/span>&lt;span class="lnt">4
+&lt;/span>&lt;span class="lnt">5
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-cmd" data-lang="cmd">&lt;span class="line">&lt;span class="cl"># 輸出 crt
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">openssl pkcs12 -in server.pfx -clcerts -nokeys -out server.crt
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"># 輸出 key
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">openssl pkcs12 -in server.pfx -nocerts -nodes -out server.rsa
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;h3 id="3-修改-nginxconf">3. 修改 &lt;code>nginx.conf&lt;/code>
+&lt;/h3>&lt;p>產出兩個檔案之後就可以進入 &lt;code>nginx.conf&lt;/code> 的修改了。修改好記得要 &lt;code>nginx -s reload&lt;/code>，防火牆 443 port 的部分也要記得開：&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt"> 1
+&lt;/span>&lt;span class="lnt"> 2
+&lt;/span>&lt;span class="lnt"> 3
+&lt;/span>&lt;span class="lnt"> 4
+&lt;/span>&lt;span class="lnt"> 5
+&lt;/span>&lt;span class="lnt"> 6
+&lt;/span>&lt;span class="lnt"> 7
+&lt;/span>&lt;span class="lnt"> 8
+&lt;/span>&lt;span class="lnt"> 9
+&lt;/span>&lt;span class="lnt">10
+&lt;/span>&lt;span class="lnt">11
+&lt;/span>&lt;span class="lnt">12
+&lt;/span>&lt;span class="lnt">13
+&lt;/span>&lt;span class="lnt">14
+&lt;/span>&lt;span class="lnt">15
+&lt;/span>&lt;span class="lnt">16
+&lt;/span>&lt;span class="lnt">17
+&lt;/span>&lt;span class="lnt">18
+&lt;/span>&lt;span class="lnt">19
+&lt;/span>&lt;span class="lnt">20
+&lt;/span>&lt;span class="lnt">21
+&lt;/span>&lt;span class="lnt">22
+&lt;/span>&lt;span class="lnt">23
+&lt;/span>&lt;span class="lnt">24
+&lt;/span>&lt;span class="lnt">25
+&lt;/span>&lt;span class="lnt">26
+&lt;/span>&lt;span class="lnt">27
+&lt;/span>&lt;span class="lnt">28
+&lt;/span>&lt;span class="lnt">29
+&lt;/span>&lt;span class="lnt">30
+&lt;/span>&lt;span class="lnt">31
+&lt;/span>&lt;span class="lnt">32
+&lt;/span>&lt;span class="lnt">33
+&lt;/span>&lt;span class="lnt">34
+&lt;/span>&lt;span class="lnt">35
+&lt;/span>&lt;span class="lnt">36
+&lt;/span>&lt;span class="lnt">37
+&lt;/span>&lt;span class="lnt">38
+&lt;/span>&lt;span class="lnt">39
+&lt;/span>&lt;span class="lnt">40
+&lt;/span>&lt;span class="lnt">41
+&lt;/span>&lt;span class="lnt">42
+&lt;/span>&lt;span class="lnt">43
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-fallback" data-lang="fallback">&lt;span class="line">&lt;span class="cl">events {
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> worker_connections 4096;
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">}
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">http {
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> upstream www.abc.com {
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> server localhost:8082;
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> server localhost:8083;
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> }
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> server {
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> # 因為是正式的環境，防火牆也需要申請，所以改成監聽原本 IIS 監聽的 80 port
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> listen 80;
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> server_name www.abc.com;
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> location / {
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> # 將 http 轉導到 https
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> return 301 https://$host$request_uri;
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> }
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> }
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> server {
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> listen 443 ssl;
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> server_name www.abc.com;
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> ssl_certificate server.crt;
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> ssl_certificate_key server.rsa;
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> ssl_protocols TLSv1 TLSv1.1 TLSv1.2;
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> ssl_ciphers HIGH:!aNULL:!MD5;
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> location / {
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> proxy_pass http://guideapp.npm.gov.tw;
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> # 以下為 proxy 的詳細設置，可以參考下列網站的說明
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> # https://www.cnblogs.com/kevingrace/p/8269955.html
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> proxy_http_version 1.1;
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> proxy_set_header Upgrade $http_upgrade;
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> proxy_set_header Connection keep-alive;
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> proxy_set_header Host $host;
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> proxy_cache_bypass $http_upgrade;
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> }
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> }
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">}
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;blockquote>
+&lt;p>&lt;p>參考資料&lt;/p>
+&lt;ul>
+&lt;li>&lt;a class="link" href="https://zhuanlan.zhihu.com/p/109225748" target="_blank" rel="noopener"
+>Nginx 中使用 PFX 格式的 SSL 证书&lt;/a>&lt;/li>
+&lt;li>&lt;a class="link" href="https://blog.csdn.net/itworld123/article/details/115553346" target="_blank" rel="noopener"
+>crt、pem、pfx、cer、key 作用及區別&lt;/a>&lt;/li>
+&lt;/ul>&lt;/p>&lt;/blockquote></description></item><item><title>Nginx 從入門開始的網站架設 (3)</title><link>https://anthea-wu.github.io/post/nginx-web-setup-3/</link><pubDate>Thu, 23 Jun 2022 23:15:50 +0800</pubDate><guid>https://anthea-wu.github.io/post/nginx-web-setup-3/</guid><description>&lt;p>&lt;a class="link" href="../nginx-web-setup-2" >上一篇文章&lt;/a> 中我們用最簡單的設定建立起一個靜態服務了，接下來要提到的是 Nginx 最廣為人知的其中一種功能－－代理伺服器（Proxy Server）。&lt;/p>
+&lt;h2 id="proxy-server-代理伺服器">Proxy Server 代理伺服器
+&lt;/h2>&lt;p>有一陣子募資平台很流行，當你有想法但是沒有資金的時候，你可以透過這些平台把你的計劃放上去，吸引一般民眾投入資金，接著拿這些錢去實際生產你的產品，並給當初提供你資金的民眾一些回饋。在這個過程中，募資平台所扮演的角色就是代理：你只能看到資金提供者的提供的寄件資訊，甚至完全不知道他們的身分，但你會負責把你的產品或回饋透過平台提供出去。&lt;/p>
+&lt;p>以網路來說，Client（一般民眾）透過代理伺服器（募資平台）發送請求給 Server（你），Server 基本上不會有 Client 的資料，而這就是 Proxy 的好處之一：隱藏 Client 的真實身分。&lt;/p>
+&lt;p>其他的好處還有很多，但今天我只想看這次客戶最主要的目的：Load Balance（負載平衡）。&lt;/p>
+&lt;h3 id="load-balance-負載平衡">Load Balance 負載平衡
+&lt;/h3>&lt;p>Load Balance 的主要目的在於分散伺服器端的壓力，讓伺服器的回應速度和其他效能可以得到提升，使用者能擁有更好的體驗。而要做到這個程度一般來說都會需要依賴剛剛所提到的 proxy 做為中繼站，去判斷現在接收到的這個 request 要被分配到哪一台 server 上。&lt;/p>
+&lt;hr>
+&lt;h2 id="nginx-設定">Nginx 設定
+&lt;/h2>&lt;p>稍微了解 Proxy Server 和 Load Balance 的用途之後，接下來開始試著用 Nginx 來進行設定吧。&lt;/p>
+&lt;h3 id="proxy">Proxy
+&lt;/h3>&lt;p>首先設定好 &lt;code>nginx.conf&lt;/code> ：&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt"> 1
+&lt;/span>&lt;span class="lnt"> 2
+&lt;/span>&lt;span class="lnt"> 3
+&lt;/span>&lt;span class="lnt"> 4
+&lt;/span>&lt;span class="lnt"> 5
+&lt;/span>&lt;span class="lnt"> 6
+&lt;/span>&lt;span class="lnt"> 7
+&lt;/span>&lt;span class="lnt"> 8
+&lt;/span>&lt;span class="lnt"> 9
+&lt;/span>&lt;span class="lnt">10
+&lt;/span>&lt;span class="lnt">11
+&lt;/span>&lt;span class="lnt">12
+&lt;/span>&lt;span class="lnt">13
+&lt;/span>&lt;span class="lnt">14
+&lt;/span>&lt;span class="lnt">15
+&lt;/span>&lt;span class="lnt">16
+&lt;/span>&lt;span class="lnt">17
+&lt;/span>&lt;span class="lnt">18
+&lt;/span>&lt;span class="lnt">19
+&lt;/span>&lt;span class="lnt">20
+&lt;/span>&lt;span class="lnt">21
+&lt;/span>&lt;span class="lnt">22
+&lt;/span>&lt;span class="lnt">23
+&lt;/span>&lt;span class="lnt">24
+&lt;/span>&lt;span class="lnt">25
+&lt;/span>&lt;span class="lnt">26
+&lt;/span>&lt;span class="lnt">27
+&lt;/span>&lt;span class="lnt">28
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-fallback" data-lang="fallback">&lt;span class="line">&lt;span class="cl">events {
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> worker_connections 1024;
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">}
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">http {
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> server {
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> listen 8081;
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> server_name localhost;
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> # 以 &amp;#39;/&amp;#39; 開頭的 url 會向 &amp;#39;/data/www&amp;#39; 發送請求
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> location / {
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> # 設定要導向的路徑
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> # 如果 IIS 上有設定 8082 port 的站台就會被導向那個站台
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> proxy_pass http://localhost:8082;
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> }
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> }
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> # IIS 上沒有的站台，設定 8082 port 的內容
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> server {
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> listen 8082;
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> server_name localhost;
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> # 以 &amp;#39;/&amp;#39; 開頭的 url 會向 &amp;#39;/data/www2&amp;#39; 發送請求
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> location / {
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> root data/www2;
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> }
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> }
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">}
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>接著到 &lt;code>/data/www2&lt;/code> 底下新增一個新的 &lt;code>index.html&lt;/code>，這時候 &lt;code>www&lt;/code> 和 &lt;code>www2&lt;/code> 的資料夾內各有一個 &lt;code>index.html&lt;/code>，上一篇文章中我們會看到 &lt;code>www&lt;/code> 內的 &lt;code>index.html&lt;/code>，這一次的設定預期會出現的應該是 &lt;code>www2&lt;/code> 內的 &lt;code>index.html&lt;/code>。&lt;/p>
+&lt;p>儲存修改好的 config 之後，&lt;code>nginx -s reload&lt;/code> 重新載入檔案，在瀏覽器中輸入 &lt;code>http://localhost:8081&lt;/code> 應該就可以看到 &lt;code>www2&lt;/code> 中 &lt;code>index.html&lt;/code> 的內容囉。&lt;/p>
+&lt;h3 id="load-balance">Load Balance
+&lt;/h3>&lt;p>要在 Nginx 中使用 Load Balance 需要在 http 中加入 upstream 這組設定，加好之後你的 &lt;code>nginx.conf&lt;/code> 應該會長這樣：&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt"> 1
+&lt;/span>&lt;span class="lnt"> 2
+&lt;/span>&lt;span class="lnt"> 3
+&lt;/span>&lt;span class="lnt"> 4
+&lt;/span>&lt;span class="lnt"> 5
+&lt;/span>&lt;span class="lnt"> 6
+&lt;/span>&lt;span class="lnt"> 7
+&lt;/span>&lt;span class="lnt"> 8
+&lt;/span>&lt;span class="lnt"> 9
+&lt;/span>&lt;span class="lnt">10
+&lt;/span>&lt;span class="lnt">11
+&lt;/span>&lt;span class="lnt">12
+&lt;/span>&lt;span class="lnt">13
+&lt;/span>&lt;span class="lnt">14
+&lt;/span>&lt;span class="lnt">15
+&lt;/span>&lt;span class="lnt">16
+&lt;/span>&lt;span class="lnt">17
+&lt;/span>&lt;span class="lnt">18
+&lt;/span>&lt;span class="lnt">19
+&lt;/span>&lt;span class="lnt">20
+&lt;/span>&lt;span class="lnt">21
+&lt;/span>&lt;span class="lnt">22
+&lt;/span>&lt;span class="lnt">23
+&lt;/span>&lt;span class="lnt">24
+&lt;/span>&lt;span class="lnt">25
+&lt;/span>&lt;span class="lnt">26
+&lt;/span>&lt;span class="lnt">27
+&lt;/span>&lt;span class="lnt">28
+&lt;/span>&lt;span class="lnt">29
+&lt;/span>&lt;span class="lnt">30
+&lt;/span>&lt;span class="lnt">31
+&lt;/span>&lt;span class="lnt">32
+&lt;/span>&lt;span class="lnt">33
+&lt;/span>&lt;span class="lnt">34
+&lt;/span>&lt;span class="lnt">35
+&lt;/span>&lt;span class="lnt">36
+&lt;/span>&lt;span class="lnt">37
+&lt;/span>&lt;span class="lnt">38
+&lt;/span>&lt;span class="lnt">39
+&lt;/span>&lt;span class="lnt">40
+&lt;/span>&lt;span class="lnt">41
+&lt;/span>&lt;span class="lnt">42
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-fallback" data-lang="fallback">&lt;span class="line">&lt;span class="cl">events {
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> worker_connections 1024;
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">}
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">http {
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> # &amp;#39;localhost&amp;#39; 是這組 upstream 的名稱
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> upstream localhost {
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> # 利用 &amp;#39;weight&amp;#39; 來設定權重
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> server localhost:8082 weight=1;
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> server localhost:8083 weight=2;
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> }
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> server {
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> listen 8081;
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> server_name localhost;
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> location / {
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> # 這裡要改成 upstream 的名稱
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> proxy_pass http://localhost;
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> }
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> }
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> server {
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> listen 8082;
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> server_name localhost;
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> location / {
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> # 在 nginx.exe 同一層的資料夾 data 裡面新增一個資料夾 www 和 index.html
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> root data/www;
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> }
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> }
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> server {
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> listen 8083;
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> server_name localhost;
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> location / {
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> # 在 nginx.exe 同一層的資料夾 data 裡面新增一個資料夾 www2 和 index.html
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> root data/www2;
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> }
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> }
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">}
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>設定好之後 &lt;code>nginx -s reload&lt;/code>，瀏覽器打開 &lt;code>http://localhost:8081&lt;/code>，持續重新整理，就可以看到交替出現的兩個 &lt;code>index.html&lt;/code> 囉~&lt;/p>
+&lt;p>&lt;img src="https://anthea-wu.github.io/post/nginx-web-setup-3/Index1.png"
+width="515"
+height="202"
+srcset="https://anthea-wu.github.io/post/nginx-web-setup-3/Index1_hu_f14ae67f5c331a6d.png 480w, https://anthea-wu.github.io/post/nginx-web-setup-3/Index1_hu_a80fb3fdcd691604.png 1024w"
+loading="lazy"
+alt="位於 8083 中 www2 的 index.html"
+class="gallery-image"
+data-flex-grow="254"
+data-flex-basis="611px"
+>&lt;/p>
+&lt;p>&lt;img src="https://anthea-wu.github.io/post/nginx-web-setup-3/index2.png"
+width="521"
+height="198"
+srcset="https://anthea-wu.github.io/post/nginx-web-setup-3/index2_hu_b42fff8b9d1c0c03.png 480w, https://anthea-wu.github.io/post/nginx-web-setup-3/index2_hu_8931d83e05f7ca1b.png 1024w"
+loading="lazy"
+alt="位於 8082 中 www 的 index.html"
+class="gallery-image"
+data-flex-grow="263"
+data-flex-basis="631px"
+>&lt;/p>
+&lt;blockquote>
+&lt;p>&lt;p>參考資料：&lt;/p>
+&lt;ul>
+&lt;li>&lt;a class="link" href="https://www.zhihu.com/question/24723688" target="_blank" rel="noopener"
+>反向代理與正向代理&lt;/a>&lt;/li>
+&lt;li>&lt;a class="link" href="https://ithelp.ithome.com.tw/articles/10188498" target="_blank" rel="noopener"
+>俄羅斯不愧是戰鬥民族：nginx&lt;/a>&lt;/li>
+&lt;/ul>&lt;/p>&lt;/blockquote></description></item><item><title>Nginx 從入門開始的網站架設 (2)</title><link>https://anthea-wu.github.io/post/nginx-web-setup-2/</link><pubDate>Fri, 17 Jun 2022 22:53:49 +0800</pubDate><guid>https://anthea-wu.github.io/post/nginx-web-setup-2/</guid><description>&lt;p>在&lt;a class="link" href="../nginx-web-setup-1" >上一篇文章&lt;/a>中我們簡單認識了 nginx 的操作，接下來我們要透過那些操作來建立一個靜態服務。&lt;/p>
+&lt;h3 id="1-準備資料">1. 準備資料
+&lt;/h3>&lt;p>假設我們的 &lt;code>nginx.exe&lt;/code> 位於 &lt;code>nginx&lt;/code> 底下，接著我們在這裡新增一個資料夾 &lt;code>data&lt;/code>，並在 &lt;code>data&lt;/code> 裡面再新增兩個資料夾，分別是 &lt;code>www&lt;/code> 和 &lt;code>images&lt;/code>，將 &lt;code>index.html&lt;/code> 放入 &lt;code>www&lt;/code> 資料夾中，將任意的圖片放到 &lt;code>images&lt;/code> 資料夾內，這時候你的資料夾結構會像這樣：&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;span class="lnt">2
+&lt;/span>&lt;span class="lnt">3
+&lt;/span>&lt;span class="lnt">4
+&lt;/span>&lt;span class="lnt">5
+&lt;/span>&lt;span class="lnt">6
+&lt;/span>&lt;span class="lnt">7
+&lt;/span>&lt;span class="lnt">8
+&lt;/span>&lt;span class="lnt">9
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-fallback" data-lang="fallback">&lt;span class="line">&lt;span class="cl">nginx
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> |- nginx.exe
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> |- conf
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> |- data
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> | |- www
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> | | |- index.html
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> | |- images
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> | | |- test.jpg
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> |- ...
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;h3 id="2-修改-nginxconf">2. 修改 &lt;code>nginx.conf&lt;/code>
+&lt;/h3>&lt;p>接著開啟你的 &lt;code>nginx.conf&lt;/code>，並用下面的內容取代掉原本的設定：&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt"> 1
+&lt;/span>&lt;span class="lnt"> 2
+&lt;/span>&lt;span class="lnt"> 3
+&lt;/span>&lt;span class="lnt"> 4
+&lt;/span>&lt;span class="lnt"> 5
+&lt;/span>&lt;span class="lnt"> 6
+&lt;/span>&lt;span class="lnt"> 7
+&lt;/span>&lt;span class="lnt"> 8
+&lt;/span>&lt;span class="lnt"> 9
+&lt;/span>&lt;span class="lnt">10
+&lt;/span>&lt;span class="lnt">11
+&lt;/span>&lt;span class="lnt">12
+&lt;/span>&lt;span class="lnt">13
+&lt;/span>&lt;span class="lnt">14
+&lt;/span>&lt;span class="lnt">15
+&lt;/span>&lt;span class="lnt">16
+&lt;/span>&lt;span class="lnt">17
+&lt;/span>&lt;span class="lnt">18
+&lt;/span>&lt;span class="lnt">19
+&lt;/span>&lt;span class="lnt">20
+&lt;/span>&lt;span class="lnt">21
+&lt;/span>&lt;span class="lnt">22
+&lt;/span>&lt;span class="lnt">23
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-fallback" data-lang="fallback">&lt;span class="line">&lt;span class="cl">events {
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> worker_connections 1024;
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">}
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">http {
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> server {
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> # 如果電腦上有裝 IIS，預設會占用掉 80 port
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> # 當這裡沒有改成其他 port 號，就算運行了 nginx 也會被帶到 IIS 的畫面去
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> listen 8081;
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> server_name localhost;
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> # 以 &amp;#39;/&amp;#39; 開頭的 url 會向 &amp;#39;/data/www&amp;#39; 發送請求
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> location / {
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> # 官方文件上是寫 &amp;#39;/data/www&amp;#39;，但測試過後無法執行
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> root data/www;
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> }
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> # 以 &amp;#39;/images/&amp;#39; 開頭的 url 會向 &amp;#39;/data&amp;#39; 發送請求
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> location /images/ {
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> root data;
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> }
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> }
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">}
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>在設定 &lt;code>location&lt;/code> 的時候，如果一個 url 如果有多個相符的區塊，nginx 會選擇具有最長前綴的區塊來發送請求。以上面的例子來說，第一個區塊的前綴是 &lt;code>/&lt;/code>，長度為 1，因此當我輸入網址 &lt;code>/books&lt;/code> 時，nginx 會幫我從長度更長的 &lt;code>/images&lt;/code> 開始比對。這時候因為沒有其他相符的目的地了，所以他會走進最短的 &lt;code>/&lt;/code> 裡。&lt;/p>
+&lt;h3 id="3-reload-nginxconf">3. reload &lt;code>nginx.conf&lt;/code>
+&lt;/h3>&lt;p>將 &lt;code>nginx.conf&lt;/code> 儲存之後，開啟 cmd 將目錄切換到 nginx 的資料夾底下，如果已經啟動過 nginx，執行 &lt;code>nginx -s reload&lt;/code> 來重新載入改寫好的 &lt;code>nginx.conf&lt;/code>；如果還沒有，輸入 &lt;code>start nginx&lt;/code> 來啟動 nginx。&lt;/p>
+&lt;p>沒有出現任何錯誤的話，就可以打開瀏覽器，輸入 &lt;code>localhost:8081&lt;/code> 就可以看到我們剛剛新增在 &lt;code>/data/www&lt;/code> 底下的 &lt;code>index.html&lt;/code> 了。&lt;/p>
+&lt;blockquote>
+&lt;p>&lt;p>參考資料&lt;/p>
+&lt;ul>
+&lt;li>&lt;a class="link" href="https://nginx.org/en/docs/beginners_guide.html" target="_blank" rel="noopener"
+>Beginner’s Guide&lt;/a>&lt;/li>
+&lt;/ul>&lt;/p>&lt;/blockquote></description></item><item><title>Nginx 從入門開始的網站架設 (1)</title><link>https://anthea-wu.github.io/post/nginx-web-setup-1/</link><pubDate>Fri, 17 Jun 2022 22:41:56 +0800</pubDate><guid>https://anthea-wu.github.io/post/nginx-web-setup-1/</guid><description>&lt;p>最近有個案子，客戶覺得我們第一次交上去的壓力測試結果太狼狽，要我們想辦法把數字做得更好，於是我們嘗試了 windows 內建的 Network Load Balance（NLB）來進行設定，礙於網路管理的基礎知識不足，遇到了非常多的阻礙 QQ&lt;/p>
+&lt;p>最後透過 Nginx 成功做到了 Load Balance，這個系列的文章就是來紀錄順便複習學習到的內容。&lt;/p>
+&lt;h2 id="beginners-guide">Beginner’s Guide
+&lt;/h2>&lt;p>從 Nginx 的官網上&lt;a class="link" href="https://nginx.org/en/download.html" target="_blank" rel="noopener"
+>下載&lt;/a>下來的檔案內容其實很簡單，只有一個 exe 執行檔和一些資料夾。&lt;/p>
+&lt;p>Nginx 的運作方式主要是靠 &lt;code>nginx.conf&lt;/code> 來決定的，這個檔案通常會在 &lt;code>/usr/local/nginx/conf&lt;/code> &lt;code>/etc/nginx&lt;/code> &lt;code>/usr/local/etc/nginx&lt;/code> 這幾個目錄底下。&lt;/p>
+&lt;h3 id="啟動-nginx">啟動 Nginx
+&lt;/h3>&lt;ol>
+&lt;li>雙擊來執行 &lt;code>nginx.exe&lt;/code>&lt;/li>
+&lt;li>透過 cmd 切換到 nginx 的資料夾底下，執行 &lt;code>start nginx&lt;/code>&lt;/li>
+&lt;/ol>
+&lt;h3 id="對-nginx-進行操作">對 Nginx 進行操作
+&lt;/h3>&lt;p>nginx 被執行起來後就需要以 &lt;code>nginx -s &amp;lt;options&amp;gt;&lt;/code> 的方式來控制：&lt;/p>
+&lt;p>&lt;img src="https://anthea-wu.github.io/post/nginx-web-setup-1/NginxOption.png"
+width="422"
+height="247"
+srcset="https://anthea-wu.github.io/post/nginx-web-setup-1/NginxOption_hu_e396ffd7b823fb3a.png 480w, https://anthea-wu.github.io/post/nginx-web-setup-1/NginxOption_hu_7cddebe8d7468efd.png 1024w"
+loading="lazy"
+alt="nginx -x 中 options 可以填入的內容和說明。"
+class="gallery-image"
+data-flex-grow="170"
+data-flex-basis="410px"
+>&lt;/p>
+&lt;p>其中 &lt;code>nginx -s stop&lt;/code> 和 &lt;code>nginx -s quit&lt;/code> 的差別在於：&lt;/p>
+&lt;ul>
+&lt;li>&lt;code>quit&lt;/code> - 停止接收 request，等到手上這個 request 處理完之後，才會結束目前的服務&lt;/li>
+&lt;li>&lt;code>stop&lt;/code> - 立刻結束服務&lt;/li>
+&lt;/ul>
+&lt;p>另外， &lt;code>nginx -s quit&lt;/code> 只能由開啟 nginx 的使用者（帳號）執行。&lt;/p>
+&lt;p>除了 &lt;code>nginx -s stop&lt;/code> 之外，最常會用到的應該是 &lt;code>nginx -s reload&lt;/code>。&lt;/p>
+&lt;p>如果 &lt;code>nginx.conf&lt;/code> 有進行修改的話，執行 reload 後主程式才會吃到這個設定的更改。如果主程式設定成功，會通知其他舊有的程式，讓他們停止接收新的 request，將手上的 request 處理完之後結束服務，用新的設定開啟一個新的程式。如果主程式設定失敗的話，會把設定 rollback 成舊的設定並繼續執行。&lt;/p>
+&lt;h3 id="config-檔案的名詞">config 檔案的名詞
+&lt;/h3>&lt;p>在修改 &lt;code>nginx.conf&lt;/code> 之前，先來認識一下 config 檔案裏面基本的組成元素：&lt;/p>
+&lt;ul>
+&lt;li>&lt;code>simple directives&lt;/code> - 包含指令名稱和參數，兩者之間用半形空白來區隔，並且以半形分號 &lt;code>;&lt;/code> 作為結尾&lt;/li>
+&lt;li>&lt;code>block directive&lt;/code> - 結構和 &lt;code>simple directives&lt;/code> 一樣，但他會被半形大括號 &lt;code>{}&lt;/code> 包起來&lt;/li>
+&lt;li>&lt;code>context&lt;/code> - 一個 &lt;code>block directive&lt;/code> 裡面有其他的 &lt;code>directive&lt;/code>，例如 &lt;code>events&lt;/code> &lt;code>http&lt;/code> &lt;code>server&lt;/code> &lt;code>location&lt;/code> 都是屬於 &lt;code>context&lt;/code>&lt;/li>
+&lt;/ul></description></item></channel></rss>

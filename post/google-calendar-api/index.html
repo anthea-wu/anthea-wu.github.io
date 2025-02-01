@@ -1,687 +1,100 @@
-<!DOCTYPE html>
-<html lang="en" dir="ltr">
-    <head><meta charset='utf-8'>
-<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content="using .NET">
-<title>Google Calendar API</title>
-
-<link rel='canonical' href='https://anthea-wu.github.io/post/google-calendar-api/'>
-
-<link rel="stylesheet" href="/scss/style.min.663803bebe609202d5b39d848f2d7c2dc8b598a2d879efa079fa88893d29c49c.css"><meta property='og:title' content="Google Calendar API">
-<meta property='og:description' content="using .NET">
-<meta property='og:url' content='https://anthea-wu.github.io/post/google-calendar-api/'>
-<meta property='og:site_name' content='Anthea&#39;s Blog'>
-<meta property='og:type' content='article'><meta property='article:section' content='Post' /><meta property='article:tag' content='.NET' /><meta property='article:tag' content='Google API' /><meta property='article:published_time' content='2022-05-14T21:55:35&#43;08:00'/><meta property='article:modified_time' content='2022-05-14T21:55:35&#43;08:00'/>
-<meta name="twitter:title" content="Google Calendar API">
-<meta name="twitter:description" content="using .NET">
-    </head>
-    <body class="
-    article-page
-    ">
-    <script>
-        (function() {
-            const colorSchemeKey = 'StackColorScheme';
-            if(!localStorage.getItem(colorSchemeKey)){
-                localStorage.setItem(colorSchemeKey, "auto");
-            }
-        })();
-    </script><script>
-    (function() {
-        const colorSchemeKey = 'StackColorScheme';
-        const colorSchemeItem = localStorage.getItem(colorSchemeKey);
-        const supportDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches === true;
-
-        if (colorSchemeItem == 'dark' || colorSchemeItem === 'auto' && supportDarkMode) {
-            
-
-            document.documentElement.dataset.scheme = 'dark';
-        } else {
-            document.documentElement.dataset.scheme = 'light';
-        }
-    })();
-</script>
-<div class="container main-container flex on-phone--column extended"><aside class="sidebar left-sidebar sticky ">
-    <button class="hamburger hamburger--spin" type="button" id="toggle-menu" aria-label="Toggle Menu">
-        <span class="hamburger-box">
-            <span class="hamburger-inner"></span>
-        </span>
-    </button>
-
-    <header>
-        
-            
-            <figure class="site-avatar">
-                <a href="/">
-                
-                    
-                    
-                    
-                        
-                        <img src="/img/avatar_hu_d8c2fe4d260f28d7.png" width="300"
-                            height="300" class="site-logo" loading="lazy" alt="Avatar">
-                    
-                
-                </a>
-                
-            </figure>
-            
-        
-        
-        <div class="site-meta">
-            <h1 class="site-name"><a href="/">Anthea&#39;s Blog</a></h1>
-            <h2 class="site-description">Titansoft / Product Developer</h2>
-        </div>
-    </header><ol class="menu-social">
-            
-                <li>
-                    <a 
-                        href='https://github.com/anthea-wu'
-                        target="_blank"
-                        title="GitHub"
-                        rel="me"
-                    >
-                        
-                        
-                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-brand-github" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-  <path d="M9 19c-4.3 1.4 -4.3 -2.5 -6 -3m12 5v-3.5c0 -1 .1 -1.4 -.5 -2c2.8 -.3 5.5 -1.4 5.5 -6a4.6 4.6 0 0 0 -1.3 -3.2a4.2 4.2 0 0 0 -.1 -3.2s-1.1 -.3 -3.5 1.3a12.3 12.3 0 0 0 -6.2 0c-2.4 -1.6 -3.5 -1.3 -3.5 -1.3a4.2 4.2 0 0 0 -.1 3.2a4.6 4.6 0 0 0 -1.3 3.2c0 4.6 2.7 5.7 5.5 6c-.6 .6 -.6 1.2 -.5 2v3.5" />
-</svg>
-
-
-
-                        
-                    </a>
-                </li>
-            
-        </ol><ol class="menu" id="main-menu">
-        
-        
-        
-        <li >
-            <a href='/' >
-                
-                
-                
-                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-home" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-  <path stroke="none" d="M0 0h24v24H0z"/>
-  <polyline points="5 12 3 12 12 3 21 12 19 12" />
-  <path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-7" />
-  <path d="M9 21v-6a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v6" />
-</svg>
-
-
-
-                
-                <span>Home</span>
-            </a>
-        </li>
-        
-        
-        <li >
-            <a href='/page/about/' >
-                
-                
-                
-                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-user" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-  <path stroke="none" d="M0 0h24v24H0z"/>
-  <circle cx="12" cy="7" r="4" />
-  <path d="M6 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2" />
-</svg>
-
-
-
-                
-                <span>About</span>
-            </a>
-        </li>
-        
-        
-        <li >
-            <a href='/books' target="_blank">
-                
-                
-                
-                    <svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-book"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M3 19a9 9 0 0 1 9 0a9 9 0 0 1 9 0" /><path d="M3 6a9 9 0 0 1 9 0a9 9 0 0 1 9 0" /><path d="M3 6l0 13" /><path d="M12 6l0 13" /><path d="M21 6l0 13" /></svg>
-                
-                <span>Books</span>
-            </a>
-        </li>
-        
-        <li class="menu-bottom-section">
-            <ol class="menu">
-
-                
-                    <li id="dark-mode-toggle">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-  <path stroke="none" d="M0 0h24v24H0z"/>
-  <circle cx="8" cy="12" r="2" />
-  <rect x="2" y="6" width="20" height="12" rx="6" />
-</svg>
-
-
-
-                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-  <path stroke="none" d="M0 0h24v24H0z"/>
-  <circle cx="16" cy="12" r="2" />
-  <rect x="2" y="6" width="20" height="12" rx="6" />
-</svg>
-
-
-
-                        <span>Dark Mode</span>
-                    </li>
-                
-            </ol>
-        </li>
-    </ol>
-</aside>
-
-    <aside class="sidebar right-sidebar sticky">
-        
-            
-                
-    <section class="widget archives">
-        <div class="widget-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-  <path stroke="none" d="M0 0h24v24H0z"/>
-  <line x1="5" y1="9" x2="19" y2="9" />
-  <line x1="5" y1="15" x2="19" y2="15" />
-  <line x1="11" y1="4" x2="7" y2="20" />
-  <line x1="17" y1="4" x2="13" y2="20" />
-</svg>
-
-
-
-        </div>
-        <h2 class="widget-title section-title">Table of contents</h2>
-        
-        <div class="widget--toc">
-            <nav id="TableOfContents">
-  <ul>
-    <li><a href="#使用前的準備">使用前的準備</a>
-      <ul>
-        <li><a href="#申請-token">申請 Token</a></li>
-        <li><a href="#建立-calerdar">建立 Calerdar</a></li>
-      </ul>
-    </li>
-    <li><a href="#新增一個活動">新增一個活動</a></li>
-    <li><a href="#debug-紀錄">Debug 紀錄</a>
-      <ul>
-        <li><a href="#invalid-resource-id-value">Invalid resource id value</a></li>
-      </ul>
-    </li>
-    <li><a href="#小結">小結</a></li>
-  </ul>
-</nav>
-        </div>
-    </section>
-
-            
-        
-    </aside>
-
-
-            <main class="main full-width">
-    <article class="main-article">
-    <header class="article-header">
-
-    <div class="article-details">
-    
-    <header class="article-category">
-        
-            <a href="/categories/technical/" >
-                Technical
-            </a>
-        
-    </header>
-    
-
-    <div class="article-title-wrapper">
-        <h2 class="article-title">
-            <a href="/post/google-calendar-api/">Google Calendar API</a>
-        </h2>
-    
-        
-        <h3 class="article-subtitle">
-            using .NET
-        </h3>
-        
-    </div>
-
-    
-    
-    
-    
-    <footer class="article-time">
-        
-            <div>
-                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-  <path stroke="none" d="M0 0h24v24H0z"/>
-  <path d="M11.795 21h-6.795a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v4" />
-  <circle cx="18" cy="18" r="4" />
-  <path d="M15 3v4" />
-  <path d="M7 3v4" />
-  <path d="M3 11h16" />
-  <path d="M18 16.496v1.504l1 1" />
-</svg>
-                <time class="article-time--published">2022/05/14</time>
-            </div>
-        
-
-        
-            <div>
-                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-  <path stroke="none" d="M0 0h24v24H0z"/>
-  <circle cx="12" cy="12" r="9" />
-  <polyline points="12 7 12 12 15 15" />
-</svg>
-
-
-
-                <time class="article-time--reading">
-                    2 minute read
-                </time>
-            </div>
-        
-    </footer>
-    
-
-    
-</div>
-
-</header>
-
-    <section class="article-content">
-    
-    
-    <p>最近開始思考有什麼樣的需求可以當作小小的 side project 練習，剛好最近疫情的關係比較多人請假，我就把腦筋動到了請假系統身上。在目前的請假流程中，有一個部分是填寫 google 表單，送出之後會自動新增到 google calendar 上，只要有加入這個日曆的人都可以看到。所以決定以這個為主題，爬了一下文，順便紀錄一下使用 google calendar 的過程。</p>
-<h2 id="使用前的準備">使用前的準備
-</h2><p>Google API 都是透過 token 來操作的，所以在正式使用前需要先申請好 token，並跟我們自己的 google calendar 連動。</p>
-<h3 id="申請-token">申請 Token
-</h3><ol>
-<li>進入 <a class="link" href="https://console.cloud.google.com/"  target="_blank" rel="noopener"
-    >Google Cloud Platform</a>，預設會幫你建立一個新的專案，如果要更改可以點選畫面上方的 <code>My First Project</code>。不需要的話，直接點選畫面左側的選單，從 <code>API 與服務</code> 中選擇 <code>程式庫</code>。</li>
-</ol>
-<p><img src="/post/google-calendar-api/Token1.png"
-	width="1100"
-	height="489"
-	srcset="/post/google-calendar-api/Token1_hu_1dc1f43baf320a5e.png 480w, /post/google-calendar-api/Token1_hu_3fbb305ab8f8999e.png 1024w"
-	loading="lazy"
-	
-	
-		class="gallery-image" 
-		data-flex-grow="224"
-		data-flex-basis="539px"
-	
-></p>
-<ol start="2">
-<li>搜尋 <code>Google Calendar API</code> 並啟用，等 loading 跑完後會出現 <code>管理</code> 的按鈕，或是從選單的 <code>API 與服務</code> 中找到 <code>憑證</code>，點選畫面上方的 <code>新增憑證</code>，選擇 <code>服務帳戶</code> 的選項。</li>
-</ol>
-<p><img src="/post/google-calendar-api/Token2.png"
-	width="1400"
-	height="665"
-	srcset="/post/google-calendar-api/Token2_hu_446d732f2d75be2a.png 480w, /post/google-calendar-api/Token2_hu_7cb4deb5011d3555.png 1024w"
-	loading="lazy"
-	
-		alt="可以看到頁面最下方的服務帳戶列表，已經有我之前新增過的一筆憑證。"
-	
-	
-		class="gallery-image" 
-		data-flex-grow="210"
-		data-flex-basis="505px"
-	
-></p>
-<ol start="3">
-<li>輸入 <code>服務帳戶詳細資料</code> 後按下送出，接著會回到憑證頁面，找到最下面的 <code>服務帳戶</code> 那一列，點選右側的編輯，找到畫面上方的 <code>金鑰</code>，點擊 <code>新增金鑰</code>，選擇 <code>JSON</code> 的格式後按下建立，瀏覽器會自動下載這份檔案，<strong>請不要隨意刪除，如果遺失了只能重新產生一份金鑰</strong>。</li>
-</ol>
-<p><img src="/post/google-calendar-api/Token3.png"
-	width="1400"
-	height="665"
-	srcset="/post/google-calendar-api/Token3_hu_9d0ccb038ef880fc.png 480w, /post/google-calendar-api/Token3_hu_18f5578b02d1a7b3.png 1024w"
-	loading="lazy"
-	
-		alt="或是參考畫面左側的標題和分類，從選單進入也可以。"
-	
-	
-		class="gallery-image" 
-		data-flex-grow="210"
-		data-flex-basis="505px"
-	
-></p>
-<h3 id="建立-calerdar">建立 Calerdar
-</h3><ol>
-<li>進入 <a class="link" href="https://calendar.google.com/calendar"  target="_blank" rel="noopener"
-    >Google Calendar</a> 後選擇一個建立好的日曆，從 <code>設定和共用</code> 進入日曆的設定。</li>
-</ol>
-<p><img src="/post/google-calendar-api/Calendar1.png"
-	width="1400"
-	height="711"
-	srcset="/post/google-calendar-api/Calendar1_hu_db94d011f0e0167d.png 480w, /post/google-calendar-api/Calendar1_hu_a7bae9fa07eb1adf.png 1024w"
-	loading="lazy"
-	
-		alt="移動到日立上方的話會出現三個點，點下去找到設定和共用的選項。"
-	
-	
-		class="gallery-image" 
-		data-flex-grow="196"
-		data-flex-basis="472px"
-	
-></p>
-<ol start="2">
-<li>找到 <code>與特定使用者共用日曆</code> 的選項，點選 <code>新增邀請對象</code>。這裡的 email 要輸入剛才那份金鑰 JSON 檔中，<code>client_email_form</code> 的欄位內容，權限要記得調整成 <code>進行變更並管理共用設定</code>。</li>
-</ol>
-<p><img src="/post/google-calendar-api/Calendar2.png"
-	width="720"
-	height="237"
-	srcset="/post/google-calendar-api/Calendar2_hu_75d43700c74c61de.png 480w, /post/google-calendar-api/Calendar2_hu_e96d2963aeee1527.png 1024w"
-	loading="lazy"
-	
-		alt="剛剛下載完成的那份金鑰 JSON 檔內容。"
-	
-	
-		class="gallery-image" 
-		data-flex-grow="303"
-		data-flex-basis="729px"
-	
-></p>
-<ol start="3">
-<li>接著把網頁往下拉，找到 <code>整合日曆</code> 的區塊，記下這個 <code>日曆 ID</code>，接下來會使用到。</li>
-</ol>
-<p><img src="/post/google-calendar-api/Calendar3.png"
-	width="720"
-	height="390"
-	srcset="/post/google-calendar-api/Calendar3_hu_3d7623a0f96e44a6.png 480w, /post/google-calendar-api/Calendar3_hu_8762fd604f76b719.png 1024w"
-	loading="lazy"
-	
-	
-		class="gallery-image" 
-		data-flex-grow="184"
-		data-flex-basis="443px"
-	
-></p>
-<p>到目前為止，需要使用的部分都準備完成了，接下來要進入到程式的部分。</p>
-<h2 id="新增一個活動">新增一個活動
-</h2><p>新增好一個專案之後，從 Nuget 將 <code>Google.Apis.Calendar.v3</code> 新增到專案內，並加入下列程式碼：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span><span class="lnt">11
-</span><span class="lnt">12
-</span><span class="lnt">13
-</span><span class="lnt">14
-</span><span class="lnt">15
-</span><span class="lnt">16
-</span><span class="lnt">17
-</span><span class="lnt">18
-</span><span class="lnt">19
-</span><span class="lnt">20
-</span><span class="lnt">21
-</span><span class="lnt">22
-</span><span class="lnt">23
-</span><span class="lnt">24
-</span><span class="lnt">25
-</span><span class="lnt">26
-</span><span class="lnt">27
-</span><span class="lnt">28
-</span><span class="lnt">29
-</span><span class="lnt">30
-</span><span class="lnt">31
-</span><span class="lnt">32
-</span><span class="lnt">33
-</span><span class="lnt">34
-</span><span class="lnt">35
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-C#" data-lang="C#"><span class="line"><span class="cl"><span class="k">using</span> <span class="nn">Google.Apis.Auth.OAuth2</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl"><span class="k">using</span> <span class="nn">Google.Apis.Calendar.v3</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl"><span class="k">using</span> <span class="nn">Google.Apis.Calendar.v3.Data</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl"><span class="k">using</span> <span class="nn">Google.Apis.Services</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="kd">const</span> <span class="kt">string</span> <span class="n">jsonFile</span> <span class="p">=</span> <span class="s">&#34;key.json&#34;</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl"><span class="kd">const</span> <span class="kt">string</span> <span class="n">calendarId</span> <span class="p">=</span> <span class="s">&#34;id@group.calendar.google.com&#34;</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="n">GoogleCredential</span> <span class="n">credential</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl"><span class="k">using</span> <span class="nn">var</span> <span class="n">stream</span> <span class="p">=</span> <span class="k">new</span> <span class="n">FileStream</span><span class="p">(</span><span class="n">jsonFile</span><span class="p">,</span> <span class="n">FileMode</span><span class="p">.</span><span class="n">Open</span><span class="p">,</span> <span class="n">FileAccess</span><span class="p">.</span><span class="n">Read</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl"><span class="n">credential</span> <span class="p">=</span> <span class="n">GoogleCredential</span><span class="p">.</span><span class="n">FromStream</span><span class="p">(</span><span class="n">stream</span><span class="p">).</span><span class="n">CreateScoped</span><span class="p">(</span><span class="n">CalendarService</span><span class="p">.</span><span class="n">Scope</span><span class="p">.</span><span class="n">Calendar</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="kt">var</span> <span class="n">service</span> <span class="p">=</span> <span class="k">new</span> <span class="n">CalendarService</span><span class="p">(</span><span class="k">new</span> <span class="n">BaseClientService</span><span class="p">.</span><span class="n">Initializer</span>
-</span></span><span class="line"><span class="cl"><span class="p">{</span>
-</span></span><span class="line"><span class="cl">    <span class="n">HttpClientInitializer</span> <span class="p">=</span> <span class="n">credential</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">    <span class="n">ApplicationName</span> <span class="p">=</span> <span class="s">&#34;test project&#34;</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl"><span class="p">});</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="kt">var</span> <span class="n">newEvent</span> <span class="p">=</span> <span class="k">new</span> <span class="n">Event</span><span class="p">()</span>
-</span></span><span class="line"><span class="cl"><span class="p">{</span>
-</span></span><span class="line"><span class="cl">    <span class="n">Id</span> <span class="p">=</span> <span class="n">Guid</span><span class="p">.</span><span class="n">NewGuid</span><span class="p">().</span><span class="n">ToString</span><span class="p">().</span><span class="n">Replace</span><span class="p">(</span><span class="s">&#34;-&#34;</span><span class="p">,</span> <span class="s">&#34;&#34;</span><span class="p">),</span>
-</span></span><span class="line"><span class="cl">    <span class="n">Summary</span> <span class="p">=</span> <span class="s">&#34;Anthea 外出(逢甲大學)&#34;</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">    <span class="n">Start</span> <span class="p">=</span> <span class="k">new</span> <span class="n">EventDateTime</span><span class="p">()</span>
-</span></span><span class="line"><span class="cl">    <span class="p">{</span>
-</span></span><span class="line"><span class="cl">        <span class="n">DateTime</span> <span class="p">=</span> <span class="k">new</span> <span class="n">DateTime</span><span class="p">(</span><span class="m">2022</span><span class="p">,</span> <span class="m">05</span><span class="p">,</span> <span class="m">15</span><span class="p">,</span> <span class="m">09</span><span class="p">,</span> <span class="m">30</span><span class="p">,</span> <span class="m">0</span><span class="p">),</span>
-</span></span><span class="line"><span class="cl">        <span class="n">TimeZone</span> <span class="p">=</span> <span class="s">&#34;Asia/Taipei&#34;</span>  <span class="c1">// Can refer to https://stackoverflow.com/questions/22526635/list-of-acceptable-google-calendar-api-time-zones</span>
-</span></span><span class="line"><span class="cl">    <span class="p">},</span>
-</span></span><span class="line"><span class="cl">    <span class="n">End</span> <span class="p">=</span> <span class="k">new</span> <span class="n">EventDateTime</span><span class="p">()</span>
-</span></span><span class="line"><span class="cl">    <span class="p">{</span>
-</span></span><span class="line"><span class="cl">        <span class="n">DateTime</span> <span class="p">=</span> <span class="k">new</span> <span class="n">DateTime</span><span class="p">(</span><span class="m">2022</span><span class="p">,</span> <span class="m">05</span><span class="p">,</span> <span class="m">15</span><span class="p">,</span> <span class="m">10</span><span class="p">,</span> <span class="m">30</span><span class="p">,</span> <span class="m">0</span><span class="p">),</span>
-</span></span><span class="line"><span class="cl">        <span class="n">TimeZone</span> <span class="p">=</span> <span class="s">&#34;Asia/Taipei&#34;</span>
-</span></span><span class="line"><span class="cl">    <span class="p">}</span>
-</span></span><span class="line"><span class="cl"><span class="p">};</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="kt">var</span> <span class="n">insert</span> <span class="p">=</span> <span class="n">service</span><span class="p">.</span><span class="n">Events</span><span class="p">.</span><span class="n">Insert</span><span class="p">(</span><span class="n">newEvent</span><span class="p">,</span> <span class="n">calendarId</span><span class="p">).</span><span class="n">Execute</span><span class="p">();</span>
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>執行之後回到日歷的頁面，就會看到剛剛新增上去的活動了！</p>
-<p><img src="/post/google-calendar-api/Insert.png"
-	width="720"
-	height="303"
-	srcset="/post/google-calendar-api/Insert_hu_bb3451e1483fdc87.png 480w, /post/google-calendar-api/Insert_hu_9b8cc37e68c1fd72.png 1024w"
-	loading="lazy"
-	
-	
-		class="gallery-image" 
-		data-flex-grow="237"
-		data-flex-basis="570px"
-	
-></p>
-<h2 id="debug-紀錄">Debug 紀錄
-</h2><h3 id="invalid-resource-id-value">Invalid resource id value
-</h3><div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span><span class="lnt">4
-</span><span class="lnt">5
-</span><span class="lnt">6
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">Google.Apis.Requests.RequestError
-</span></span><span class="line"><span class="cl">Invalid resource id value. [400]
-</span></span><span class="line"><span class="cl">Errors [
-</span></span><span class="line"><span class="cl">        Message[Invalid resource id value.] Location[ - ]
-</span></span><span class="line"><span class="cl">        Reason[invalid] Domain[global]
-</span></span><span class="line"><span class="cl">]
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>測試的過程中有出現這個 error，看了<a class="link" href="https://developers.google.com/calendar/api/v3/reference/events/insert"  target="_blank" rel="noopener"
-    >官方文件</a>之後發現問題是出在 Event 上，於是選擇另用比較不容易重複的 GUID 去作為參數帶上去。另外，文件上有提到只能使用小寫的英文字母和數字，要記得注意。</p>
-<p><img src="/post/google-calendar-api/IdDoc.png"
-	width="1076"
-	height="473"
-	srcset="/post/google-calendar-api/IdDoc_hu_5c16acc11e0d2e4c.png 480w, /post/google-calendar-api/IdDoc_hu_14f8a70f3d1fc27e.png 1024w"
-	loading="lazy"
-	
-		alt="https://developers.google.com/calendar/api/v3/reference/events/insert"
-	
-	
-		class="gallery-image" 
-		data-flex-grow="227"
-		data-flex-basis="545px"
-	
-></p>
-<h2 id="小結">小結
-</h2><p>除了範例裡提到的 Insert 之外，基本的 CRUD 都有 API 可以接，但我目前的系統還沒有這部分的功能要實作，所以沒有特別研究。</p>
-<p>另外，官方文件所提供的註冊方法，使用的憑證類別和範例中的不太一樣，我個人認為比較麻煩，所以選擇了服務帳戶的方法。雖然大部分的功能都可以使用，但像是 Event.Attendees 這個邀請參與者的部分，就需要另外設定好權限才可以使用。</p>
-<p>以上就是這次的內容，如果有任何使用上的疑問，或是解釋上的錯誤，都歡迎跟我說喔！我們下次見。</p>
-<blockquote>
-    <p><p>參考文章</p>
-<ul>
-<li><a class="link" href="https://stackoverflow.com/questions/22526635/list-of-acceptable-google-calendar-api-time-zones"  target="_blank" rel="noopener"
-    >TimeZone List</a></li>
-<li><a class="link" href="https://stackoverflow.com/questions/54066564/google-calendar-api-with-asp-net"  target="_blank" rel="noopener"
-    >Google Calendar Api with .NET</a></li>
-<li><a class="link" href="https://stackoverflow.com/questions/28825860/google-oauth-error-at-least-one-client-secrets-installed-or-web-should-be-set"  target="_blank" rel="noopener"
-    >At least one client secrets (Installed or Web) should be set</a></li>
-</ul></p></blockquote>
-
-</section>
-
-
-    <footer class="article-footer">
-    
-    <section class="article-tags">
-        
-            <a href="/tags/.net/">.NET</a>
-        
-            <a href="/tags/google-api/">Google API</a>
-        
-    </section>
-
-
-    </footer>
-
-
-    
-</article>
-
-    
-
-    
-
-     
-    
-        
-    
-
-    <footer class="site-footer">
-    <section class="copyright">
-        &copy; 
-        
-            2022 - 
-        
-        2025 Anthea&#39;s Blog
-    </section>
-    
-    <section class="powerby">
-        Built with <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> <br />
-        Theme <b><a href="https://github.com/CaiJimmy/hugo-theme-stack" target="_blank" rel="noopener" data-version="3.30.0">Stack</a></b> designed by <a href="https://jimmycai.com" target="_blank" rel="noopener">Jimmy</a>
-    </section>
-</footer>
-
-
-    
-<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
-
-    
-    <div class="pswp__bg"></div>
-
-    
-    <div class="pswp__scroll-wrap">
-
-        
-        <div class="pswp__container">
-            <div class="pswp__item"></div>
-            <div class="pswp__item"></div>
-            <div class="pswp__item"></div>
-        </div>
-
-        
-        <div class="pswp__ui pswp__ui--hidden">
-
-            <div class="pswp__top-bar">
-
-                
-
-                <div class="pswp__counter"></div>
-
-                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
-
-                <button class="pswp__button pswp__button--share" title="Share"></button>
-
-                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
-
-                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
-
-                
-                
-                <div class="pswp__preloader">
-                    <div class="pswp__preloader__icn">
-                        <div class="pswp__preloader__cut">
-                            <div class="pswp__preloader__donut"></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
-                <div class="pswp__share-tooltip"></div>
-            </div>
-
-            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
-            </button>
-
-            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
-            </button>
-
-            <div class="pswp__caption">
-                <div class="pswp__caption__center"></div>
-            </div>
-
-        </div>
-
-    </div>
-
-</div><script 
-                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo="crossorigin="anonymous"
-                defer
-                >
-            </script><script 
-                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU="crossorigin="anonymous"
-                defer
-                >
-            </script><link 
-                rel="stylesheet" 
-                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css"crossorigin="anonymous"
-            ><link 
-                rel="stylesheet" 
-                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css"crossorigin="anonymous"
-            >
-
-            </main>
-        </div>
-        <script 
-                src="https://cdn.jsdelivr.net/npm/node-vibrant@3.1.6/dist/vibrant.min.js"integrity="sha256-awcR2jno4kI5X0zL8ex0vi2z&#43;KMkF24hUW8WePSA9HM="crossorigin="anonymous"
-                
-                >
-            </script><script type="text/javascript" src="/ts/main.1e9a3bafd846ced4c345d084b355fb8c7bae75701c338f8a1f8a82c780137826.js" defer></script>
-<script>
-    (function () {
-        const customFont = document.createElement('link');
-        customFont.href = "https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap";
-
-        customFont.type = "text/css";
-        customFont.rel = "stylesheet";
-
-        document.head.appendChild(customFont);
-    }());
-</script>
-
-    </body>
-</html>
+<!doctype html><html lang=en dir=ltr><head><meta charset=utf-8><meta name=viewport content='width=device-width,initial-scale=1'><meta name=description content="using .NET"><title>Google Calendar API</title>
+<link rel=canonical href=https://anthea-wu.github.io/post/google-calendar-api/><link rel=stylesheet href=/scss/style.min.663803bebe609202d5b39d848f2d7c2dc8b598a2d879efa079fa88893d29c49c.css><meta property='og:title' content="Google Calendar API"><meta property='og:description' content="using .NET"><meta property='og:url' content='https://anthea-wu.github.io/post/google-calendar-api/'><meta property='og:site_name' content="Anthea's Blog"><meta property='og:type' content='article'><meta property='article:section' content='Post'><meta property='article:tag' content='.NET'><meta property='article:tag' content='Google API'><meta property='article:published_time' content='2022-05-14T21:55:35+08:00'><meta property='article:modified_time' content='2022-05-14T21:55:35+08:00'><meta name=twitter:title content="Google Calendar API"><meta name=twitter:description content="using .NET"></head><body class=article-page><script>(function(){const e="StackColorScheme";localStorage.getItem(e)||localStorage.setItem(e,"auto")})()</script><script>(function(){const t="StackColorScheme",e=localStorage.getItem(t),n=window.matchMedia("(prefers-color-scheme: dark)").matches===!0;e=="dark"||e==="auto"&&n?document.documentElement.dataset.scheme="dark":document.documentElement.dataset.scheme="light"})()</script><div class="container main-container flex on-phone--column extended"><aside class="sidebar left-sidebar sticky"><button class="hamburger hamburger--spin" type=button id=toggle-menu aria-label="Toggle Menu">
+<span class=hamburger-box><span class=hamburger-inner></span></span></button><header><figure class=site-avatar><a href=/><img src=/img/avatar_hu_d8c2fe4d260f28d7.png width=300 height=300 class=site-logo loading=lazy alt=Avatar></a></figure><div class=site-meta><h1 class=site-name><a href=/>Anthea's Blog</a></h1><h2 class=site-description>Titansoft / Product Developer</h2></div></header><ol class=menu-social><li><a href=https://github.com/anthea-wu target=_blank title=GitHub rel=me><svg class="icon icon-tabler icon-tabler-brand-github" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M9 19c-4.3 1.4-4.3-2.5-6-3m12 5v-3.5c0-1 .1-1.4-.5-2 2.8-.3 5.5-1.4 5.5-6a4.6 4.6.0 00-1.3-3.2 4.2 4.2.0 00-.1-3.2s-1.1-.3-3.5 1.3a12.3 12.3.0 00-6.2.0C6.5 2.8 5.4 3.1 5.4 3.1a4.2 4.2.0 00-.1 3.2A4.6 4.6.0 004 9.5c0 4.6 2.7 5.7 5.5 6-.6.6-.6 1.2-.5 2V21"/></svg></a></li></ol><ol class=menu id=main-menu><li><a href=/><svg class="icon icon-tabler icon-tabler-home" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><polyline points="5 12 3 12 12 3 21 12 19 12"/><path d="M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7"/><path d="M9 21v-6a2 2 0 012-2h2a2 2 0 012 2v6"/></svg>
+<span>Home</span></a></li><li><a href=/page/about/><svg class="icon icon-tabler icon-tabler-user" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="7" r="4"/><path d="M6 21v-2a4 4 0 014-4h4a4 4 0 014 4v2"/></svg>
+<span>About</span></a></li><li><a href=/books target=_blank><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-book"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M3 19a9 9 0 019 0 9 9 0 019 0"/><path d="M3 6a9 9 0 019 0 9 9 0 019 0"/><path d="M3 6v13"/><path d="M12 6v13"/><path d="M21 6v13"/></svg>
+<span>Books</span></a></li><li class=menu-bottom-section><ol class=menu><li id=dark-mode-toggle><svg class="icon icon-tabler icon-tabler-toggle-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="8" cy="12" r="2"/><rect x="2" y="6" width="20" height="12" rx="6"/></svg>
+<svg class="icon icon-tabler icon-tabler-toggle-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="16" cy="12" r="2"/><rect x="2" y="6" width="20" height="12" rx="6"/></svg>
+<span>Dark Mode</span></li></ol></li></ol></aside><aside class="sidebar right-sidebar sticky"><section class="widget archives"><div class=widget-icon><svg class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><line x1="5" y1="9" x2="19" y2="9"/><line x1="5" y1="15" x2="19" y2="15"/><line x1="11" y1="4" x2="7" y2="20"/><line x1="17" y1="4" x2="13" y2="20"/></svg></div><h2 class="widget-title section-title">Table of contents</h2><div class=widget--toc><nav id=TableOfContents><ul><li><a href=#使用前的準備>使用前的準備</a><ul><li><a href=#申請-token>申請 Token</a></li><li><a href=#建立-calerdar>建立 Calerdar</a></li></ul></li><li><a href=#新增一個活動>新增一個活動</a></li><li><a href=#debug-紀錄>Debug 紀錄</a><ul><li><a href=#invalid-resource-id-value>Invalid resource id value</a></li></ul></li><li><a href=#小結>小結</a></li></ul></nav></div></section></aside><main class="main full-width"><article class=main-article><header class=article-header><div class=article-details><header class=article-category><a href=/categories/technical/>Technical</a></header><div class=article-title-wrapper><h2 class=article-title><a href=/post/google-calendar-api/>Google Calendar API</a></h2><h3 class=article-subtitle>using .NET</h3></div><footer class=article-time><div><svg class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M11.795 21H5a2 2 0 01-2-2V7a2 2 0 012-2h12a2 2 0 012 2v4"/><circle cx="18" cy="18" r="4"/><path d="M15 3v4"/><path d="M7 3v4"/><path d="M3 11h16"/><path d="M18 16.496V18l1 1"/></svg>
+<time class=article-time--published>2022/05/14</time></div><div><svg class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/></svg>
+<time class=article-time--reading>2 minute read</time></div></footer></div></header><section class=article-content><p>最近開始思考有什麼樣的需求可以當作小小的 side project 練習，剛好最近疫情的關係比較多人請假，我就把腦筋動到了請假系統身上。在目前的請假流程中，有一個部分是填寫 google 表單，送出之後會自動新增到 google calendar 上，只要有加入這個日曆的人都可以看到。所以決定以這個為主題，爬了一下文，順便紀錄一下使用 google calendar 的過程。</p><h2 id=使用前的準備>使用前的準備</h2><p>Google API 都是透過 token 來操作的，所以在正式使用前需要先申請好 token，並跟我們自己的 google calendar 連動。</p><h3 id=申請-token>申請 Token</h3><ol><li>進入 <a class=link href=https://console.cloud.google.com/ target=_blank rel=noopener>Google Cloud Platform</a>，預設會幫你建立一個新的專案，如果要更改可以點選畫面上方的 <code>My First Project</code>。不需要的話，直接點選畫面左側的選單，從 <code>API 與服務</code> 中選擇 <code>程式庫</code>。</li></ol><p><img src=/post/google-calendar-api/Token1.png width=1100 height=489 srcset="/post/google-calendar-api/Token1_hu_1dc1f43baf320a5e.png 480w, /post/google-calendar-api/Token1_hu_3fbb305ab8f8999e.png 1024w" loading=lazy class=gallery-image data-flex-grow=224 data-flex-basis=539px></p><ol start=2><li>搜尋 <code>Google Calendar API</code> 並啟用，等 loading 跑完後會出現 <code>管理</code> 的按鈕，或是從選單的 <code>API 與服務</code> 中找到 <code>憑證</code>，點選畫面上方的 <code>新增憑證</code>，選擇 <code>服務帳戶</code> 的選項。</li></ol><p><img src=/post/google-calendar-api/Token2.png width=1400 height=665 srcset="/post/google-calendar-api/Token2_hu_446d732f2d75be2a.png 480w, /post/google-calendar-api/Token2_hu_7cb4deb5011d3555.png 1024w" loading=lazy alt=可以看到頁面最下方的服務帳戶列表，已經有我之前新增過的一筆憑證。 class=gallery-image data-flex-grow=210 data-flex-basis=505px></p><ol start=3><li>輸入 <code>服務帳戶詳細資料</code> 後按下送出，接著會回到憑證頁面，找到最下面的 <code>服務帳戶</code> 那一列，點選右側的編輯，找到畫面上方的 <code>金鑰</code>，點擊 <code>新增金鑰</code>，選擇 <code>JSON</code> 的格式後按下建立，瀏覽器會自動下載這份檔案，<strong>請不要隨意刪除，如果遺失了只能重新產生一份金鑰</strong>。</li></ol><p><img src=/post/google-calendar-api/Token3.png width=1400 height=665 srcset="/post/google-calendar-api/Token3_hu_9d0ccb038ef880fc.png 480w, /post/google-calendar-api/Token3_hu_18f5578b02d1a7b3.png 1024w" loading=lazy alt=或是參考畫面左側的標題和分類，從選單進入也可以。 class=gallery-image data-flex-grow=210 data-flex-basis=505px></p><h3 id=建立-calerdar>建立 Calerdar</h3><ol><li>進入 <a class=link href=https://calendar.google.com/calendar target=_blank rel=noopener>Google Calendar</a> 後選擇一個建立好的日曆，從 <code>設定和共用</code> 進入日曆的設定。</li></ol><p><img src=/post/google-calendar-api/Calendar1.png width=1400 height=711 srcset="/post/google-calendar-api/Calendar1_hu_db94d011f0e0167d.png 480w, /post/google-calendar-api/Calendar1_hu_a7bae9fa07eb1adf.png 1024w" loading=lazy alt=移動到日立上方的話會出現三個點，點下去找到設定和共用的選項。 class=gallery-image data-flex-grow=196 data-flex-basis=472px></p><ol start=2><li>找到 <code>與特定使用者共用日曆</code> 的選項，點選 <code>新增邀請對象</code>。這裡的 email 要輸入剛才那份金鑰 JSON 檔中，<code>client_email_form</code> 的欄位內容，權限要記得調整成 <code>進行變更並管理共用設定</code>。</li></ol><p><img src=/post/google-calendar-api/Calendar2.png width=720 height=237 srcset="/post/google-calendar-api/Calendar2_hu_75d43700c74c61de.png 480w, /post/google-calendar-api/Calendar2_hu_e96d2963aeee1527.png 1024w" loading=lazy alt="剛剛下載完成的那份金鑰 JSON 檔內容。" class=gallery-image data-flex-grow=303 data-flex-basis=729px></p><ol start=3><li>接著把網頁往下拉，找到 <code>整合日曆</code> 的區塊，記下這個 <code>日曆 ID</code>，接下來會使用到。</li></ol><p><img src=/post/google-calendar-api/Calendar3.png width=720 height=390 srcset="/post/google-calendar-api/Calendar3_hu_3d7623a0f96e44a6.png 480w, /post/google-calendar-api/Calendar3_hu_8762fd604f76b719.png 1024w" loading=lazy class=gallery-image data-flex-grow=184 data-flex-basis=443px></p><p>到目前為止，需要使用的部分都準備完成了，接下來要進入到程式的部分。</p><h2 id=新增一個活動>新增一個活動</h2><p>新增好一個專案之後，從 Nuget 將 <code>Google.Apis.Calendar.v3</code> 新增到專案內，並加入下列程式碼：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span><span class=lnt>28
+</span><span class=lnt>29
+</span><span class=lnt>30
+</span><span class=lnt>31
+</span><span class=lnt>32
+</span><span class=lnt>33
+</span><span class=lnt>34
+</span><span class=lnt>35
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-C# data-lang=C#><span class=line><span class=cl><span class=k>using</span> <span class=nn>Google.Apis.Auth.OAuth2</span><span class=p>;</span>
+</span></span><span class=line><span class=cl><span class=k>using</span> <span class=nn>Google.Apis.Calendar.v3</span><span class=p>;</span>
+</span></span><span class=line><span class=cl><span class=k>using</span> <span class=nn>Google.Apis.Calendar.v3.Data</span><span class=p>;</span>
+</span></span><span class=line><span class=cl><span class=k>using</span> <span class=nn>Google.Apis.Services</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=kd>const</span> <span class=kt>string</span> <span class=n>jsonFile</span> <span class=p>=</span> <span class=s>&#34;key.json&#34;</span><span class=p>;</span>
+</span></span><span class=line><span class=cl><span class=kd>const</span> <span class=kt>string</span> <span class=n>calendarId</span> <span class=p>=</span> <span class=s>&#34;id@group.calendar.google.com&#34;</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=n>GoogleCredential</span> <span class=n>credential</span><span class=p>;</span>
+</span></span><span class=line><span class=cl><span class=k>using</span> <span class=nn>var</span> <span class=n>stream</span> <span class=p>=</span> <span class=k>new</span> <span class=n>FileStream</span><span class=p>(</span><span class=n>jsonFile</span><span class=p>,</span> <span class=n>FileMode</span><span class=p>.</span><span class=n>Open</span><span class=p>,</span> <span class=n>FileAccess</span><span class=p>.</span><span class=n>Read</span><span class=p>);</span>
+</span></span><span class=line><span class=cl><span class=n>credential</span> <span class=p>=</span> <span class=n>GoogleCredential</span><span class=p>.</span><span class=n>FromStream</span><span class=p>(</span><span class=n>stream</span><span class=p>).</span><span class=n>CreateScoped</span><span class=p>(</span><span class=n>CalendarService</span><span class=p>.</span><span class=n>Scope</span><span class=p>.</span><span class=n>Calendar</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=kt>var</span> <span class=n>service</span> <span class=p>=</span> <span class=k>new</span> <span class=n>CalendarService</span><span class=p>(</span><span class=k>new</span> <span class=n>BaseClientService</span><span class=p>.</span><span class=n>Initializer</span>
+</span></span><span class=line><span class=cl><span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=n>HttpClientInitializer</span> <span class=p>=</span> <span class=n>credential</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>    <span class=n>ApplicationName</span> <span class=p>=</span> <span class=s>&#34;test project&#34;</span><span class=p>,</span>
+</span></span><span class=line><span class=cl><span class=p>});</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=kt>var</span> <span class=n>newEvent</span> <span class=p>=</span> <span class=k>new</span> <span class=n>Event</span><span class=p>()</span>
+</span></span><span class=line><span class=cl><span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=n>Id</span> <span class=p>=</span> <span class=n>Guid</span><span class=p>.</span><span class=n>NewGuid</span><span class=p>().</span><span class=n>ToString</span><span class=p>().</span><span class=n>Replace</span><span class=p>(</span><span class=s>&#34;-&#34;</span><span class=p>,</span> <span class=s>&#34;&#34;</span><span class=p>),</span>
+</span></span><span class=line><span class=cl>    <span class=n>Summary</span> <span class=p>=</span> <span class=s>&#34;Anthea 外出(逢甲大學)&#34;</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>    <span class=n>Start</span> <span class=p>=</span> <span class=k>new</span> <span class=n>EventDateTime</span><span class=p>()</span>
+</span></span><span class=line><span class=cl>    <span class=p>{</span>
+</span></span><span class=line><span class=cl>        <span class=n>DateTime</span> <span class=p>=</span> <span class=k>new</span> <span class=n>DateTime</span><span class=p>(</span><span class=m>2022</span><span class=p>,</span> <span class=m>05</span><span class=p>,</span> <span class=m>15</span><span class=p>,</span> <span class=m>09</span><span class=p>,</span> <span class=m>30</span><span class=p>,</span> <span class=m>0</span><span class=p>),</span>
+</span></span><span class=line><span class=cl>        <span class=n>TimeZone</span> <span class=p>=</span> <span class=s>&#34;Asia/Taipei&#34;</span>  <span class=c1>// Can refer to https://stackoverflow.com/questions/22526635/list-of-acceptable-google-calendar-api-time-zones</span>
+</span></span><span class=line><span class=cl>    <span class=p>},</span>
+</span></span><span class=line><span class=cl>    <span class=n>End</span> <span class=p>=</span> <span class=k>new</span> <span class=n>EventDateTime</span><span class=p>()</span>
+</span></span><span class=line><span class=cl>    <span class=p>{</span>
+</span></span><span class=line><span class=cl>        <span class=n>DateTime</span> <span class=p>=</span> <span class=k>new</span> <span class=n>DateTime</span><span class=p>(</span><span class=m>2022</span><span class=p>,</span> <span class=m>05</span><span class=p>,</span> <span class=m>15</span><span class=p>,</span> <span class=m>10</span><span class=p>,</span> <span class=m>30</span><span class=p>,</span> <span class=m>0</span><span class=p>),</span>
+</span></span><span class=line><span class=cl>        <span class=n>TimeZone</span> <span class=p>=</span> <span class=s>&#34;Asia/Taipei&#34;</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=p>};</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=kt>var</span> <span class=n>insert</span> <span class=p>=</span> <span class=n>service</span><span class=p>.</span><span class=n>Events</span><span class=p>.</span><span class=n>Insert</span><span class=p>(</span><span class=n>newEvent</span><span class=p>,</span> <span class=n>calendarId</span><span class=p>).</span><span class=n>Execute</span><span class=p>();</span>
+</span></span></code></pre></td></tr></table></div></div><p>執行之後回到日歷的頁面，就會看到剛剛新增上去的活動了！</p><p><img src=/post/google-calendar-api/Insert.png width=720 height=303 srcset="/post/google-calendar-api/Insert_hu_bb3451e1483fdc87.png 480w, /post/google-calendar-api/Insert_hu_9b8cc37e68c1fd72.png 1024w" loading=lazy class=gallery-image data-flex-grow=237 data-flex-basis=570px></p><h2 id=debug-紀錄>Debug 紀錄</h2><h3 id=invalid-resource-id-value>Invalid resource id value</h3><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>Google.Apis.Requests.RequestError
+</span></span><span class=line><span class=cl>Invalid resource id value. [400]
+</span></span><span class=line><span class=cl>Errors [
+</span></span><span class=line><span class=cl>        Message[Invalid resource id value.] Location[ - ]
+</span></span><span class=line><span class=cl>        Reason[invalid] Domain[global]
+</span></span><span class=line><span class=cl>]
+</span></span></code></pre></td></tr></table></div></div><p>測試的過程中有出現這個 error，看了<a class=link href=https://developers.google.com/calendar/api/v3/reference/events/insert target=_blank rel=noopener>官方文件</a>之後發現問題是出在 Event 上，於是選擇另用比較不容易重複的 GUID 去作為參數帶上去。另外，文件上有提到只能使用小寫的英文字母和數字，要記得注意。</p><p><img src=/post/google-calendar-api/IdDoc.png width=1076 height=473 srcset="/post/google-calendar-api/IdDoc_hu_5c16acc11e0d2e4c.png 480w, /post/google-calendar-api/IdDoc_hu_14f8a70f3d1fc27e.png 1024w" loading=lazy alt=https://developers.google.com/calendar/api/v3/reference/events/insert class=gallery-image data-flex-grow=227 data-flex-basis=545px></p><h2 id=小結>小結</h2><p>除了範例裡提到的 Insert 之外，基本的 CRUD 都有 API 可以接，但我目前的系統還沒有這部分的功能要實作，所以沒有特別研究。</p><p>另外，官方文件所提供的註冊方法，使用的憑證類別和範例中的不太一樣，我個人認為比較麻煩，所以選擇了服務帳戶的方法。雖然大部分的功能都可以使用，但像是 Event.Attendees 這個邀請參與者的部分，就需要另外設定好權限才可以使用。</p><p>以上就是這次的內容，如果有任何使用上的疑問，或是解釋上的錯誤，都歡迎跟我說喔！我們下次見。</p><blockquote><p><p>參考文章</p><ul><li><a class=link href=https://stackoverflow.com/questions/22526635/list-of-acceptable-google-calendar-api-time-zones target=_blank rel=noopener>TimeZone List</a></li><li><a class=link href=https://stackoverflow.com/questions/54066564/google-calendar-api-with-asp-net target=_blank rel=noopener>Google Calendar Api with .NET</a></li><li><a class=link href=https://stackoverflow.com/questions/28825860/google-oauth-error-at-least-one-client-secrets-installed-or-web-should-be-set target=_blank rel=noopener>At least one client secrets (Installed or Web) should be set</a></li></ul></p></blockquote></section><footer class=article-footer><section class=article-tags><a href=/tags/.net/>.NET</a>
+<a href=/tags/google-api/>Google API</a></section></footer></article><footer class=site-footer><section class=copyright>&copy;
+2022 -
+2025 Anthea's Blog</section><section class=powerby>Built with <a href=https://gohugo.io/ target=_blank rel=noopener>Hugo</a><br>Theme <b><a href=https://github.com/CaiJimmy/hugo-theme-stack target=_blank rel=noopener data-version=3.30.0>Stack</a></b> designed by <a href=https://jimmycai.com target=_blank rel=noopener>Jimmy</a></section></footer><div class=pswp tabindex=-1 role=dialog aria-hidden=true><div class=pswp__bg></div><div class=pswp__scroll-wrap><div class=pswp__container><div class=pswp__item></div><div class=pswp__item></div><div class=pswp__item></div></div><div class="pswp__ui pswp__ui--hidden"><div class=pswp__top-bar><div class=pswp__counter></div><button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+<button class="pswp__button pswp__button--share" title=Share></button>
+<button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+<button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button><div class=pswp__preloader><div class=pswp__preloader__icn><div class=pswp__preloader__cut><div class=pswp__preloader__donut></div></div></div></div></div><div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap"><div class=pswp__share-tooltip></div></div><button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+</button>
+<button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)"></button><div class=pswp__caption><div class=pswp__caption__center></div></div></div></div></div><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo=" crossorigin=anonymous defer></script><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU=" crossorigin=anonymous defer></script><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css crossorigin=anonymous><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css crossorigin=anonymous></main></div><script src=https://cdn.jsdelivr.net/npm/node-vibrant@3.1.6/dist/vibrant.min.js integrity="sha256-awcR2jno4kI5X0zL8ex0vi2z+KMkF24hUW8WePSA9HM=" crossorigin=anonymous></script><script type=text/javascript src=/ts/main.1e9a3bafd846ced4c345d084b355fb8c7bae75701c338f8a1f8a82c780137826.js defer></script><script>(function(){const e=document.createElement("link");e.href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap",e.type="text/css",e.rel="stylesheet",document.head.appendChild(e)})()</script></body></html>
