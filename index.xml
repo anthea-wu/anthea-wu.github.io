@@ -30,7 +30,8 @@
 &lt;/table>
 &lt;h3 id="作品">作品
 &lt;/h3>&lt;ul>
-&lt;li>2022 鐵人賽：歡迎來到 GIS 的世界！&lt;/li>
+&lt;li>&lt;a class="link" href="https://ithelp.ithome.com.tw/users/20151635/ironman/5827" target="_blank" rel="noopener"
+>2022 鐵人賽：歡迎來到 GIS 的世界！&lt;/a>&lt;/li>
 &lt;/ul></description></item><item><title>不常見的遠端主機已強制關閉連線</title><link>https://anthea-wu.github.io/post/%E4%B8%8D%E5%B8%B8%E8%A6%8B%E7%9A%84%E9%81%A0%E7%AB%AF%E4%B8%BB%E6%A9%9F%E5%B7%B2%E5%BC%B7%E5%88%B6%E9%97%9C%E9%96%89%E9%80%A3%E7%B7%9A/</link><pubDate>Tue, 03 May 2022 00:00:00 +0000</pubDate><guid>https://anthea-wu.github.io/post/%E4%B8%8D%E5%B8%B8%E8%A6%8B%E7%9A%84%E9%81%A0%E7%AB%AF%E4%B8%BB%E6%A9%9F%E5%B7%B2%E5%BC%B7%E5%88%B6%E9%97%9C%E9%96%89%E9%80%A3%E7%B7%9A/</guid><description>&lt;h2 id="遠端主機已強制關閉一個現存的連線">遠端主機已強制關閉一個現存的連線
 &lt;/h2>&lt;p>Server A 一直有一隻運行的很正常的 API 提供給 Server B 和 Server C 呼叫，在某一天忽然 Server B 就呼叫失敗了，同一時間 Server C 以及我的 local 環境仍然可以正常使用那隻 API。查看 Server B log 後發現顯示的錯誤是：&lt;/p>
 &lt;div class="highlight">&lt;div class="chroma">
