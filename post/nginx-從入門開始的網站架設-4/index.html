@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+    <head><meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content="https 設定">
+<title>Nginx 從入門開始的網站架設 (4)</title>
+
+<link rel='canonical' href='https://anthea-wu.github.io/post/nginx-%E5%BE%9E%E5%85%A5%E9%96%80%E9%96%8B%E5%A7%8B%E7%9A%84%E7%B6%B2%E7%AB%99%E6%9E%B6%E8%A8%AD-4/'>
+
+<link rel="stylesheet" href="/scss/style.min.663803bebe609202d5b39d848f2d7c2dc8b598a2d879efa079fa88893d29c49c.css"><meta property='og:title' content="Nginx 從入門開始的網站架設 (4)">
+<meta property='og:description' content="https 設定">
+<meta property='og:url' content='https://anthea-wu.github.io/post/nginx-%E5%BE%9E%E5%85%A5%E9%96%80%E9%96%8B%E5%A7%8B%E7%9A%84%E7%B6%B2%E7%AB%99%E6%9E%B6%E8%A8%AD-4/'>
+<meta property='og:site_name' content='Anthea&#39;s Blog'>
+<meta property='og:type' content='article'><meta property='article:section' content='Post' /><meta property='article:tag' content='Nginx' /><meta property='article:tag' content='Windows' /><meta property='article:tag' content='Nginx 從入門開始的網站架設' /><meta property='article:published_time' content='2022-07-02T23:24:03&#43;08:00'/><meta property='article:modified_time' content='2022-07-02T23:24:03&#43;08:00'/>
+<meta name="twitter:title" content="Nginx 從入門開始的網站架設 (4)">
+<meta name="twitter:description" content="https 設定">
+    </head>
+    <body class="
+    article-page
+    ">
+    <script>
+        (function() {
+            const colorSchemeKey = 'StackColorScheme';
+            if(!localStorage.getItem(colorSchemeKey)){
+                localStorage.setItem(colorSchemeKey, "auto");
+            }
+        })();
+    </script><script>
+    (function() {
+        const colorSchemeKey = 'StackColorScheme';
+        const colorSchemeItem = localStorage.getItem(colorSchemeKey);
+        const supportDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches === true;
+
+        if (colorSchemeItem == 'dark' || colorSchemeItem === 'auto' && supportDarkMode) {
+            
+
+            document.documentElement.dataset.scheme = 'dark';
+        } else {
+            document.documentElement.dataset.scheme = 'light';
+        }
+    })();
+</script>
+<div class="container main-container flex on-phone--column extended"><aside class="sidebar left-sidebar sticky ">
+    <button class="hamburger hamburger--spin" type="button" id="toggle-menu" aria-label="Toggle Menu">
+        <span class="hamburger-box">
+            <span class="hamburger-inner"></span>
+        </span>
+    </button>
+
+    <header>
+        
+            
+            <figure class="site-avatar">
+                <a href="/">
+                
+                    
+                    
+                    
+                        
+                        <img src="/img/avatar_hu_d8c2fe4d260f28d7.png" width="300"
+                            height="300" class="site-logo" loading="lazy" alt="Avatar">
+                    
+                
+                </a>
+                
+            </figure>
+            
+        
+        
+        <div class="site-meta">
+            <h1 class="site-name"><a href="/">Anthea&#39;s Blog</a></h1>
+            <h2 class="site-description">Titansoft / Product Developer</h2>
+        </div>
+    </header><ol class="menu-social">
+            
+                <li>
+                    <a 
+                        href='https://github.com/anthea-wu'
+                        target="_blank"
+                        title="GitHub"
+                        rel="me"
+                    >
+                        
+                        
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-brand-github" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+  <path d="M9 19c-4.3 1.4 -4.3 -2.5 -6 -3m12 5v-3.5c0 -1 .1 -1.4 -.5 -2c2.8 -.3 5.5 -1.4 5.5 -6a4.6 4.6 0 0 0 -1.3 -3.2a4.2 4.2 0 0 0 -.1 -3.2s-1.1 -.3 -3.5 1.3a12.3 12.3 0 0 0 -6.2 0c-2.4 -1.6 -3.5 -1.3 -3.5 -1.3a4.2 4.2 0 0 0 -.1 3.2a4.6 4.6 0 0 0 -1.3 3.2c0 4.6 2.7 5.7 5.5 6c-.6 .6 -.6 1.2 -.5 2v3.5" />
+</svg>
+
+
+
+                        
+                    </a>
+                </li>
+            
+        </ol><ol class="menu" id="main-menu">
+        
+        
+        
+        <li >
+            <a href='/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-home" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <polyline points="5 12 3 12 12 3 21 12 19 12" />
+  <path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-7" />
+  <path d="M9 21v-6a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v6" />
+</svg>
+
+
+
+                
+                <span>Home</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/page/about/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-user" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="7" r="4" />
+  <path d="M6 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2" />
+</svg>
+
+
+
+                
+                <span>About</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/books' target="_blank">
+                
+                
+                
+                    <svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-book"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M3 19a9 9 0 0 1 9 0a9 9 0 0 1 9 0" /><path d="M3 6a9 9 0 0 1 9 0a9 9 0 0 1 9 0" /><path d="M3 6l0 13" /><path d="M12 6l0 13" /><path d="M21 6l0 13" /></svg>
+                
+                <span>Books</span>
+            </a>
+        </li>
+        
+        <li class="menu-bottom-section">
+            <ol class="menu">
+
+                
+                    <li id="dark-mode-toggle">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="8" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="16" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                        <span>Dark Mode</span>
+                    </li>
+                
+            </ol>
+        </li>
+    </ol>
+</aside>
+
+    
+
+            <main class="main full-width">
+    <article class="main-article">
+    <header class="article-header">
+
+    <div class="article-details">
+    
+    <header class="article-category">
+        
+            <a href="/categories/technical/" >
+                Technical
+            </a>
+        
+    </header>
+    
+
+    <div class="article-title-wrapper">
+        <h2 class="article-title">
+            <a href="/post/nginx-%E5%BE%9E%E5%85%A5%E9%96%80%E9%96%8B%E5%A7%8B%E7%9A%84%E7%B6%B2%E7%AB%99%E6%9E%B6%E8%A8%AD-4/">Nginx 從入門開始的網站架設 (4)</a>
+        </h2>
+    
+        
+        <h3 class="article-subtitle">
+            https 設定
+        </h3>
+        
+    </div>
+
+    
+    
+    
+    
+    <footer class="article-time">
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M11.795 21h-6.795a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v4" />
+  <circle cx="18" cy="18" r="4" />
+  <path d="M15 3v4" />
+  <path d="M7 3v4" />
+  <path d="M3 11h16" />
+  <path d="M18 16.496v1.504l1 1" />
+</svg>
+                <time class="article-time--published">2022/07/02</time>
+            </div>
+        
+
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <polyline points="12 7 12 12 15 15" />
+</svg>
+
+
+
+                <time class="article-time--reading">
+                    2 minute read
+                </time>
+            </div>
+        
+    </footer>
+    
+
+    
+</div>
+
+</header>
+
+    <section class="article-content">
+    
+    
+    <p>一般在 IIS 上啟用 https 的步驟很簡單：先匯出憑證要求，接著在收到憑證之後完成憑證要求，在站台上設定新的繫結，將 443 指定到申請的憑證上的域名即可。</p>
+<p>但是，利用 IIS 去向中華電信所申請到的憑證格式為 <code>.cer</code>，在 Nginx 的官網中，使用的卻是 <code>.crt</code> 格式，並且還多了一個一般流程中不會看到的 <code>.key</code>。網路上的教學大多是直接使用 <code>openssl</code> 去生產憑證，由於這個案子是已經有申請好的憑證，所以我們要透過一些方法來把申請到的憑證轉成 Nginx 可以使用的格式。</p>
+<p><img src="/post/nginx-%E5%BE%9E%E5%85%A5%E9%96%80%E9%96%8B%E5%A7%8B%E7%9A%84%E7%B6%B2%E7%AB%99%E6%9E%B6%E8%A8%AD-4/NginxDoc.png"
+	width="803"
+	height="238"
+	srcset="/post/nginx-%E5%BE%9E%E5%85%A5%E9%96%80%E9%96%8B%E5%A7%8B%E7%9A%84%E7%B6%B2%E7%AB%99%E6%9E%B6%E8%A8%AD-4/NginxDoc_hu_f17f5839a3187187.png 480w, /post/nginx-%E5%BE%9E%E5%85%A5%E9%96%80%E9%96%8B%E5%A7%8B%E7%9A%84%E7%B6%B2%E7%AB%99%E6%9E%B6%E8%A8%AD-4/NginxDoc_hu_882ae8773b9d80d6.png 1024w"
+	loading="lazy"
+	
+		alt="Nginx 官方文件對於 https 設定的說明"
+	
+	
+		class="gallery-image" 
+		data-flex-grow="337"
+		data-flex-basis="809px"
+	
+></p>
+<h2 id="在-nginx-中使用-cer-來設定-https">在 Nginx 中使用 <code>cer</code> 來設定 https
+</h2><p>可以在上面那張圖片中觀察到，有兩個地方的值是粗體的黑字：<code>ssl_certificate</code> 和 <code>ssl_certificate_key</code>，這兩個部分要放的就是憑證的檔案和憑證的私密金鑰。而在這裡會有兩個問題：</p>
+<ol>
+<li>如果是利用 IIS 去產生憑證要求所申請到的憑證，會沒有辦法直接得到私密金鑰，因為他會是加密過後的內容，而 Nginx 要求是不能加密的檔案。</li>
+<li>申請所得到的憑證 <code>.cer</code> 沒有辦法直接使用在 Nginx 上。</li>
+</ol>
+<p>在看這些問題之前，要先了解一下這幾個檔案的用途和差別：</p>
+<div class="table-wrapper"><table>
+  <thead>
+      <tr>
+          <th style="text-align: center">名稱</th>
+          <th>用途</th>
+          <th>說明</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td style="text-align: center"><code>crt</code></td>
+          <td>憑證證書</td>
+          <td>Lunix 系統上的檔案格式</td>
+      </tr>
+      <tr>
+          <td style="text-align: center"><code>cer</code></td>
+          <td>憑證證書</td>
+          <td>Windows 系統上的檔案格式</td>
+      </tr>
+      <tr>
+          <td style="text-align: center"><code>key</code></td>
+          <td>金鑰</td>
+          <td>存放公鑰或私鑰</td>
+      </tr>
+      <tr>
+          <td style="text-align: center"><code>pfx</code></td>
+          <td>憑證證書及私鑰</td>
+          <td>Windows 系統上會把 <code>crt</code> 和私鑰 <code>key</code> 放在同一個檔案內，需要有密碼才能提取</td>
+      </tr>
+  </tbody>
+</table></div>
+<p>了解了這幾種不同的名詞之後，接下來就是要把我們手上有的 <code>cer</code> 憑證檔案轉換成 Nginx 可以接受的格式。</p>
+<h3 id="1-匯出-pfx-檔案">1. 匯出 <code>pfx</code> 檔案
+</h3><p>第一個步驟，是要藉由 <code>cer</code> 來取得包含憑證證書和私鑰的 <code>pfx</code> 檔案。</p>
+<ol>
+<li><code>Windows + R</code> 開啟 執行，輸入 <code>mmc</code></li>
+<li><code>檔案 &gt; 新增或移除嵌入式管理單元</code>，拉到最底下找到 <code>憑證</code>，點選後點擊中間的新增，會跳出另外一個視窗，選擇 <code>電腦帳戶 &gt; 本機電腦</code>，按下完成後視窗會回到 <code>嵌入式管理單元</code> 這一層，確定憑證有被移動到右邊的視窗後就可以按下確定。</li>
+</ol>
+<p><img src="/post/nginx-%E5%BE%9E%E5%85%A5%E9%96%80%E9%96%8B%E5%A7%8B%E7%9A%84%E7%B6%B2%E7%AB%99%E6%9E%B6%E8%A8%AD-4/Pfx1.png"
+	width="1028"
+	height="619"
+	srcset="/post/nginx-%E5%BE%9E%E5%85%A5%E9%96%80%E9%96%8B%E5%A7%8B%E7%9A%84%E7%B6%B2%E7%AB%99%E6%9E%B6%E8%A8%AD-4/Pfx1_hu_4f0f4a8cd1a7c9b7.png 480w, /post/nginx-%E5%BE%9E%E5%85%A5%E9%96%80%E9%96%8B%E5%A7%8B%E7%9A%84%E7%B6%B2%E7%AB%99%E6%9E%B6%E8%A8%AD-4/Pfx1_hu_9791949cfaf3b4a0.png 1024w"
+	loading="lazy"
+	
+	
+		class="gallery-image" 
+		data-flex-grow="166"
+		data-flex-basis="398px"
+	
+></p>
+<ol start="3">
+<li>在憑證的目錄底下選擇 <code>個人&gt;憑證</code>，如果有先在 IIS 完成憑證要求的話就可以看到原本匯入的憑證，沒有的話請先匯入。找到要匯出 <code>pfx</code> 檔案的憑證對他點選 <code>右鍵 &gt; 所有工作 &gt; 匯出</code>，選擇 <code>是，匯出私密金鑰</code>，點選兩次下一步進入 <code>安全性</code> 的頁面，輸入要存取 <code>pfx</code> 時的密碼。下一步輸入檔名後按下儲存就可以得到 <code>pfx</code> 檔案了。</li>
+</ol>
+<p><img src="/post/nginx-%E5%BE%9E%E5%85%A5%E9%96%80%E9%96%8B%E5%A7%8B%E7%9A%84%E7%B6%B2%E7%AB%99%E6%9E%B6%E8%A8%AD-4/Pfx2.png"
+	width="1060"
+	height="684"
+	srcset="/post/nginx-%E5%BE%9E%E5%85%A5%E9%96%80%E9%96%8B%E5%A7%8B%E7%9A%84%E7%B6%B2%E7%AB%99%E6%9E%B6%E8%A8%AD-4/Pfx2_hu_e21c483d8f395dc0.png 480w, /post/nginx-%E5%BE%9E%E5%85%A5%E9%96%80%E9%96%8B%E5%A7%8B%E7%9A%84%E7%B6%B2%E7%AB%99%E6%9E%B6%E8%A8%AD-4/Pfx2_hu_fbba6a83a1419fd9.png 1024w"
+	loading="lazy"
+	
+	
+		class="gallery-image" 
+		data-flex-grow="154"
+		data-flex-basis="371px"
+	
+></p>
+<h3 id="2-轉成-crt-檔案">2. 轉成 <code>crt</code> 檔案
+</h3><p>有了 <code>pfx</code> 的下一步就是要轉換成 <code>crt</code> 和 <code>key</code>。轉換的方法很簡單，使用 <code>openssl</code>，輸入下面的指令，就可以得到這兩個檔案了：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-cmd" data-lang="cmd"><span class="line"><span class="cl"># 輸出 crt
+</span></span><span class="line"><span class="cl">openssl pkcs12 -in server.pfx -clcerts -nokeys -out server.crt
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"># 輸出 key
+</span></span><span class="line"><span class="cl">openssl pkcs12 -in server.pfx -nocerts -nodes -out server.rsa
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="3-修改-nginxconf">3. 修改 <code>nginx.conf</code>
+</h3><p>產出兩個檔案之後就可以進入 <code>nginx.conf</code> 的修改了。修改好記得要 <code>nginx -s reload</code>，防火牆 443 port 的部分也要記得開：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">events {
+</span></span><span class="line"><span class="cl">    worker_connections  4096;
+</span></span><span class="line"><span class="cl">}
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">http {
+</span></span><span class="line"><span class="cl">    upstream www.abc.com {
+</span></span><span class="line"><span class="cl">        server localhost:8082;
+</span></span><span class="line"><span class="cl">        server localhost:8083;
+</span></span><span class="line"><span class="cl">    }
+</span></span><span class="line"><span class="cl">	
+</span></span><span class="line"><span class="cl">    server {
+</span></span><span class="line"><span class="cl">        # 因為是正式的環境，防火牆也需要申請，所以改成監聽原本 IIS 監聽的 80 port
+</span></span><span class="line"><span class="cl">        listen              80;
+</span></span><span class="line"><span class="cl">        server_name         www.abc.com;
+</span></span><span class="line"><span class="cl">		
+</span></span><span class="line"><span class="cl">        location / {
+</span></span><span class="line"><span class="cl">            # 將 http 轉導到 https
+</span></span><span class="line"><span class="cl">            return          301     https://$host$request_uri;
+</span></span><span class="line"><span class="cl">        }
+</span></span><span class="line"><span class="cl">    }
+</span></span><span class="line"><span class="cl">	
+</span></span><span class="line"><span class="cl">    server {
+</span></span><span class="line"><span class="cl">	listen              443 ssl;
+</span></span><span class="line"><span class="cl">        server_name         www.abc.com;
+</span></span><span class="line"><span class="cl">        ssl_certificate     server.crt;
+</span></span><span class="line"><span class="cl">        ssl_certificate_key server.rsa;
+</span></span><span class="line"><span class="cl">        ssl_protocols       TLSv1 TLSv1.1 TLSv1.2;
+</span></span><span class="line"><span class="cl">        ssl_ciphers         HIGH:!aNULL:!MD5;
+</span></span><span class="line"><span class="cl">	
+</span></span><span class="line"><span class="cl">	location / {
+</span></span><span class="line"><span class="cl">            proxy_pass                 http://guideapp.npm.gov.tw;
+</span></span><span class="line"><span class="cl">            
+</span></span><span class="line"><span class="cl">            # 以下為 proxy 的詳細設置，可以參考下列網站的說明
+</span></span><span class="line"><span class="cl">            # https://www.cnblogs.com/kevingrace/p/8269955.html
+</span></span><span class="line"><span class="cl">            proxy_http_version         1.1;
+</span></span><span class="line"><span class="cl">            proxy_set_header           Upgrade $http_upgrade;
+</span></span><span class="line"><span class="cl">            proxy_set_header           Connection keep-alive;
+</span></span><span class="line"><span class="cl">            proxy_set_header           Host $host;
+</span></span><span class="line"><span class="cl">            proxy_cache_bypass         $http_upgrade;
+</span></span><span class="line"><span class="cl">            proxy_set_header           X-Forwarded-For $proxy_add_x_forwarded_for;
+</span></span><span class="line"><span class="cl">        }
+</span></span><span class="line"><span class="cl">    }
+</span></span><span class="line"><span class="cl">}
+</span></span></code></pre></td></tr></table>
+</div>
+</div><blockquote>
+    <p><p>參考資料</p>
+<ul>
+<li><a class="link" href="https://zhuanlan.zhihu.com/p/109225748"  target="_blank" rel="noopener"
+    >Nginx 中使用 PFX 格式的 SSL 证书</a></li>
+<li><a class="link" href="https://blog.csdn.net/itworld123/article/details/115553346"  target="_blank" rel="noopener"
+    >crt、pem、pfx、cer、key 作用及區別</a></li>
+</ul></p></blockquote>
+
+</section>
+
+
+    <footer class="article-footer">
+    
+    <section class="article-tags">
+        
+            <a href="/tags/nginx/">Nginx</a>
+        
+            <a href="/tags/windows/">Windows</a>
+        
+            <a href="/tags/nginx-%E5%BE%9E%E5%85%A5%E9%96%80%E9%96%8B%E5%A7%8B%E7%9A%84%E7%B6%B2%E7%AB%99%E6%9E%B6%E8%A8%AD/">Nginx 從入門開始的網站架設</a>
+        
+    </section>
+
+
+    </footer>
+
+
+    
+</article>
+
+    
+
+    
+
+<aside class="related-content--wrapper">
+    <h2 class="section-title">Related content</h2>
+    <div class="related-content">
+        <div class="flex article-list--tile">
+            
+                
+<article class="">
+    <a href="/post/nginx-%E5%BE%9E%E5%85%A5%E9%96%80%E9%96%8B%E5%A7%8B%E7%9A%84%E7%B6%B2%E7%AB%99%E6%9E%B6%E8%A8%AD-3/">
+        
+        
+
+        <div class="article-details">
+            <h2 class="article-title">Nginx 從入門開始的網站架設 (3)</h2>
+        </div>
+    </a>
+</article>
+
+            
+                
+<article class="">
+    <a href="/post/nginx-%E5%BE%9E%E5%85%A5%E9%96%80%E9%96%8B%E5%A7%8B%E7%9A%84%E7%B6%B2%E7%AB%99%E6%9E%B6%E8%A8%AD-2/">
+        
+        
+
+        <div class="article-details">
+            <h2 class="article-title">Nginx 從入門開始的網站架設 (2)</h2>
+        </div>
+    </a>
+</article>
+
+            
+                
+<article class="">
+    <a href="/post/nginx-%E5%BE%9E%E5%85%A5%E9%96%80%E9%96%8B%E5%A7%8B%E7%9A%84%E7%B6%B2%E7%AB%99%E6%9E%B6%E8%A8%AD-1/">
+        
+        
+
+        <div class="article-details">
+            <h2 class="article-title">Nginx 從入門開始的網站架設 (1)</h2>
+        </div>
+    </a>
+</article>
+
+            
+        </div>
+    </div>
+</aside>
+
+     
+    
+        
+    
+
+    <footer class="site-footer">
+    <section class="copyright">
+        &copy; 
+        
+            2022 - 
+        
+        2025 Anthea&#39;s Blog
+    </section>
+    
+    <section class="powerby">
+        Built with <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> <br />
+        Theme <b><a href="https://github.com/CaiJimmy/hugo-theme-stack" target="_blank" rel="noopener" data-version="3.30.0">Stack</a></b> designed by <a href="https://jimmycai.com" target="_blank" rel="noopener">Jimmy</a>
+    </section>
+</footer>
+
+
+    
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    
+    <div class="pswp__bg"></div>
+
+    
+    <div class="pswp__scroll-wrap">
+
+        
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                
+                
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo="crossorigin="anonymous"
+                defer
+                >
+            </script><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU="crossorigin="anonymous"
+                defer
+                >
+            </script><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css"crossorigin="anonymous"
+            ><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css"crossorigin="anonymous"
+            >
+
+            </main>
+        </div>
+        <script 
+                src="https://cdn.jsdelivr.net/npm/node-vibrant@3.1.6/dist/vibrant.min.js"integrity="sha256-awcR2jno4kI5X0zL8ex0vi2z&#43;KMkF24hUW8WePSA9HM="crossorigin="anonymous"
+                
+                >
+            </script><script type="text/javascript" src="/ts/main.1e9a3bafd846ced4c345d084b355fb8c7bae75701c338f8a1f8a82c780137826.js" defer></script>
+<script>
+    (function () {
+        const customFont = document.createElement('link');
+        customFont.href = "https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap";
+
+        customFont.type = "text/css";
+        customFont.rel = "stylesheet";
+
+        document.head.appendChild(customFont);
+    }());
+</script>
+
+    </body>
+</html>

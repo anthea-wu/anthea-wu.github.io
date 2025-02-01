@@ -1,0 +1,781 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+    <head><meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content="建立 Shapefile">
+<title>GDAL 操作 ShapeFile (3)</title>
+
+<link rel='canonical' href='https://anthea-wu.github.io/post/gdal-shapefile-3/'>
+
+<link rel="stylesheet" href="/scss/style.min.663803bebe609202d5b39d848f2d7c2dc8b598a2d879efa079fa88893d29c49c.css"><meta property='og:title' content="GDAL 操作 ShapeFile (3)">
+<meta property='og:description' content="建立 Shapefile">
+<meta property='og:url' content='https://anthea-wu.github.io/post/gdal-shapefile-3/'>
+<meta property='og:site_name' content='Anthea&#39;s Blog'>
+<meta property='og:type' content='article'><meta property='article:section' content='Post' /><meta property='article:tag' content='.NET' /><meta property='article:tag' content='GDAL' /><meta property='article:published_time' content='2022-07-31T00:43:50&#43;08:00'/><meta property='article:modified_time' content='2022-07-31T00:43:50&#43;08:00'/>
+<meta name="twitter:title" content="GDAL 操作 ShapeFile (3)">
+<meta name="twitter:description" content="建立 Shapefile">
+    </head>
+    <body class="
+    article-page
+    ">
+    <script>
+        (function() {
+            const colorSchemeKey = 'StackColorScheme';
+            if(!localStorage.getItem(colorSchemeKey)){
+                localStorage.setItem(colorSchemeKey, "auto");
+            }
+        })();
+    </script><script>
+    (function() {
+        const colorSchemeKey = 'StackColorScheme';
+        const colorSchemeItem = localStorage.getItem(colorSchemeKey);
+        const supportDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches === true;
+
+        if (colorSchemeItem == 'dark' || colorSchemeItem === 'auto' && supportDarkMode) {
+            
+
+            document.documentElement.dataset.scheme = 'dark';
+        } else {
+            document.documentElement.dataset.scheme = 'light';
+        }
+    })();
+</script>
+<div class="container main-container flex on-phone--column extended"><aside class="sidebar left-sidebar sticky ">
+    <button class="hamburger hamburger--spin" type="button" id="toggle-menu" aria-label="Toggle Menu">
+        <span class="hamburger-box">
+            <span class="hamburger-inner"></span>
+        </span>
+    </button>
+
+    <header>
+        
+            
+            <figure class="site-avatar">
+                <a href="/">
+                
+                    
+                    
+                    
+                        
+                        <img src="/img/avatar_hu_d8c2fe4d260f28d7.png" width="300"
+                            height="300" class="site-logo" loading="lazy" alt="Avatar">
+                    
+                
+                </a>
+                
+            </figure>
+            
+        
+        
+        <div class="site-meta">
+            <h1 class="site-name"><a href="/">Anthea&#39;s Blog</a></h1>
+            <h2 class="site-description">Titansoft / Product Developer</h2>
+        </div>
+    </header><ol class="menu-social">
+            
+                <li>
+                    <a 
+                        href='https://github.com/anthea-wu'
+                        target="_blank"
+                        title="GitHub"
+                        rel="me"
+                    >
+                        
+                        
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-brand-github" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+  <path d="M9 19c-4.3 1.4 -4.3 -2.5 -6 -3m12 5v-3.5c0 -1 .1 -1.4 -.5 -2c2.8 -.3 5.5 -1.4 5.5 -6a4.6 4.6 0 0 0 -1.3 -3.2a4.2 4.2 0 0 0 -.1 -3.2s-1.1 -.3 -3.5 1.3a12.3 12.3 0 0 0 -6.2 0c-2.4 -1.6 -3.5 -1.3 -3.5 -1.3a4.2 4.2 0 0 0 -.1 3.2a4.6 4.6 0 0 0 -1.3 3.2c0 4.6 2.7 5.7 5.5 6c-.6 .6 -.6 1.2 -.5 2v3.5" />
+</svg>
+
+
+
+                        
+                    </a>
+                </li>
+            
+        </ol><ol class="menu" id="main-menu">
+        
+        
+        
+        <li >
+            <a href='/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-home" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <polyline points="5 12 3 12 12 3 21 12 19 12" />
+  <path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-7" />
+  <path d="M9 21v-6a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v6" />
+</svg>
+
+
+
+                
+                <span>Home</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/page/about/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-user" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="7" r="4" />
+  <path d="M6 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2" />
+</svg>
+
+
+
+                
+                <span>About</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/books' target="_blank">
+                
+                
+                
+                    <svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-book"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M3 19a9 9 0 0 1 9 0a9 9 0 0 1 9 0" /><path d="M3 6a9 9 0 0 1 9 0a9 9 0 0 1 9 0" /><path d="M3 6l0 13" /><path d="M12 6l0 13" /><path d="M21 6l0 13" /></svg>
+                
+                <span>Books</span>
+            </a>
+        </li>
+        
+        <li class="menu-bottom-section">
+            <ol class="menu">
+
+                
+                    <li id="dark-mode-toggle">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="8" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="16" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                        <span>Dark Mode</span>
+                    </li>
+                
+            </ol>
+        </li>
+    </ol>
+</aside>
+
+    
+
+            <main class="main full-width">
+    <article class="main-article">
+    <header class="article-header">
+
+    <div class="article-details">
+    
+    <header class="article-category">
+        
+            <a href="/categories/technical/" >
+                Technical
+            </a>
+        
+            <a href="/categories/gis/" >
+                GIS
+            </a>
+        
+    </header>
+    
+
+    <div class="article-title-wrapper">
+        <h2 class="article-title">
+            <a href="/post/gdal-shapefile-3/">GDAL 操作 ShapeFile (3)</a>
+        </h2>
+    
+        
+        <h3 class="article-subtitle">
+            建立 Shapefile
+        </h3>
+        
+    </div>
+
+    
+    
+    
+    
+    <footer class="article-time">
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M11.795 21h-6.795a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v4" />
+  <circle cx="18" cy="18" r="4" />
+  <path d="M15 3v4" />
+  <path d="M7 3v4" />
+  <path d="M3 11h16" />
+  <path d="M18 16.496v1.504l1 1" />
+</svg>
+                <time class="article-time--published">2022/07/31</time>
+            </div>
+        
+
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <polyline points="12 7 12 12 15 15" />
+</svg>
+
+
+
+                <time class="article-time--reading">
+                    3 minute read
+                </time>
+            </div>
+        
+    </footer>
+    
+
+    
+</div>
+
+</header>
+
+    <section class="article-content">
+    
+    
+    <p>前兩篇文章說明了如何讀取 Shapefile，接下來要介紹的是如何生成一個 Shapefile 檔案。</p>
+<h3 id="建立-shapefile-檔案">建立 Shapefile 檔案
+</h3><p>在<a class="link" href="../gdal-shapefile-2" >上一篇文章</a>中，我們讀取的檔案包含了三個資訊：ID、土地名稱還有土地面積。所以就按照這個簡單的範例，來建立一個 Shapefile 檔案吧。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-C#" data-lang="C#"><span class="line"><span class="cl"><span class="c1">// 註冊 MaxRev.Gdal.Core</span>
+</span></span><span class="line"><span class="cl"><span class="n">GdalBase</span><span class="p">.</span><span class="n">ConfigureAll</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// 註冊 GDAL</span>
+</span></span><span class="line"><span class="cl"><span class="n">Gdal</span><span class="p">.</span><span class="n">SetConfigOption</span><span class="p">(</span><span class="s">&#34;SHAPE_ENCODING&#34;</span><span class="p">,</span> <span class="s">&#34;big5&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="n">Gdal</span><span class="p">.</span><span class="n">AllRegister</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl"><span class="n">Ogr</span><span class="p">.</span><span class="n">RegisterAll</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// 建立 Driver</span>
+</span></span><span class="line"><span class="cl"><span class="kt">var</span> <span class="n">driver</span> <span class="p">=</span> <span class="n">Ogr</span><span class="p">.</span><span class="n">GetDriverByName</span><span class="p">(</span><span class="s">&#34;ESRI Shapefile&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="kt">var</span> <span class="n">source</span> <span class="p">=</span> <span class="n">driver</span><span class="p">.</span><span class="n">CreateDataSource</span><span class="p">(</span><span class="s">&#34;files/simple/create.shp&#34;</span><span class="p">,</span> <span class="kc">null</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// 座標系統設定</span>
+</span></span><span class="line"><span class="cl"><span class="kt">var</span> <span class="n">spatialReference</span> <span class="p">=</span> <span class="k">new</span> <span class="n">SpatialReference</span><span class="p">(</span><span class="s">&#34;&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="n">spatialReference</span><span class="p">.</span><span class="n">SetWellKnownGeogCS</span><span class="p">(</span><span class="s">&#34;WGS84&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// 建立 Field</span>
+</span></span><span class="line"><span class="cl"><span class="kt">var</span> <span class="n">layer</span> <span class="p">=</span> <span class="n">source</span><span class="p">.</span><span class="n">CreateLayer</span><span class="p">(</span><span class="s">&#34;layer one&#34;</span><span class="p">,</span> <span class="k">new</span> <span class="n">SpatialReference</span><span class="p">(),</span> <span class="n">wkbGeometryType</span><span class="p">.</span><span class="n">wkbPolygon</span><span class="p">,</span> <span class="kc">null</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="kt">var</span> <span class="n">fieldId</span> <span class="p">=</span> <span class="k">new</span> <span class="n">FieldDefn</span><span class="p">(</span><span class="s">&#34;Id&#34;</span><span class="p">,</span> <span class="n">FieldType</span><span class="p">.</span><span class="n">OFTInteger</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="n">layer</span><span class="p">.</span><span class="n">CreateField</span><span class="p">(</span><span class="n">fieldId</span><span class="p">,</span> <span class="p">(</span><span class="kt">int</span><span class="p">)</span><span class="n">EnumShapefileColumn</span><span class="p">.</span><span class="n">Id</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="kt">var</span> <span class="n">fieldName</span> <span class="p">=</span> <span class="k">new</span> <span class="n">FieldDefn</span><span class="p">(</span><span class="s">&#34;土地名稱&#34;</span><span class="p">,</span> <span class="n">FieldType</span><span class="p">.</span><span class="n">OFTString</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="n">layer</span><span class="p">.</span><span class="n">CreateField</span><span class="p">(</span><span class="n">fieldName</span><span class="p">,</span> <span class="p">(</span><span class="kt">int</span><span class="p">)</span><span class="n">EnumShapefileColumn</span><span class="p">.</span><span class="n">Name</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="kt">var</span> <span class="n">fieldArea</span> <span class="p">=</span> <span class="k">new</span> <span class="n">FieldDefn</span><span class="p">(</span><span class="s">&#34;土地面積&#34;</span><span class="p">,</span> <span class="n">FieldType</span><span class="p">.</span><span class="n">OFTString</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="n">layer</span><span class="p">.</span><span class="n">CreateField</span><span class="p">(</span><span class="n">fieldArea</span><span class="p">,</span> <span class="p">(</span><span class="kt">int</span><span class="p">)</span><span class="n">EnumShapefileColumn</span><span class="p">.</span><span class="n">Area</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// 建立 Feature</span>
+</span></span><span class="line"><span class="cl"><span class="kt">var</span> <span class="n">field</span> <span class="p">=</span> <span class="n">layer</span><span class="p">.</span><span class="n">GetLayerDefn</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl"><span class="kt">var</span> <span class="n">feature</span> <span class="p">=</span> <span class="k">new</span> <span class="n">Feature</span><span class="p">(</span><span class="n">field</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// 設定內容</span>
+</span></span><span class="line"><span class="cl"><span class="n">feature</span><span class="p">.</span><span class="n">SetField</span><span class="p">((</span><span class="kt">int</span><span class="p">)</span><span class="n">EnumShapefileColumn</span><span class="p">.</span><span class="n">Id</span><span class="p">,</span> <span class="m">1</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="n">feature</span><span class="p">.</span><span class="n">SetField</span><span class="p">((</span><span class="kt">int</span><span class="p">)</span><span class="n">EnumShapefileColumn</span><span class="p">.</span><span class="n">Name</span><span class="p">,</span> <span class="s">&#34;第二塊土地&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="n">feature</span><span class="p">.</span><span class="n">SetField</span><span class="p">((</span><span class="kt">int</span><span class="p">)</span><span class="n">EnumShapefileColumn</span><span class="p">.</span><span class="n">Area</span><span class="p">,</span> <span class="s">&#34;123.4&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// 設定空間資訊</span>
+</span></span><span class="line"><span class="cl"><span class="kt">var</span> <span class="n">wkt</span> <span class="p">=</span> <span class="s">&#34;POLYGON ((-1.13755980861244 0.746411483253589,-0.350478468899522 0.488038277511962,-1.06578947368421 -0.028708133971292,-1.13755980861244 0.746411483253589))&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kt">var</span> <span class="n">geometry</span> <span class="p">=</span> <span class="n">Geometry</span><span class="p">.</span><span class="n">CreateFromWkt</span><span class="p">(</span><span class="n">wkt</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="n">feature</span><span class="p">.</span><span class="n">SetGeometry</span><span class="p">(</span><span class="n">geometry</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="n">layer</span><span class="p">.</span><span class="n">CreateFeature</span><span class="p">(</span><span class="n">feature</span><span class="p">);</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="error-1-cannot-convert-to-big5">Error 1: cannot convert to big5
+</h2><p>如果你原封不動把上面的程式碼複製貼上執行的話，應該會遇到第一個錯誤：</p>
+<p><img src="/post/gdal-shapefile-3/Error1.png"
+	width="569"
+	height="319"
+	srcset="/post/gdal-shapefile-3/Error1_hu_5de160e9d245f11.png 480w, /post/gdal-shapefile-3/Error1_hu_32e6ed59f949fd7.png 1024w"
+	loading="lazy"
+	
+	
+		class="gallery-image" 
+		data-flex-grow="178"
+		data-flex-basis="428px"
+	
+></p>
+<p>這個錯誤的原因雖然有查詢到<a class="link" href="https://github.com/conda-forge/libgdal-feedstock/issues/32"  target="_blank" rel="noopener"
+    >相關的討論</a>，但我沒有看的很懂 😢 不過要解決這個問題最簡單的方法就是把第五行的部分進行下面的修改：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-C#" data-lang="C#"><span class="line"><span class="cl"><span class="c1">// 造成錯誤</span>
+</span></span><span class="line"><span class="cl"><span class="c1">// Gdal.SetConfigOption(“SHAPE_ENCODING”, “big5”);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// 修復</span>
+</span></span><span class="line"><span class="cl"><span class="n">Gdal</span><span class="p">.</span><span class="n">SetConfigOption</span><span class="p">(</span><span class="err">“</span><span class="n">SHAPE_ENCODING</span><span class="err">”</span><span class="p">,</span> <span class="err">“”</span><span class="p">);</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>好的，程式看起來可以順利執行了！不過這樣就會讓前兩篇文章的<strong>中文讀取變成亂碼</strong>，暫時還沒有更好的解法，所以就先將就一下，把讀寫的註冊分開來吧。</p>
+<hr>
+<h2 id="error-2-中文亂碼">Error 2: 中文亂碼
+</h2><p>接下來讓我們用 QGIS 檢視一下我們所產生的 Shapefile 檔案：</p>
+<p><img src="/post/gdal-shapefile-3/Output1.png"
+	width="398"
+	height="76"
+	srcset="/post/gdal-shapefile-3/Output1_hu_7f70457eb5454d56.png 480w, /post/gdal-shapefile-3/Output1_hu_c99317db28565a67.png 1024w"
+	loading="lazy"
+	
+	
+		class="gallery-image" 
+		data-flex-grow="523"
+		data-flex-basis="1256px"
+	
+></p>
+<p>第二個問題出現了，Field 如果使用中文的話會變成亂碼。不過神奇的是，當我們去 QGIS 在的設定中，把 Data Source Encoding 從 UTF-8 調整為 BIG-5 之後，亂碼的情形就反過來了：</p>
+<p><img src="/post/gdal-shapefile-3/Output2.png"
+	width="398"
+	height="78"
+	srcset="/post/gdal-shapefile-3/Output2_hu_e042d981c368426.png 480w, /post/gdal-shapefile-3/Output2_hu_ef3c892de81164ef.png 1024w"
+	loading="lazy"
+	
+	
+		class="gallery-image" 
+		data-flex-grow="510"
+		data-flex-basis="1224px"
+	
+></p>
+<p>這個問題和上一篇文章中，中文亂碼的問題原因相似，在套件中一個有先被轉為 UTF-8 的編碼，一個沒有，所以造成這樣的情況發生。</p>
+<h3 id="解決中文編碼不同的問題">解決中文編碼不同的問題
+</h3><p>最一開始以為這個問題很簡單，既然編碼不一樣，那我就先轉好再送進去就應該可以了吧！結果他的編碼是在原生的 dll 裡面進行的，我在外面先轉好一次一樣沒有用……</p>
+<p>於是就想說，既然跟上一篇文章是差不多的問題，那就使用差不多的方式，讀取原生的 method 直接進行調用即可，但卻會一直遇到 <code>Attempted to read or write protected memory. This is often an indication that other memory is corrupt.</code> 的問題，因此也放棄了這個解法。</p>
+<p>最後是查尋到一篇文章，把 <code>feature.SetField</code> 改成調用 <code>SetFieldBinaryFromHexString</code> 就完美的解決問題了！不過方法名稱都明確的顯了要使用 Hex string，所以需要利用下面的方法來把原本的字串稍作轉換：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-C#" data-lang="C#"><span class="line"><span class="cl"><span class="c1">// .NET Core 使用需安裝 Nuget 套件 System.Text.Encoding.CodePages</span>
+</span></span><span class="line"><span class="cl"><span class="c1">// Encoding.RegisterProvider(CodePagesEncodingProvider.Instance); // 可以加在使用前，或是 Program.cs</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kt">var</span> <span class="n">bytes</span> <span class="p">=</span> <span class="n">Encoding</span><span class="p">.</span><span class="n">GetEncoding</span><span class="p">(</span><span class="m">950</span><span class="p">).</span><span class="n">GetBytes</span><span class="p">(</span><span class="s">&#34;第二塊土地&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="kt">var</span> <span class="n">hexString</span> <span class="p">=</span> <span class="n">Convert</span><span class="p">.</span><span class="n">ToHexString</span><span class="p">(</span><span class="n">bytes</span><span class="p">);</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><hr>
+<p>最後檢視一下我們生產的 Shapefile 檔案，還可以發現兩個小問題：</p>
+<h3 id="error-3-預設編碼">Error 3: 預設編碼
+</h3><p>如果是先轉成 BIG-5 再轉 Hex string，可以發現一開始打開的時候還是亂碼，需要到設定裡面把 Data Source Encoding 調整為 BIG-5 後才能正常顯示。這個部分只需要在建立 Layer 的時候把最後一個參數加上 Encoding 的設定即可：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-C#" data-lang="C#"><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// 原本的設定</span>
+</span></span><span class="line"><span class="cl"><span class="kt">var</span> <span class="n">layer</span> <span class="p">=</span> <span class="n">source</span><span class="p">.</span><span class="n">CreateLayer</span><span class="p">(</span><span class="s">&#34;layer one&#34;</span><span class="p">,</span> <span class="k">new</span> <span class="n">SpatialReference</span><span class="p">(</span><span class="s">&#34;&#34;</span><span class="p">),</span> <span class="n">wkbGeometryType</span><span class="p">.</span><span class="n">wkbPolygon</span><span class="p">,</span> <span class="kc">null</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// 新增 Encoding 為 BIG-5</span>
+</span></span><span class="line"><span class="cl"><span class="kt">var</span> <span class="n">layer</span> <span class="p">=</span> <span class="n">source</span><span class="p">.</span><span class="n">CreateLayer</span><span class="p">(</span><span class="s">&#34;layer one&#34;</span><span class="p">,</span> <span class="k">new</span> <span class="n">SpatialReference</span><span class="p">(</span><span class="s">&#34;&#34;</span><span class="p">),</span> <span class="n">wkbGeometryType</span><span class="p">.</span><span class="n">wkbPolygon</span><span class="p">,</span> <span class="k">new</span><span class="p">[]{</span><span class="s">&#34;ENCODING=BIG5&#34;</span><span class="p">});</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="error-4-座標系統">Error 4: 座標系統
+</h3><p>一般來說，Shapefile 必須要有指定的座標系統，沒有的話可能會在讀取上遇到一些問題，造成後續的操作錯誤，例如：轉成 WKT 和現存的資料要進行比對的時候，可能就會因為座標系統的不同而需要進行轉換。</p>
+<p>設定座標系統的方法很簡單：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-C#" data-lang="C#"><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// 原本</span>
+</span></span><span class="line"><span class="cl"><span class="kt">var</span> <span class="n">layer</span> <span class="p">=</span> <span class="n">source</span><span class="p">.</span><span class="n">CreateLayer</span><span class="p">(</span><span class="s">&#34;layer one&#34;</span><span class="p">,</span> <span class="k">new</span> <span class="n">SpatialReference</span><span class="p">(),</span> <span class="n">wkbGeometryType</span><span class="p">.</span><span class="n">wkbPolygon</span><span class="p">,</span> <span class="k">new</span><span class="p">[]{</span><span class="s">&#34;ENCODING=BIG5&#34;</span><span class="p">});</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// 設定座標系統為 WGS84</span>
+</span></span><span class="line"><span class="cl"><span class="kt">var</span> <span class="n">spatialReference</span> <span class="p">=</span> <span class="k">new</span> <span class="n">SpatialReference</span><span class="p">(</span><span class="s">&#34;&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="n">spatialReference</span><span class="p">.</span><span class="n">SetWellKnownGeogCS</span><span class="p">(</span><span class="s">&#34;WGS84&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="kt">var</span> <span class="n">layer</span> <span class="p">=</span> <span class="n">source</span><span class="p">.</span><span class="n">CreateLayer</span><span class="p">(</span><span class="s">&#34;layer one&#34;</span><span class="p">,</span> <span class="n">spatialReference</span><span class="p">,</span> <span class="n">wkbGeometryType</span><span class="p">.</span><span class="n">wkbPolygon</span><span class="p">,</span> <span class="k">new</span><span class="p">[]{</span><span class="s">&#34;ENCODING=BIG5&#34;</span><span class="p">});</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><hr>
+<h2 id="最終版程式碼">最終版程式碼
+</h2><p>經過上面的修正和調整之後，完整的程式碼如下：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-C#" data-lang="C#"><span class="line"><span class="cl"><span class="c1">// 註冊 MaxRev.Gdal.Core</span>
+</span></span><span class="line"><span class="cl"><span class="n">GdalBase</span><span class="p">.</span><span class="n">ConfigureAll</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// 註冊 GDAL</span>
+</span></span><span class="line"><span class="cl"><span class="n">Gdal</span><span class="p">.</span><span class="n">SetConfigOption</span><span class="p">(</span><span class="s">&#34;SHAPE_ENCODING&#34;</span><span class="p">,</span> <span class="s">&#34;big5&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="n">Gdal</span><span class="p">.</span><span class="n">AllRegister</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl"><span class="n">Ogr</span><span class="p">.</span><span class="n">RegisterAll</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// 建立 Driver</span>
+</span></span><span class="line"><span class="cl"><span class="kt">var</span> <span class="n">driver</span> <span class="p">=</span> <span class="n">Ogr</span><span class="p">.</span><span class="n">GetDriverByName</span><span class="p">(</span><span class="s">&#34;ESRI Shapefile&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="kt">var</span> <span class="n">source</span> <span class="p">=</span> <span class="n">driver</span><span class="p">.</span><span class="n">CreateDataSource</span><span class="p">(</span><span class="s">&#34;files/simple/create.shp&#34;</span><span class="p">,</span> <span class="kc">null</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// 座標系統設定</span>
+</span></span><span class="line"><span class="cl"><span class="kt">var</span> <span class="n">spatialReference</span> <span class="p">=</span> <span class="k">new</span> <span class="n">SpatialReference</span><span class="p">(</span><span class="s">&#34;&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="n">spatialReference</span><span class="p">.</span><span class="n">SetWellKnownGeogCS</span><span class="p">(</span><span class="s">&#34;WGS84&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// 建立 Field</span>
+</span></span><span class="line"><span class="cl"><span class="kt">var</span> <span class="n">spatialReference</span> <span class="p">=</span> <span class="k">new</span> <span class="n">SpatialReference</span><span class="p">(</span><span class="s">&#34;&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="n">spatialReference</span><span class="p">.</span><span class="n">SetWellKnownGeogCS</span><span class="p">(</span><span class="s">&#34;WGS84&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="kt">var</span> <span class="n">layer</span> <span class="p">=</span> <span class="n">source</span><span class="p">.</span><span class="n">CreateLayer</span><span class="p">(</span><span class="s">&#34;layer one&#34;</span><span class="p">,</span> <span class="n">spatialReference</span><span class="p">,</span> <span class="n">wkbGeometryType</span><span class="p">.</span><span class="n">wkbPolygon</span><span class="p">,</span> <span class="k">new</span><span class="p">[]{</span><span class="s">&#34;ENCODING=BIG5&#34;</span><span class="p">});</span>
+</span></span><span class="line"><span class="cl"><span class="kt">var</span> <span class="n">fieldId</span> <span class="p">=</span> <span class="k">new</span> <span class="n">FieldDefn</span><span class="p">(</span><span class="s">&#34;Id&#34;</span><span class="p">,</span> <span class="n">FieldType</span><span class="p">.</span><span class="n">OFTInteger</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="n">layer</span><span class="p">.</span><span class="n">CreateField</span><span class="p">(</span><span class="n">fieldId</span><span class="p">,</span> <span class="p">(</span><span class="kt">int</span><span class="p">)</span><span class="n">EnumShapefileColumn</span><span class="p">.</span><span class="n">Id</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="kt">var</span> <span class="n">fieldName</span> <span class="p">=</span> <span class="k">new</span> <span class="n">FieldDefn</span><span class="p">(</span><span class="s">&#34;土地名稱&#34;</span><span class="p">,</span> <span class="n">FieldType</span><span class="p">.</span><span class="n">OFTString</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="n">layer</span><span class="p">.</span><span class="n">CreateField</span><span class="p">(</span><span class="n">fieldName</span><span class="p">,</span> <span class="p">(</span><span class="kt">int</span><span class="p">)</span><span class="n">EnumShapefileColumn</span><span class="p">.</span><span class="n">Name</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="kt">var</span> <span class="n">fieldArea</span> <span class="p">=</span> <span class="k">new</span> <span class="n">FieldDefn</span><span class="p">(</span><span class="s">&#34;土地面積&#34;</span><span class="p">,</span> <span class="n">FieldType</span><span class="p">.</span><span class="n">OFTString</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="n">layer</span><span class="p">.</span><span class="n">CreateField</span><span class="p">(</span><span class="n">fieldArea</span><span class="p">,</span> <span class="p">(</span><span class="kt">int</span><span class="p">)</span><span class="n">EnumShapefileColumn</span><span class="p">.</span><span class="n">Area</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// 建立 Feature</span>
+</span></span><span class="line"><span class="cl"><span class="kt">var</span> <span class="n">field</span> <span class="p">=</span> <span class="n">layer</span><span class="p">.</span><span class="n">GetLayerDefn</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl"><span class="kt">var</span> <span class="n">feature</span> <span class="p">=</span> <span class="k">new</span> <span class="n">Feature</span><span class="p">(</span><span class="n">field</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// 設定內容</span>
+</span></span><span class="line"><span class="cl"><span class="kt">var</span> <span class="n">bytes</span> <span class="p">=</span> <span class="n">Encoding</span><span class="p">.</span><span class="n">GetEncoding</span><span class="p">(</span><span class="m">950</span><span class="p">).</span><span class="n">GetBytes</span><span class="p">(</span><span class="s">&#34;第二塊土地&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="kt">var</span> <span class="n">hexString</span> <span class="p">=</span> <span class="n">Convert</span><span class="p">.</span><span class="n">ToHexString</span><span class="p">(</span><span class="n">bytes</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="n">feature</span><span class="p">.</span><span class="n">SetField</span><span class="p">((</span><span class="kt">int</span><span class="p">)</span><span class="n">EnumShapefileColumn</span><span class="p">.</span><span class="n">Id</span><span class="p">,</span> <span class="m">1</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="n">feature</span><span class="p">.</span><span class="n">SetField</span><span class="p">((</span><span class="kt">int</span><span class="p">)</span><span class="n">EnumShapefileColumn</span><span class="p">.</span><span class="n">Name</span><span class="p">,</span> <span class="n">hexString</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="n">feature</span><span class="p">.</span><span class="n">SetField</span><span class="p">((</span><span class="kt">int</span><span class="p">)</span><span class="n">EnumShapefileColumn</span><span class="p">.</span><span class="n">Area</span><span class="p">,</span> <span class="s">&#34;123.4&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// 設定空間資訊</span>
+</span></span><span class="line"><span class="cl"><span class="kt">var</span> <span class="n">wkt</span> <span class="p">=</span> <span class="s">&#34;POLYGON ((-1.13755980861244 0.746411483253589,-0.350478468899522 0.488038277511962,-1.06578947368421 -0.028708133971292,-1.13755980861244 0.746411483253589))&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kt">var</span> <span class="n">geometry</span> <span class="p">=</span> <span class="n">Geometry</span><span class="p">.</span><span class="n">CreateFromWkt</span><span class="p">(</span><span class="n">wkt</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="n">feature</span><span class="p">.</span><span class="n">SetGeometry</span><span class="p">(</span><span class="n">geometry</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="n">layer</span><span class="p">.</span><span class="n">CreateFeature</span><span class="p">(</span><span class="n">feature</span><span class="p">);</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>感謝大家的觀看！有任何錯誤還請各位大大不吝指教，有任何問題也歡迎來信跟我討論喔 😉</p>
+<blockquote>
+<p>參考文章</p>
+<ul>
+<li><a class="link" href="https://blog.csdn.net/qq_34045114/article/details/84133815"  target="_blank" rel="noopener"
+    >gdal for android 開發包，字段屬性為中文出現亂碼</a></li>
+</ul>
+</blockquote>
+
+</section>
+
+
+    <footer class="article-footer">
+    
+    <section class="article-tags">
+        
+            <a href="/tags/.net/">.NET</a>
+        
+            <a href="/tags/gdal/">GDAL</a>
+        
+    </section>
+
+
+    </footer>
+
+
+    
+</article>
+
+    
+
+    
+
+<aside class="related-content--wrapper">
+    <h2 class="section-title">Related content</h2>
+    <div class="related-content">
+        <div class="flex article-list--tile">
+            
+                
+<article class="">
+    <a href="/post/gdal-%E6%93%8D%E4%BD%9C-shapefile-2/">
+        
+        
+
+        <div class="article-details">
+            <h2 class="article-title">GDAL 操作 ShapeFile (2)</h2>
+        </div>
+    </a>
+</article>
+
+            
+                
+<article class="">
+    <a href="/post/gdal-%E6%93%8D%E4%BD%9C-shapefile-1/">
+        
+        
+
+        <div class="article-details">
+            <h2 class="article-title">GDAL 操作 ShapeFile (1)</h2>
+        </div>
+    </a>
+</article>
+
+            
+                
+<article class="">
+    <a href="/post/%E5%90%8C%E4%B8%80%E5%80%8B%E4%BB%8B%E9%9D%A2%E5%A4%9A%E5%80%8B%E5%AF%A6%E4%BD%9C%E7%9A%84%E8%A8%BB%E5%86%8A/">
+        
+        
+
+        <div class="article-details">
+            <h2 class="article-title">同一個介面多個實作的註冊</h2>
+        </div>
+    </a>
+</article>
+
+            
+                
+<article class="">
+    <a href="/post/google-calendar-api/">
+        
+        
+
+        <div class="article-details">
+            <h2 class="article-title">Google Calendar API</h2>
+        </div>
+    </a>
+</article>
+
+            
+        </div>
+    </div>
+</aside>
+
+     
+    
+        
+    
+
+    <footer class="site-footer">
+    <section class="copyright">
+        &copy; 
+        
+            2022 - 
+        
+        2025 Anthea&#39;s Blog
+    </section>
+    
+    <section class="powerby">
+        Built with <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> <br />
+        Theme <b><a href="https://github.com/CaiJimmy/hugo-theme-stack" target="_blank" rel="noopener" data-version="3.30.0">Stack</a></b> designed by <a href="https://jimmycai.com" target="_blank" rel="noopener">Jimmy</a>
+    </section>
+</footer>
+
+
+    
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    
+    <div class="pswp__bg"></div>
+
+    
+    <div class="pswp__scroll-wrap">
+
+        
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                
+                
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo="crossorigin="anonymous"
+                defer
+                >
+            </script><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU="crossorigin="anonymous"
+                defer
+                >
+            </script><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css"crossorigin="anonymous"
+            ><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css"crossorigin="anonymous"
+            >
+
+            </main>
+        </div>
+        <script 
+                src="https://cdn.jsdelivr.net/npm/node-vibrant@3.1.6/dist/vibrant.min.js"integrity="sha256-awcR2jno4kI5X0zL8ex0vi2z&#43;KMkF24hUW8WePSA9HM="crossorigin="anonymous"
+                
+                >
+            </script><script type="text/javascript" src="/ts/main.1e9a3bafd846ced4c345d084b355fb8c7bae75701c338f8a1f8a82c780137826.js" defer></script>
+<script>
+    (function () {
+        const customFont = document.createElement('link');
+        customFont.href = "https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap";
+
+        customFont.type = "text/css";
+        customFont.rel = "stylesheet";
+
+        document.head.appendChild(customFont);
+    }());
+</script>
+
+    </body>
+</html>
