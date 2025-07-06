@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Git on Anthea's Blog</title><link>https://anthea-wu.github.io/categories/git/</link><description>Recent content in Git on Anthea's Blog</description><generator>Hugo -- gohugo.io</generator><language>en</language><lastBuildDate>Sun, 16 Mar 2025 10:00:00 +0800</lastBuildDate><atom:link href="https://anthea-wu.github.io/categories/git/index.xml" rel="self" type="application/rss+xml"/><item><title>如何在 local 設置 Git Pre-commit Hook</title><link>https://anthea-wu.github.io/post/git-pre-commit-hook-local-setup/</link><pubDate>Sun, 16 Mar 2025 10:00:00 +0800</pubDate><guid>https://anthea-wu.github.io/post/git-pre-commit-hook-local-setup/</guid><description>&lt;h2 id="什麼是-pre-commit-hook">什麼是 Pre-commit Hook
+&lt;/h2>&lt;p>Git pre-commit hook 是一種本地腳本，在跑 git commit 命令時會自動執行。這些 hook 可以用來確保程式碼品質，例如 run test、TypeScript 型別檢查、執行 ES Lint 等等，確保只有合格的程式碼才能被提交。&lt;/p>
+&lt;h2 id="local-hook-的好處">Local Hook 的好處
+&lt;/h2>&lt;ul>
+&lt;li>只影響 local，不會干擾其他團隊成員 → 以我們團隊來說，因為每個人電腦規格不同，如果大家 commit 前都需要跑過一次測試可能會很沒有效率，所以我選擇只寫在自己的 local 上&lt;/li>
+&lt;li>不需要修改專案的 package.json&lt;/li>
+&lt;li>不會被提交到版本庫&lt;/li>
+&lt;li>可以根據個人需求自定義檢查內容&lt;/li>
+&lt;/ul>
+&lt;h2 id="設置步驟">設置步驟
+&lt;/h2>&lt;h3 id="1-建立-hooks-目錄">1. 建立 hooks 目錄
+&lt;/h3>&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-bash" data-lang="bash">&lt;span class="line">&lt;span class="cl">mkdir -p .git/hooks
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;h3 id="2-建立-pre-commit-檔案">2. 建立 pre-commit 檔案
+&lt;/h3>&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-bash" data-lang="bash">&lt;span class="line">&lt;span class="cl">touch .git/hooks/pre-commit
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;h3 id="3-編寫-pre-commit-腳本">3. 編寫 pre-commit 腳本
+&lt;/h3>&lt;p>將以下內容寫入 &lt;code>.git/hooks/pre-commit&lt;/code> 檔案：&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt"> 1
+&lt;/span>&lt;span class="lnt"> 2
+&lt;/span>&lt;span class="lnt"> 3
+&lt;/span>&lt;span class="lnt"> 4
+&lt;/span>&lt;span class="lnt"> 5
+&lt;/span>&lt;span class="lnt"> 6
+&lt;/span>&lt;span class="lnt"> 7
+&lt;/span>&lt;span class="lnt"> 8
+&lt;/span>&lt;span class="lnt"> 9
+&lt;/span>&lt;span class="lnt">10
+&lt;/span>&lt;span class="lnt">11
+&lt;/span>&lt;span class="lnt">12
+&lt;/span>&lt;span class="lnt">13
+&lt;/span>&lt;span class="lnt">14
+&lt;/span>&lt;span class="lnt">15
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-bash" data-lang="bash">&lt;span class="line">&lt;span class="cl">&lt;span class="cp">#!/bin/sh
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="cp">&lt;/span>&lt;span class="nb">echo&lt;/span> &lt;span class="s2">&amp;#34;Running pre-commit hook: tests and type checking...&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1"># Exit on error&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nb">set&lt;/span> -e
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1"># Run tests&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nb">echo&lt;/span> &lt;span class="s2">&amp;#34;Running tests...&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">npm run &lt;span class="nb">test&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1"># Run type checking&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nb">echo&lt;/span> &lt;span class="s2">&amp;#34;Running type checking...&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">npm run tsc
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nb">echo&lt;/span> &lt;span class="s2">&amp;#34;All checks passed! Proceeding with commit.&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;h3 id="4-設定執行權限">4. 設定執行權限
+&lt;/h3>&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-bash" data-lang="bash">&lt;span class="line">&lt;span class="cl">chmod +x .git/hooks/pre-commit
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;h2 id="測試與使用">測試與使用
+&lt;/h2>&lt;p>建立一個測試 commit：&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;span class="lnt">2
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-bash" data-lang="bash">&lt;span class="line">&lt;span class="cl">git add .
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">git commit -m &lt;span class="s2">&amp;#34;Test commit&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>如果設置正確，執行後就會看到測試與 TypeScript 型別檢查完後才會真的 commit 成功。&lt;/p>
+&lt;p>如果需要臨時跳過 hook 檢查：&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-bash" data-lang="bash">&lt;span class="line">&lt;span class="cl">git commit --no-verify
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;h2 id="qa">Q&amp;amp;A
+&lt;/h2>&lt;p>&lt;strong>如果我設定了這個 pre-commit 的內容，是不是連後端專案的 commit 都會跑過這個 pre-commit？&lt;/strong>&lt;/p>
+&lt;p>pre-commit hook 是儲存在每個 Git 儲存庫的 &lt;code>.git/hooks&lt;/code> 目錄中，只對該特定儲存庫有效。&lt;/p>
+&lt;p>所以說，我們在哪個專案中設定的 pre-commit hook：&lt;/p>
+&lt;ul>
+&lt;li>只會在對這個專案進行 commit 時執行&lt;/li>
+&lt;li>不會影響電腦上的其他專案（如後端專案）&lt;/li>
+&lt;li>每個 Git 儲存庫都有自己獨立的 hooks 設定&lt;/li>
+&lt;/ul></description></item></channel></rss>
