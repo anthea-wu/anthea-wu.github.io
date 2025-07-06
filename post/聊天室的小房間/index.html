@@ -1,0 +1,455 @@
+<!doctype html><html lang=en dir=ltr><head><meta charset=utf-8><meta name=viewport content='width=device-width,initial-scale=1'><meta name=description content=".NET SignalR 的學習與應用（2）"><title>聊天室的小房間</title><link rel=canonical href=https://anthea-wu.github.io/post/%E8%81%8A%E5%A4%A9%E5%AE%A4%E7%9A%84%E5%B0%8F%E6%88%BF%E9%96%93/><link rel=stylesheet href=/scss/style.min.946cca6c6259ef94ac55abfae7c7bf3291ea3ed5eea17ef77500b257217c6710.css><meta property='og:title' content="聊天室的小房間"><meta property='og:description' content=".NET SignalR 的學習與應用（2）"><meta property='og:url' content='https://anthea-wu.github.io/post/%E8%81%8A%E5%A4%A9%E5%AE%A4%E7%9A%84%E5%B0%8F%E6%88%BF%E9%96%93/'><meta property='og:site_name' content="Anthea's Blog"><meta property='og:type' content='article'><meta property='article:section' content='Post'><meta property='article:tag' content='.NET'><meta property='article:tag' content='SignalR'><meta property='article:tag' content='WebSocket'><meta property='article:tag' content='Groups'><meta property='article:published_time' content='2025-01-07T21:00:00+08:00'><meta property='article:modified_time' content='2025-01-07T21:00:00+08:00'><meta name=twitter:title content="聊天室的小房間"><meta name=twitter:description content=".NET SignalR 的學習與應用（2）"><script async src="https://www.googletagmanager.com/gtag/js?id=G-WDCDS5VPR1"></script><script>var dnt,doNotTrack=!1;if(!1&&(dnt=navigator.doNotTrack||window.doNotTrack||navigator.msDoNotTrack,doNotTrack=dnt=="1"||dnt=="yes"),!doNotTrack){window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag("js",new Date),gtag("config","G-WDCDS5VPR1")}</script></head><body class=article-page><script>(function(){const e="StackColorScheme";localStorage.getItem(e)||localStorage.setItem(e,"auto")})()</script><script>(function(){const t="StackColorScheme",e=localStorage.getItem(t),n=window.matchMedia("(prefers-color-scheme: dark)").matches===!0;e=="dark"||e==="auto"&&n?document.documentElement.dataset.scheme="dark":document.documentElement.dataset.scheme="light"})()</script><div class="container main-container flex on-phone--column extended"><aside class="sidebar left-sidebar sticky"><button class="hamburger hamburger--spin" type=button id=toggle-menu aria-label="Toggle Menu">
+<span class=hamburger-box><span class=hamburger-inner></span></span></button><header><figure class=site-avatar><a href=/><img src=/img/avatar_hu_d8c2fe4d260f28d7.png width=300 height=300 class=site-logo loading=lazy alt=Avatar></a></figure><div class=site-meta><h1 class=site-name><a href=/>Anthea's Blog</a></h1><h2 class=site-description>Titansoft / Product Developer</h2></div></header><ol class=menu-social><li><a href=https://github.com/anthea-wu target=_blank title=GitHub rel=me><svg class="icon icon-tabler icon-tabler-brand-github" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M9 19c-4.3 1.4-4.3-2.5-6-3m12 5v-3.5c0-1 .1-1.4-.5-2 2.8-.3 5.5-1.4 5.5-6a4.6 4.6.0 00-1.3-3.2 4.2 4.2.0 00-.1-3.2s-1.1-.3-3.5 1.3a12.3 12.3.0 00-6.2.0C6.5 2.8 5.4 3.1 5.4 3.1a4.2 4.2.0 00-.1 3.2A4.6 4.6.0 004 9.5c0 4.6 2.7 5.7 5.5 6-.6.6-.6 1.2-.5 2V21"/></svg></a></li></ol><ol class=menu id=main-menu><li><a href=/><svg class="icon icon-tabler icon-tabler-home" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><polyline points="5 12 3 12 12 3 21 12 19 12"/><path d="M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7"/><path d="M9 21v-6a2 2 0 012-2h2a2 2 0 012 2v6"/></svg>
+<span>Home</span></a></li><li><a href=/page/about/><svg class="icon icon-tabler icon-tabler-user" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="7" r="4"/><path d="M6 21v-2a4 4 0 014-4h4a4 4 0 014 4v2"/></svg>
+<span>About</span></a></li><li><a href=/page/archives/><svg class="icon icon-tabler icon-tabler-archive" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><rect x="3" y="4" width="18" height="4" rx="2"/><path d="M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8"/><line x1="10" y1="12" x2="14" y2="12"/></svg>
+<span>Archives</span></a></li><li><a href=/page/search/><svg class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="10" cy="10" r="7"/><line x1="21" y1="21" x2="15" y2="15"/></svg>
+<span>Search</span></a></li><li><a href=/books target=_blank><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-book"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M3 19a9 9 0 019 0 9 9 0 019 0"/><path d="M3 6a9 9 0 019 0 9 9 0 019 0"/><path d="M3 6v13"/><path d="M12 6v13"/><path d="M21 6v13"/></svg>
+<span>Books</span></a></li><li class=menu-bottom-section><ol class=menu><li id=dark-mode-toggle><svg class="icon icon-tabler icon-tabler-toggle-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="8" cy="12" r="2"/><rect x="2" y="6" width="20" height="12" rx="6"/></svg>
+<svg class="icon icon-tabler icon-tabler-toggle-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="16" cy="12" r="2"/><rect x="2" y="6" width="20" height="12" rx="6"/></svg>
+<span>Dark Mode</span></li></ol></li></ol></aside><aside class="sidebar right-sidebar sticky"><section class="widget archives"><div class=widget-icon><svg class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><line x1="5" y1="9" x2="19" y2="9"/><line x1="5" y1="15" x2="19" y2="15"/><line x1="11" y1="4" x2="7" y2="20"/><line x1="17" y1="4" x2="13" y2="20"/></svg></div><h2 class="widget-title section-title">Table of contents</h2><div class=widget--toc><nav id=TableOfContents><ul><li><a href=#signalr-groups-簡介>SignalR Groups 簡介</a><ul><li><a href=#groups-主要特點>Groups 主要特點</a></li></ul></li><li><a href=#實作步驟>實作步驟</a><ul><li><a href=#1-服務器端實現>1. 服務器端實現</a></li><li><a href=#2-客戶端實現>2. 客戶端實現</a></li></ul></li><li><a href=#測試效果>測試效果</a></li></ul></nav></div></section></aside><main class="main full-width"><article class=main-article><header class=article-header><div class=article-details><header class=article-category><a href=/categories/technical/>Technical</a></header><div class=article-title-wrapper><h2 class=article-title><a href=/post/%E8%81%8A%E5%A4%A9%E5%AE%A4%E7%9A%84%E5%B0%8F%E6%88%BF%E9%96%93/>聊天室的小房間</a></h2><h3 class=article-subtitle>.NET SignalR 的學習與應用（2）</h3></div><footer class=article-time><div><svg class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M11.795 21H5a2 2 0 01-2-2V7a2 2 0 012-2h12a2 2 0 012 2v4"/><circle cx="18" cy="18" r="4"/><path d="M15 3v4"/><path d="M7 3v4"/><path d="M3 11h16"/><path d="M18 16.496V18l1 1"/></svg>
+<time class=article-time--published>2025/01/07</time></div><div><svg class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/></svg>
+<time class=article-time--reading>4 minute read</time></div></footer></div></header><section class=article-content><h2 id=signalr-groups-簡介>SignalR Groups 簡介</h2><p>延續上一篇文章介紹的 SignalR 聊天室概念，這次要來聊聊「小房間」功能。如果你熟悉 Discord，可以把 SignalR Groups 想像成 Discord 的語音或文字頻道，每個頻道就是一個 Group，使用者可以進出不同的頻道來交流。</p><p>SignalR 的 Groups 讓我們可以把連接的使用者分成不同的「小房間」，用來實現群組聊天、特定用戶廣播等功能。每個使用者可以同時在多個房間裡，這讓訊息傳遞變得很彈性。</p><h3 id=groups-主要特點>Groups 主要特點</h3><ul><li><p><strong>動態管理</strong>：你可以隨時讓使用者加入或退出房間，像是隨時加入或離開 Discord 頻道一樣。</p></li><li><p><strong>臨時性</strong>：房間成員資料只存在伺服器記憶體裡，伺服器重啟後就會清空，不用擔心長期維護。</p></li><li><p><strong>廣播效率</strong>：可以一次把訊息發給整個房間的人，不需要重複發送。</p></li><li><p><strong>多組成員</strong>：同一個使用者可以同時待在很多房間，就像你可以加入好幾個 Discord 頻道一樣。</p></li></ul><h2 id=實作步驟>實作步驟</h2><h3 id=1-服務器端實現>1. 服務器端實現</h3><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span><span class=lnt>28
+</span><span class=lnt>29
+</span><span class=lnt>30
+</span><span class=lnt>31
+</span><span class=lnt>32
+</span><span class=lnt>33
+</span><span class=lnt>34
+</span><span class=lnt>35
+</span><span class=lnt>36
+</span><span class=lnt>37
+</span><span class=lnt>38
+</span><span class=lnt>39
+</span><span class=lnt>40
+</span><span class=lnt>41
+</span><span class=lnt>42
+</span><span class=lnt>43
+</span><span class=lnt>44
+</span><span class=lnt>45
+</span><span class=lnt>46
+</span><span class=lnt>47
+</span><span class=lnt>48
+</span><span class=lnt>49
+</span><span class=lnt>50
+</span><span class=lnt>51
+</span><span class=lnt>52
+</span><span class=lnt>53
+</span><span class=lnt>54
+</span><span class=lnt>55
+</span><span class=lnt>56
+</span><span class=lnt>57
+</span><span class=lnt>58
+</span><span class=lnt>59
+</span><span class=lnt>60
+</span><span class=lnt>61
+</span><span class=lnt>62
+</span><span class=lnt>63
+</span><span class=lnt>64
+</span><span class=lnt>65
+</span><span class=lnt>66
+</span><span class=lnt>67
+</span><span class=lnt>68
+</span><span class=lnt>69
+</span><span class=lnt>70
+</span><span class=lnt>71
+</span><span class=lnt>72
+</span><span class=lnt>73
+</span><span class=lnt>74
+</span><span class=lnt>75
+</span><span class=lnt>76
+</span><span class=lnt>77
+</span><span class=lnt>78
+</span><span class=lnt>79
+</span><span class=lnt>80
+</span><span class=lnt>81
+</span><span class=lnt>82
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-csharp data-lang=csharp><span class=line><span class=cl><span class=k>using</span> <span class=nn>Microsoft.AspNetCore.SignalR</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=k>namespace</span> <span class=nn>WebApiDemo.Hubs</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=kd>public</span> <span class=k>class</span> <span class=nc>ChatHub</span> <span class=p>:</span> <span class=n>Hub</span>
+</span></span><span class=line><span class=cl><span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=c1>// 使用 Dictionary 追踪用戶所在的房間</span>
+</span></span><span class=line><span class=cl>    <span class=kd>private</span> <span class=kd>static</span> <span class=k>readonly</span> <span class=n>Dictionary</span><span class=p>&lt;</span><span class=kt>string</span><span class=p>,</span> <span class=kt>string</span><span class=p>&gt;</span> <span class=n>UserRooms</span> <span class=p>=</span> <span class=k>new</span><span class=p>();</span>
+</span></span><span class=line><span class=cl>    <span class=kd>private</span> <span class=kd>static</span> <span class=k>readonly</span> <span class=kt>string</span><span class=p>[]</span> <span class=n>SensitiveWords</span> <span class=p>=</span> <span class=k>new</span><span class=p>[]</span> <span class=p>{</span> <span class=s>&#34;討厭&#34;</span><span class=p>,</span> <span class=s>&#34;笨蛋&#34;</span><span class=p>,</span> <span class=s>&#34;白痴&#34;</span> <span class=p>};</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=c1>// 前置需求：記得在 Program.cs 中設定 SignalR 服務</span>
+</span></span><span class=line><span class=cl>    <span class=c1>// builder.Services.AddSignalR();</span>
+</span></span><span class=line><span class=cl>    <span class=c1>// app.MapHub&lt;ChatHub&gt;(&#34;/chatHub&#34;);</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=c1>// 加入房間的方法</span>
+</span></span><span class=line><span class=cl>    <span class=kd>public</span> <span class=kd>async</span> <span class=n>Task</span> <span class=n>JoinRoom</span><span class=p>(</span><span class=kt>string</span> <span class=n>user</span><span class=p>,</span> <span class=kt>string</span> <span class=n>roomName</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>    <span class=p>{</span>
+</span></span><span class=line><span class=cl>        <span class=c1>// 檢查用戶是否已在其他房間</span>
+</span></span><span class=line><span class=cl>        <span class=k>if</span> <span class=p>(</span><span class=n>UserRooms</span><span class=p>.</span><span class=n>TryGetValue</span><span class=p>(</span><span class=n>Context</span><span class=p>.</span><span class=n>ConnectionId</span><span class=p>,</span> <span class=k>out</span> <span class=kt>string?</span> <span class=n>oldRoom</span><span class=p>))</span>
+</span></span><span class=line><span class=cl>        <span class=p>{</span>
+</span></span><span class=line><span class=cl>            <span class=c1>// 從舊房間移除</span>
+</span></span><span class=line><span class=cl>            <span class=k>await</span> <span class=n>Groups</span><span class=p>.</span><span class=n>RemoveFromGroupAsync</span><span class=p>(</span><span class=n>Context</span><span class=p>.</span><span class=n>ConnectionId</span><span class=p>,</span> <span class=n>oldRoom</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>            <span class=c1>// 通知舊房間的其他用戶</span>
+</span></span><span class=line><span class=cl>            <span class=k>await</span> <span class=n>Clients</span><span class=p>.</span><span class=n>Group</span><span class=p>(</span><span class=n>oldRoom</span><span class=p>).</span><span class=n>SendAsync</span><span class=p>(</span><span class=s>&#34;ReceiveSystemMessage&#34;</span><span class=p>,</span> 
+</span></span><span class=line><span class=cl>                <span class=s>$&#34;用戶 {user} 離開了房間&#34;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>        <span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>        <span class=c1>// 將用戶加入新房間</span>
+</span></span><span class=line><span class=cl>        <span class=k>await</span> <span class=n>Groups</span><span class=p>.</span><span class=n>AddToGroupAsync</span><span class=p>(</span><span class=n>Context</span><span class=p>.</span><span class=n>ConnectionId</span><span class=p>,</span> <span class=n>roomName</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>        <span class=c1>// 更新用戶房間記錄</span>
+</span></span><span class=line><span class=cl>        <span class=n>UserRooms</span><span class=p>[</span><span class=n>Context</span><span class=p>.</span><span class=n>ConnectionId</span><span class=p>]</span> <span class=p>=</span> <span class=n>roomName</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>        <span class=c1>// 通知新房間的所有用戶</span>
+</span></span><span class=line><span class=cl>        <span class=k>await</span> <span class=n>Clients</span><span class=p>.</span><span class=n>Group</span><span class=p>(</span><span class=n>roomName</span><span class=p>).</span><span class=n>SendAsync</span><span class=p>(</span><span class=s>&#34;ReceiveSystemMessage&#34;</span><span class=p>,</span> 
+</span></span><span class=line><span class=cl>            <span class=s>$&#34;用戶 {user} 加入了房間&#34;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=kd>public</span> <span class=kd>async</span> <span class=n>Task</span> <span class=n>SendMessage</span><span class=p>(</span><span class=kt>string</span> <span class=n>user</span><span class=p>,</span> <span class=kt>string</span> <span class=n>message</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>    <span class=p>{</span>
+</span></span><span class=line><span class=cl>        <span class=k>if</span> <span class=p>(</span><span class=n>ContainsSensitiveWords</span><span class=p>(</span><span class=n>message</span><span class=p>,</span> <span class=k>out</span> <span class=kt>string</span> <span class=n>foundWord</span><span class=p>))</span>
+</span></span><span class=line><span class=cl>        <span class=p>{</span>
+</span></span><span class=line><span class=cl>            <span class=k>await</span> <span class=n>Clients</span><span class=p>.</span><span class=n>Caller</span><span class=p>.</span><span class=n>SendAsync</span><span class=p>(</span><span class=s>&#34;ReceiveSystemMessage&#34;</span><span class=p>,</span> 
+</span></span><span class=line><span class=cl>                <span class=s>$&#34;消息包含敏感詞「{foundWord}」，已被攔截&#34;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>            <span class=k>return</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>        <span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>        <span class=c1>// 檢查用戶所在的房間</span>
+</span></span><span class=line><span class=cl>        <span class=k>if</span> <span class=p>(</span><span class=n>UserRooms</span><span class=p>.</span><span class=n>TryGetValue</span><span class=p>(</span><span class=n>Context</span><span class=p>.</span><span class=n>ConnectionId</span><span class=p>,</span> <span class=k>out</span> <span class=kt>string?</span> <span class=n>room</span><span class=p>))</span>
+</span></span><span class=line><span class=cl>        <span class=p>{</span>
+</span></span><span class=line><span class=cl>            <span class=c1>// 只向同一房間的用戶發送消息</span>
+</span></span><span class=line><span class=cl>            <span class=k>await</span> <span class=n>Clients</span><span class=p>.</span><span class=n>Group</span><span class=p>(</span><span class=n>room</span><span class=p>).</span><span class=n>SendAsync</span><span class=p>(</span><span class=s>&#34;ReceiveMessage&#34;</span><span class=p>,</span> <span class=n>user</span><span class=p>,</span> <span class=n>message</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>        <span class=p>}</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=kd>private</span> <span class=kt>bool</span> <span class=n>ContainsSensitiveWords</span><span class=p>(</span><span class=kt>string</span> <span class=n>message</span><span class=p>,</span> <span class=k>out</span> <span class=kt>string</span> <span class=n>foundWord</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>    <span class=p>{</span>
+</span></span><span class=line><span class=cl>        <span class=n>foundWord</span> <span class=p>=</span> <span class=n>SensitiveWords</span><span class=p>.</span><span class=n>FirstOrDefault</span><span class=p>(</span><span class=n>word</span> <span class=p>=&gt;</span> 
+</span></span><span class=line><span class=cl>            <span class=n>message</span><span class=p>.</span><span class=n>Contains</span><span class=p>(</span><span class=n>word</span><span class=p>,</span> <span class=n>StringComparison</span><span class=p>.</span><span class=n>OrdinalIgnoreCase</span><span class=p>));</span>
+</span></span><span class=line><span class=cl>        
+</span></span><span class=line><span class=cl>        <span class=k>return</span> <span class=n>foundWord</span> <span class=p>!=</span> <span class=kc>null</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=c1>// 當新客戶端連接時觸發</span>
+</span></span><span class=line><span class=cl>    <span class=kd>public</span> <span class=kd>override</span> <span class=kd>async</span> <span class=n>Task</span> <span class=n>OnConnectedAsync</span><span class=p>()</span>
+</span></span><span class=line><span class=cl>    <span class=p>{</span>
+</span></span><span class=line><span class=cl>        <span class=c1>// Context.ConnectionId: 每個連接的唯一標識</span>
+</span></span><span class=line><span class=cl>        <span class=k>await</span> <span class=n>Clients</span><span class=p>.</span><span class=n>All</span><span class=p>.</span><span class=n>SendAsync</span><span class=p>(</span><span class=s>&#34;UserConnected&#34;</span><span class=p>,</span> <span class=n>Context</span><span class=p>.</span><span class=n>ConnectionId</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>        <span class=k>await</span> <span class=k>base</span><span class=p>.</span><span class=n>OnConnectedAsync</span><span class=p>();</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=c1>// 當客戶端斷開連接時觸發</span>
+</span></span><span class=line><span class=cl>    <span class=kd>public</span> <span class=kd>override</span> <span class=kd>async</span> <span class=n>Task</span> <span class=n>OnDisconnectedAsync</span><span class=p>(</span><span class=n>Exception</span><span class=p>?</span> <span class=n>exception</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>    <span class=p>{</span>
+</span></span><span class=line><span class=cl>        <span class=c1>// 用戶斷開連接時清理房間資訊</span>
+</span></span><span class=line><span class=cl>        <span class=k>if</span> <span class=p>(</span><span class=n>UserRooms</span><span class=p>.</span><span class=n>TryGetValue</span><span class=p>(</span><span class=n>Context</span><span class=p>.</span><span class=n>ConnectionId</span><span class=p>,</span> <span class=k>out</span> <span class=kt>string?</span> <span class=n>room</span><span class=p>))</span>
+</span></span><span class=line><span class=cl>        <span class=p>{</span>
+</span></span><span class=line><span class=cl>            <span class=k>await</span> <span class=n>Groups</span><span class=p>.</span><span class=n>RemoveFromGroupAsync</span><span class=p>(</span><span class=n>Context</span><span class=p>.</span><span class=n>ConnectionId</span><span class=p>,</span> <span class=n>room</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>            <span class=n>UserRooms</span><span class=p>.</span><span class=n>Remove</span><span class=p>(</span><span class=n>Context</span><span class=p>.</span><span class=n>ConnectionId</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>        <span class=p>}</span>
+</span></span><span class=line><span class=cl>        <span class=k>await</span> <span class=n>Clients</span><span class=p>.</span><span class=n>All</span><span class=p>.</span><span class=n>SendAsync</span><span class=p>(</span><span class=s>&#34;UserDisconnected&#34;</span><span class=p>,</span> <span class=n>Context</span><span class=p>.</span><span class=n>ConnectionId</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>        <span class=k>await</span> <span class=k>base</span><span class=p>.</span><span class=n>OnDisconnectedAsync</span><span class=p>(</span><span class=n>exception</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span></code></pre></td></tr></table></div></div><h4 id=groups-相關的重要方法>Groups 相關的重要方法</h4><ul><li><strong>Groups.AddToGroupAsync</strong>：將使用者加入房間</li><li><strong>Groups.RemoveFromGroupAsync</strong>：將使用者從房間中移除</li><li><strong>Clients.Group</strong>：向指定房間的使用者發送消息</li></ul><h3 id=2-客戶端實現>2. 客戶端實現</h3><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>  1
+</span><span class=lnt>  2
+</span><span class=lnt>  3
+</span><span class=lnt>  4
+</span><span class=lnt>  5
+</span><span class=lnt>  6
+</span><span class=lnt>  7
+</span><span class=lnt>  8
+</span><span class=lnt>  9
+</span><span class=lnt> 10
+</span><span class=lnt> 11
+</span><span class=lnt> 12
+</span><span class=lnt> 13
+</span><span class=lnt> 14
+</span><span class=lnt> 15
+</span><span class=lnt> 16
+</span><span class=lnt> 17
+</span><span class=lnt> 18
+</span><span class=lnt> 19
+</span><span class=lnt> 20
+</span><span class=lnt> 21
+</span><span class=lnt> 22
+</span><span class=lnt> 23
+</span><span class=lnt> 24
+</span><span class=lnt> 25
+</span><span class=lnt> 26
+</span><span class=lnt> 27
+</span><span class=lnt> 28
+</span><span class=lnt> 29
+</span><span class=lnt> 30
+</span><span class=lnt> 31
+</span><span class=lnt> 32
+</span><span class=lnt> 33
+</span><span class=lnt> 34
+</span><span class=lnt> 35
+</span><span class=lnt> 36
+</span><span class=lnt> 37
+</span><span class=lnt> 38
+</span><span class=lnt> 39
+</span><span class=lnt> 40
+</span><span class=lnt> 41
+</span><span class=lnt> 42
+</span><span class=lnt> 43
+</span><span class=lnt> 44
+</span><span class=lnt> 45
+</span><span class=lnt> 46
+</span><span class=lnt> 47
+</span><span class=lnt> 48
+</span><span class=lnt> 49
+</span><span class=lnt> 50
+</span><span class=lnt> 51
+</span><span class=lnt> 52
+</span><span class=lnt> 53
+</span><span class=lnt> 54
+</span><span class=lnt> 55
+</span><span class=lnt> 56
+</span><span class=lnt> 57
+</span><span class=lnt> 58
+</span><span class=lnt> 59
+</span><span class=lnt> 60
+</span><span class=lnt> 61
+</span><span class=lnt> 62
+</span><span class=lnt> 63
+</span><span class=lnt> 64
+</span><span class=lnt> 65
+</span><span class=lnt> 66
+</span><span class=lnt> 67
+</span><span class=lnt> 68
+</span><span class=lnt> 69
+</span><span class=lnt> 70
+</span><span class=lnt> 71
+</span><span class=lnt> 72
+</span><span class=lnt> 73
+</span><span class=lnt> 74
+</span><span class=lnt> 75
+</span><span class=lnt> 76
+</span><span class=lnt> 77
+</span><span class=lnt> 78
+</span><span class=lnt> 79
+</span><span class=lnt> 80
+</span><span class=lnt> 81
+</span><span class=lnt> 82
+</span><span class=lnt> 83
+</span><span class=lnt> 84
+</span><span class=lnt> 85
+</span><span class=lnt> 86
+</span><span class=lnt> 87
+</span><span class=lnt> 88
+</span><span class=lnt> 89
+</span><span class=lnt> 90
+</span><span class=lnt> 91
+</span><span class=lnt> 92
+</span><span class=lnt> 93
+</span><span class=lnt> 94
+</span><span class=lnt> 95
+</span><span class=lnt> 96
+</span><span class=lnt> 97
+</span><span class=lnt> 98
+</span><span class=lnt> 99
+</span><span class=lnt>100
+</span><span class=lnt>101
+</span><span class=lnt>102
+</span><span class=lnt>103
+</span><span class=lnt>104
+</span><span class=lnt>105
+</span><span class=lnt>106
+</span><span class=lnt>107
+</span><span class=lnt>108
+</span><span class=lnt>109
+</span><span class=lnt>110
+</span><span class=lnt>111
+</span><span class=lnt>112
+</span><span class=lnt>113
+</span><span class=lnt>114
+</span><span class=lnt>115
+</span><span class=lnt>116
+</span><span class=lnt>117
+</span><span class=lnt>118
+</span><span class=lnt>119
+</span><span class=lnt>120
+</span><span class=lnt>121
+</span><span class=lnt>122
+</span><span class=lnt>123
+</span><span class=lnt>124
+</span><span class=lnt>125
+</span><span class=lnt>126
+</span><span class=lnt>127
+</span><span class=lnt>128
+</span><span class=lnt>129
+</span><span class=lnt>130
+</span><span class=lnt>131
+</span><span class=lnt>132
+</span><span class=lnt>133
+</span><span class=lnt>134
+</span><span class=lnt>135
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-html data-lang=html><span class=line><span class=cl><span class=cp>&lt;!DOCTYPE html&gt;</span>
+</span></span><span class=line><span class=cl><span class=p>&lt;</span><span class=nt>html</span><span class=p>&gt;</span>
+</span></span><span class=line><span class=cl><span class=p>&lt;</span><span class=nt>head</span><span class=p>&gt;</span>
+</span></span><span class=line><span class=cl>    <span class=p>&lt;</span><span class=nt>meta</span> <span class=na>charset</span><span class=o>=</span><span class=s>&#34;UTF-8&#34;</span><span class=p>&gt;</span>
+</span></span><span class=line><span class=cl>    <span class=p>&lt;</span><span class=nt>title</span><span class=p>&gt;</span>SignalR 聊天室<span class=p>&lt;/</span><span class=nt>title</span><span class=p>&gt;</span>
+</span></span><span class=line><span class=cl>    <span class=p>&lt;</span><span class=nt>style</span><span class=p>&gt;</span>
+</span></span><span class=line><span class=cl>        <span class=p>#</span><span class=nn>messagesList</span> <span class=p>{</span> 
+</span></span><span class=line><span class=cl>            <span class=k>border</span><span class=p>:</span> <span class=mi>1</span><span class=kt>px</span> <span class=kc>solid</span> <span class=mh>#ccc</span><span class=p>;</span> 
+</span></span><span class=line><span class=cl>            <span class=k>height</span><span class=p>:</span> <span class=mi>300</span><span class=kt>px</span><span class=p>;</span> 
+</span></span><span class=line><span class=cl>            <span class=k>overflow-y</span><span class=p>:</span> <span class=kc>auto</span><span class=p>;</span> 
+</span></span><span class=line><span class=cl>            <span class=k>padding</span><span class=p>:</span> <span class=mi>10</span><span class=kt>px</span><span class=p>;</span> 
+</span></span><span class=line><span class=cl>            <span class=k>margin-bottom</span><span class=p>:</span> <span class=mi>10</span><span class=kt>px</span><span class=p>;</span> 
+</span></span><span class=line><span class=cl>        <span class=p>}</span>
+</span></span><span class=line><span class=cl>        <span class=p>.</span><span class=nc>form-group</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>            <span class=k>margin</span><span class=p>:</span> <span class=mi>10</span><span class=kt>px</span> <span class=mi>0</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>        <span class=p>}</span>
+</span></span><span class=line><span class=cl>        <span class=p>.</span><span class=nc>form-group</span> <span class=nt>label</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>            <span class=k>display</span><span class=p>:</span> <span class=kc>inline-block</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>            <span class=k>width</span><span class=p>:</span> <span class=mi>70</span><span class=kt>px</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>        <span class=p>}</span>
+</span></span><span class=line><span class=cl>        <span class=p>.</span><span class=nc>form-group</span> <span class=nt>input</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>            <span class=k>padding</span><span class=p>:</span> <span class=mi>5</span><span class=kt>px</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>            <span class=k>width</span><span class=p>:</span> <span class=mi>200</span><span class=kt>px</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>        <span class=p>}</span>
+</span></span><span class=line><span class=cl>        <span class=p>#</span><span class=nn>sendButton</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>            <span class=k>padding</span><span class=p>:</span> <span class=mi>5</span><span class=kt>px</span> <span class=mi>15</span><span class=kt>px</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>            <span class=k>margin-top</span><span class=p>:</span> <span class=mi>10</span><span class=kt>px</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>        <span class=p>}</span>
+</span></span><span class=line><span class=cl>        <span class=p>.</span><span class=nc>system-message</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>            <span class=k>color</span><span class=p>:</span> <span class=mh>#ff4444</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>            <span class=k>font-style</span><span class=p>:</span> <span class=kc>italic</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>            <span class=k>margin</span><span class=p>:</span> <span class=mi>5</span><span class=kt>px</span> <span class=mi>0</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>        <span class=p>}</span>
+</span></span><span class=line><span class=cl>    <span class=p>&lt;/</span><span class=nt>style</span><span class=p>&gt;</span>
+</span></span><span class=line><span class=cl><span class=p>&lt;/</span><span class=nt>head</span><span class=p>&gt;</span>
+</span></span><span class=line><span class=cl><span class=p>&lt;</span><span class=nt>body</span><span class=p>&gt;</span>
+</span></span><span class=line><span class=cl>    <span class=p>&lt;</span><span class=nt>div</span> <span class=na>class</span><span class=o>=</span><span class=s>&#34;container&#34;</span><span class=p>&gt;</span>
+</span></span><span class=line><span class=cl>        <span class=p>&lt;</span><span class=nt>h2</span><span class=p>&gt;</span>SignalR 聊天室<span class=p>&lt;/</span><span class=nt>h2</span><span class=p>&gt;</span>
+</span></span><span class=line><span class=cl>        
+</span></span><span class=line><span class=cl>        <span class=c>&lt;!-- 添加房間選擇 --&gt;</span>
+</span></span><span class=line><span class=cl>        <span class=p>&lt;</span><span class=nt>div</span> <span class=na>class</span><span class=o>=</span><span class=s>&#34;form-group&#34;</span><span class=p>&gt;</span>
+</span></span><span class=line><span class=cl>            <span class=p>&lt;</span><span class=nt>label</span> <span class=na>for</span><span class=o>=</span><span class=s>&#34;roomInput&#34;</span><span class=p>&gt;</span>房間:<span class=p>&lt;/</span><span class=nt>label</span><span class=p>&gt;</span>
+</span></span><span class=line><span class=cl>            <span class=p>&lt;</span><span class=nt>input</span> <span class=na>type</span><span class=o>=</span><span class=s>&#34;text&#34;</span> <span class=na>id</span><span class=o>=</span><span class=s>&#34;roomInput&#34;</span> <span class=p>/&gt;</span>
+</span></span><span class=line><span class=cl>            <span class=p>&lt;</span><span class=nt>button</span> <span class=na>id</span><span class=o>=</span><span class=s>&#34;joinButton&#34;</span><span class=p>&gt;</span>加入房間<span class=p>&lt;/</span><span class=nt>button</span><span class=p>&gt;</span>
+</span></span><span class=line><span class=cl>        <span class=p>&lt;/</span><span class=nt>div</span><span class=p>&gt;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>        <span class=p>&lt;</span><span class=nt>div</span> <span class=na>id</span><span class=o>=</span><span class=s>&#34;messagesList&#34;</span><span class=p>&gt;&lt;/</span><span class=nt>div</span><span class=p>&gt;</span>
+</span></span><span class=line><span class=cl>        
+</span></span><span class=line><span class=cl>        <span class=p>&lt;</span><span class=nt>div</span> <span class=na>class</span><span class=o>=</span><span class=s>&#34;form-group&#34;</span><span class=p>&gt;</span>
+</span></span><span class=line><span class=cl>            <span class=p>&lt;</span><span class=nt>label</span> <span class=na>for</span><span class=o>=</span><span class=s>&#34;userInput&#34;</span><span class=p>&gt;</span>用戶名:<span class=p>&lt;/</span><span class=nt>label</span><span class=p>&gt;</span>
+</span></span><span class=line><span class=cl>            <span class=p>&lt;</span><span class=nt>input</span> <span class=na>type</span><span class=o>=</span><span class=s>&#34;text&#34;</span> <span class=na>id</span><span class=o>=</span><span class=s>&#34;userInput&#34;</span> <span class=p>/&gt;</span>
+</span></span><span class=line><span class=cl>        <span class=p>&lt;/</span><span class=nt>div</span><span class=p>&gt;</span>
+</span></span><span class=line><span class=cl>        <span class=p>&lt;</span><span class=nt>div</span> <span class=na>class</span><span class=o>=</span><span class=s>&#34;form-group&#34;</span><span class=p>&gt;</span>
+</span></span><span class=line><span class=cl>            <span class=p>&lt;</span><span class=nt>label</span> <span class=na>for</span><span class=o>=</span><span class=s>&#34;messageInput&#34;</span><span class=p>&gt;</span>消息:<span class=p>&lt;/</span><span class=nt>label</span><span class=p>&gt;</span>
+</span></span><span class=line><span class=cl>            <span class=p>&lt;</span><span class=nt>input</span> <span class=na>type</span><span class=o>=</span><span class=s>&#34;text&#34;</span> <span class=na>id</span><span class=o>=</span><span class=s>&#34;messageInput&#34;</span> <span class=p>/&gt;</span>
+</span></span><span class=line><span class=cl>        <span class=p>&lt;/</span><span class=nt>div</span><span class=p>&gt;</span>
+</span></span><span class=line><span class=cl>        <span class=p>&lt;</span><span class=nt>button</span> <span class=na>id</span><span class=o>=</span><span class=s>&#34;sendButton&#34;</span><span class=p>&gt;</span>發送<span class=p>&lt;/</span><span class=nt>button</span><span class=p>&gt;</span>
+</span></span><span class=line><span class=cl>    <span class=p>&lt;/</span><span class=nt>div</span><span class=p>&gt;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=p>&lt;</span><span class=nt>script</span> <span class=na>src</span><span class=o>=</span><span class=s>&#34;https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/8.0.0/signalr.min.js&#34;</span><span class=p>&gt;&lt;/</span><span class=nt>script</span><span class=p>&gt;</span>
+</span></span><span class=line><span class=cl>    <span class=p>&lt;</span><span class=nt>script</span><span class=p>&gt;</span>
+</span></span><span class=line><span class=cl>        <span class=c1>// 建立連接
+</span></span></span><span class=line><span class=cl><span class=c1></span>        <span class=kr>const</span> <span class=nx>connection</span> <span class=o>=</span> <span class=k>new</span> <span class=nx>signalR</span><span class=p>.</span><span class=nx>HubConnectionBuilder</span><span class=p>()</span>
+</span></span><span class=line><span class=cl>            <span class=p>.</span><span class=nx>withUrl</span><span class=p>(</span><span class=s2>&#34;/chatHub&#34;</span><span class=p>)</span>  <span class=c1>// Hub 的路由
+</span></span></span><span class=line><span class=cl><span class=c1></span>            <span class=p>.</span><span class=nx>build</span><span class=p>();</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>        <span class=nb>document</span><span class=p>.</span><span class=nx>getElementById</span><span class=p>(</span><span class=s2>&#34;sendButton&#34;</span><span class=p>).</span><span class=nx>disabled</span> <span class=o>=</span> <span class=kc>true</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>        <span class=c1>// 註冊接收消息的處理函數
+</span></span></span><span class=line><span class=cl><span class=c1></span>        <span class=nx>connection</span><span class=p>.</span><span class=nx>on</span><span class=p>(</span><span class=s2>&#34;ReceiveMessage&#34;</span><span class=p>,</span> <span class=kd>function</span> <span class=p>(</span><span class=nx>user</span><span class=p>,</span> <span class=nx>message</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>            <span class=kr>const</span> <span class=nx>msg</span> <span class=o>=</span> <span class=sb>`</span><span class=si>${</span><span class=nx>user</span><span class=si>}</span><span class=sb>: </span><span class=si>${</span><span class=nx>message</span><span class=si>}</span><span class=sb>`</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>            <span class=kr>const</span> <span class=nx>li</span> <span class=o>=</span> <span class=nb>document</span><span class=p>.</span><span class=nx>createElement</span><span class=p>(</span><span class=s2>&#34;div&#34;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>            <span class=nx>li</span><span class=p>.</span><span class=nx>textContent</span> <span class=o>=</span> <span class=nx>msg</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>            <span class=nb>document</span><span class=p>.</span><span class=nx>getElementById</span><span class=p>(</span><span class=s2>&#34;messagesList&#34;</span><span class=p>).</span><span class=nx>appendChild</span><span class=p>(</span><span class=nx>li</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>        <span class=p>});</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>        <span class=c1>// 處理用戶連接事件
+</span></span></span><span class=line><span class=cl><span class=c1></span>        <span class=nx>connection</span><span class=p>.</span><span class=nx>on</span><span class=p>(</span><span class=s2>&#34;UserConnected&#34;</span><span class=p>,</span> <span class=kd>function</span> <span class=p>(</span><span class=nx>connectionId</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>            <span class=kr>const</span> <span class=nx>msg</span> <span class=o>=</span> <span class=sb>`用戶已連接 (</span><span class=si>${</span><span class=nx>connectionId</span><span class=si>}</span><span class=sb>)`</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>            <span class=kr>const</span> <span class=nx>li</span> <span class=o>=</span> <span class=nb>document</span><span class=p>.</span><span class=nx>createElement</span><span class=p>(</span><span class=s2>&#34;div&#34;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>            <span class=nx>li</span><span class=p>.</span><span class=nx>textContent</span> <span class=o>=</span> <span class=nx>msg</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>            <span class=nx>li</span><span class=p>.</span><span class=nx>style</span><span class=p>.</span><span class=nx>color</span> <span class=o>=</span> <span class=s2>&#34;green&#34;</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>            <span class=nb>document</span><span class=p>.</span><span class=nx>getElementById</span><span class=p>(</span><span class=s2>&#34;messagesList&#34;</span><span class=p>).</span><span class=nx>appendChild</span><span class=p>(</span><span class=nx>li</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>        <span class=p>});</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>        <span class=nx>connection</span><span class=p>.</span><span class=nx>on</span><span class=p>(</span><span class=s2>&#34;UserDisconnected&#34;</span><span class=p>,</span> <span class=kd>function</span> <span class=p>(</span><span class=nx>connectionId</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>            <span class=kr>const</span> <span class=nx>msg</span> <span class=o>=</span> <span class=sb>`用戶已斷開連接 (</span><span class=si>${</span><span class=nx>connectionId</span><span class=si>}</span><span class=sb>)`</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>            <span class=kr>const</span> <span class=nx>li</span> <span class=o>=</span> <span class=nb>document</span><span class=p>.</span><span class=nx>createElement</span><span class=p>(</span><span class=s2>&#34;div&#34;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>            <span class=nx>li</span><span class=p>.</span><span class=nx>textContent</span> <span class=o>=</span> <span class=nx>msg</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>            <span class=nx>li</span><span class=p>.</span><span class=nx>style</span><span class=p>.</span><span class=nx>color</span> <span class=o>=</span> <span class=s2>&#34;red&#34;</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>            <span class=nb>document</span><span class=p>.</span><span class=nx>getElementById</span><span class=p>(</span><span class=s2>&#34;messagesList&#34;</span><span class=p>).</span><span class=nx>appendChild</span><span class=p>(</span><span class=nx>li</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>        <span class=p>});</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>        <span class=nx>connection</span><span class=p>.</span><span class=nx>on</span><span class=p>(</span><span class=s2>&#34;ReceiveSystemMessage&#34;</span><span class=p>,</span> <span class=kd>function</span> <span class=p>(</span><span class=nx>message</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>            <span class=kr>const</span> <span class=nx>div</span> <span class=o>=</span> <span class=nb>document</span><span class=p>.</span><span class=nx>createElement</span><span class=p>(</span><span class=s2>&#34;div&#34;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>            <span class=nx>div</span><span class=p>.</span><span class=nx>textContent</span> <span class=o>=</span> <span class=sb>`系統提示: </span><span class=si>${</span><span class=nx>message</span><span class=si>}</span><span class=sb>`</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>            <span class=nx>div</span><span class=p>.</span><span class=nx>className</span> <span class=o>=</span> <span class=s2>&#34;system-message&#34;</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>            <span class=nb>document</span><span class=p>.</span><span class=nx>getElementById</span><span class=p>(</span><span class=s2>&#34;messagesList&#34;</span><span class=p>).</span><span class=nx>appendChild</span><span class=p>(</span><span class=nx>div</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>        <span class=p>});</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>        <span class=c1>// 啟動連接
+</span></span></span><span class=line><span class=cl><span class=c1></span>        <span class=nx>connection</span><span class=p>.</span><span class=nx>start</span><span class=p>().</span><span class=nx>then</span><span class=p>(</span><span class=kd>function</span> <span class=p>()</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>            <span class=nb>document</span><span class=p>.</span><span class=nx>getElementById</span><span class=p>(</span><span class=s2>&#34;sendButton&#34;</span><span class=p>).</span><span class=nx>disabled</span> <span class=o>=</span> <span class=kc>false</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>        <span class=p>}).</span><span class=k>catch</span><span class=p>(</span><span class=kd>function</span> <span class=p>(</span><span class=nx>err</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>            <span class=k>return</span> <span class=nx>console</span><span class=p>.</span><span class=nx>error</span><span class=p>(</span><span class=nx>err</span><span class=p>.</span><span class=nx>toString</span><span class=p>());</span>
+</span></span><span class=line><span class=cl>        <span class=p>});</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>        <span class=c1>// 發送消息
+</span></span></span><span class=line><span class=cl><span class=c1></span>        <span class=nb>document</span><span class=p>.</span><span class=nx>getElementById</span><span class=p>(</span><span class=s2>&#34;sendButton&#34;</span><span class=p>).</span><span class=nx>addEventListener</span><span class=p>(</span><span class=s2>&#34;click&#34;</span><span class=p>,</span> <span class=kd>function</span> <span class=p>(</span><span class=nx>event</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>            <span class=kr>const</span> <span class=nx>user</span> <span class=o>=</span> <span class=nb>document</span><span class=p>.</span><span class=nx>getElementById</span><span class=p>(</span><span class=s2>&#34;userInput&#34;</span><span class=p>).</span><span class=nx>value</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>            <span class=kr>const</span> <span class=nx>message</span> <span class=o>=</span> <span class=nb>document</span><span class=p>.</span><span class=nx>getElementById</span><span class=p>(</span><span class=s2>&#34;messageInput&#34;</span><span class=p>).</span><span class=nx>value</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>            <span class=c1>// 調用服務器端的 SendMessage 方法
+</span></span></span><span class=line><span class=cl><span class=c1></span>            <span class=nx>connection</span><span class=p>.</span><span class=nx>invoke</span><span class=p>(</span><span class=s2>&#34;SendMessage&#34;</span><span class=p>,</span> <span class=nx>user</span><span class=p>,</span> <span class=nx>message</span><span class=p>).</span><span class=k>catch</span><span class=p>(</span><span class=kd>function</span> <span class=p>(</span><span class=nx>err</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>                <span class=k>return</span> <span class=nx>console</span><span class=p>.</span><span class=nx>error</span><span class=p>(</span><span class=nx>err</span><span class=p>.</span><span class=nx>toString</span><span class=p>());</span>
+</span></span><span class=line><span class=cl>            <span class=p>});</span>
+</span></span><span class=line><span class=cl>            <span class=nb>document</span><span class=p>.</span><span class=nx>getElementById</span><span class=p>(</span><span class=s2>&#34;messageInput&#34;</span><span class=p>).</span><span class=nx>value</span> <span class=o>=</span> <span class=s2>&#34;&#34;</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>            <span class=nx>event</span><span class=p>.</span><span class=nx>preventDefault</span><span class=p>();</span>
+</span></span><span class=line><span class=cl>        <span class=p>});</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>        <span class=c1>// 添加加入房間按鈕的處理
+</span></span></span><span class=line><span class=cl><span class=c1></span>        <span class=nb>document</span><span class=p>.</span><span class=nx>getElementById</span><span class=p>(</span><span class=s2>&#34;joinButton&#34;</span><span class=p>).</span><span class=nx>addEventListener</span><span class=p>(</span><span class=s2>&#34;click&#34;</span><span class=p>,</span> <span class=kd>function</span> <span class=p>(</span><span class=nx>event</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>            <span class=kr>const</span> <span class=nx>user</span> <span class=o>=</span> <span class=nb>document</span><span class=p>.</span><span class=nx>getElementById</span><span class=p>(</span><span class=s2>&#34;userInput&#34;</span><span class=p>).</span><span class=nx>value</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>            <span class=kr>const</span> <span class=nx>room</span> <span class=o>=</span> <span class=nb>document</span><span class=p>.</span><span class=nx>getElementById</span><span class=p>(</span><span class=s2>&#34;roomInput&#34;</span><span class=p>).</span><span class=nx>value</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>            
+</span></span><span class=line><span class=cl>            <span class=k>if</span> <span class=p>(</span><span class=o>!</span><span class=nx>user</span> <span class=o>||</span> <span class=o>!</span><span class=nx>room</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>                <span class=nx>alert</span><span class=p>(</span><span class=s2>&#34;請輸入用戶名和房間名&#34;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>                <span class=k>return</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>            <span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>            <span class=nx>connection</span><span class=p>.</span><span class=nx>invoke</span><span class=p>(</span><span class=s2>&#34;JoinRoom&#34;</span><span class=p>,</span> <span class=nx>user</span><span class=p>,</span> <span class=nx>room</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>            <span class=nx>event</span><span class=p>.</span><span class=nx>preventDefault</span><span class=p>();</span>
+</span></span><span class=line><span class=cl>        <span class=p>});</span>
+</span></span><span class=line><span class=cl>    <span class=p>&lt;/</span><span class=nt>script</span><span class=p>&gt;</span>
+</span></span><span class=line><span class=cl><span class=p>&lt;/</span><span class=nt>body</span><span class=p>&gt;</span>
+</span></span><span class=line><span class=cl><span class=p>&lt;/</span><span class=nt>html</span><span class=p>&gt;</span>
+</span></span></code></pre></td></tr></table></div></div><h2 id=測試效果>測試效果</h2><p>這時候運行你的專案（你應該有記得在上一篇文章中一起設定過 <code>launchSettings.json</code> 對吧），輸入 <code>localhost:5000/index.html</code>，就可以看到以下的畫面：</p><p><img src=/post/%E8%81%8A%E5%A4%A9%E5%AE%A4%E7%9A%84%E5%B0%8F%E6%88%BF%E9%96%93/SignalR-1.png width=418 height=682 srcset="/post/%E8%81%8A%E5%A4%A9%E5%AE%A4%E7%9A%84%E5%B0%8F%E6%88%BF%E9%96%93/SignalR-1_hu_44d976cdfdb2f12e.png 480w, /post/%E8%81%8A%E5%A4%A9%E5%AE%A4%E7%9A%84%E5%B0%8F%E6%88%BF%E9%96%93/SignalR-1_hu_e7f8870ac6e8d84d.png 1024w" loading=lazy class=gallery-image data-flex-grow=61 data-flex-basis=147px></p><p>一進入的時候沒有特別指定房間，如果 Anthea 進入到房間（明星三缺一），這時候他的訊息只會發給同一個房間裡的人，沒有進入同一個房間的 Ensui 就收不到訊息了。</p><p><img src=/post/%E8%81%8A%E5%A4%A9%E5%AE%A4%E7%9A%84%E5%B0%8F%E6%88%BF%E9%96%93/SignalR-2.png width=797 height=909 srcset="/post/%E8%81%8A%E5%A4%A9%E5%AE%A4%E7%9A%84%E5%B0%8F%E6%88%BF%E9%96%93/SignalR-2_hu_9f5ef2b8e9876611.png 480w, /post/%E8%81%8A%E5%A4%A9%E5%AE%A4%E7%9A%84%E5%B0%8F%E6%88%BF%E9%96%93/SignalR-2_hu_b3572346f7301956.png 1024w" loading=lazy class=gallery-image data-flex-grow=87 data-flex-basis=210px></p></section><footer class=article-footer><section class=article-tags><a href=/tags/.net/>.NET</a>
+<a href=/tags/signalr/>SignalR</a>
+<a href=/tags/websocket/>WebSocket</a>
+<a href=/tags/groups/>Groups</a></section></footer></article><aside class=related-content--wrapper><h2 class=section-title>Related content</h2><div class=related-content><div class="flex article-list--tile"><article><a href=/post/%E7%B0%A1%E5%96%AE%E7%B6%B2%E9%A0%81%E8%81%8A%E5%A4%A9%E5%AE%A4/><div class=article-details><h2 class=article-title>簡單網頁聊天室</h2></div></a></article><article><a href=/post/gdal-shapefile-3/><div class=article-details><h2 class=article-title>GDAL 操作 ShapeFile (3)</h2></div></a></article><article><a href=/post/gdal-shapefile-2/><div class=article-details><h2 class=article-title>GDAL 操作 ShapeFile (2)</h2></div></a></article><article><a href=/post/gdal-shapefile-1/><div class=article-details><h2 class=article-title>GDAL 操作 ShapeFile (1)</h2></div></a></article><article><a href=/post/%E5%90%8C%E4%B8%80%E5%80%8B%E4%BB%8B%E9%9D%A2%E5%A4%9A%E5%80%8B%E5%AF%A6%E4%BD%9C%E7%9A%84%E8%A8%BB%E5%86%8A/><div class=article-details><h2 class=article-title>同一個介面多個實作的註冊</h2></div></a></article></div></div></aside><footer class=site-footer><section class=copyright>&copy;
+2022 -
+2025 Anthea's Blog</section><section class=powerby>Built with <a href=https://gohugo.io/ target=_blank rel=noopener>Hugo</a><br>Theme <b><a href=https://github.com/CaiJimmy/hugo-theme-stack target=_blank rel=noopener data-version=3.30.0>Stack</a></b> designed by <a href=https://jimmycai.com target=_blank rel=noopener>Jimmy</a></section></footer><div class=pswp tabindex=-1 role=dialog aria-hidden=true><div class=pswp__bg></div><div class=pswp__scroll-wrap><div class=pswp__container><div class=pswp__item></div><div class=pswp__item></div><div class=pswp__item></div></div><div class="pswp__ui pswp__ui--hidden"><div class=pswp__top-bar><div class=pswp__counter></div><button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+<button class="pswp__button pswp__button--share" title=Share></button>
+<button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+<button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button><div class=pswp__preloader><div class=pswp__preloader__icn><div class=pswp__preloader__cut><div class=pswp__preloader__donut></div></div></div></div></div><div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap"><div class=pswp__share-tooltip></div></div><button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+</button>
+<button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)"></button><div class=pswp__caption><div class=pswp__caption__center></div></div></div></div></div><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo=" crossorigin=anonymous defer></script><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU=" crossorigin=anonymous defer></script><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css crossorigin=anonymous><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css crossorigin=anonymous></main></div><script src=https://cdn.jsdelivr.net/npm/node-vibrant@3.1.6/dist/vibrant.min.js integrity="sha256-awcR2jno4kI5X0zL8ex0vi2z+KMkF24hUW8WePSA9HM=" crossorigin=anonymous></script><script type=text/javascript src=/ts/main.1e9a3bafd846ced4c345d084b355fb8c7bae75701c338f8a1f8a82c780137826.js defer></script><script>(function(){const e=document.createElement("link");e.href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap",e.type="text/css",e.rel="stylesheet",document.head.appendChild(e)})()</script></body></html>

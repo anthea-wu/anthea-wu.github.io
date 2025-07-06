@@ -1,0 +1,278 @@
+<!doctype html><html lang=en dir=ltr><head><meta charset=utf-8><meta name=viewport content='width=device-width,initial-scale=1'><meta name=description content=".NET SignalR 的學習與應用（1）"><title>簡單網頁聊天室</title><link rel=canonical href=https://anthea-wu.github.io/post/%E7%B0%A1%E5%96%AE%E7%B6%B2%E9%A0%81%E8%81%8A%E5%A4%A9%E5%AE%A4/><link rel=stylesheet href=/scss/style.min.946cca6c6259ef94ac55abfae7c7bf3291ea3ed5eea17ef77500b257217c6710.css><meta property='og:title' content="簡單網頁聊天室"><meta property='og:description' content=".NET SignalR 的學習與應用（1）"><meta property='og:url' content='https://anthea-wu.github.io/post/%E7%B0%A1%E5%96%AE%E7%B6%B2%E9%A0%81%E8%81%8A%E5%A4%A9%E5%AE%A4/'><meta property='og:site_name' content="Anthea's Blog"><meta property='og:type' content='article'><meta property='article:section' content='Post'><meta property='article:tag' content='.NET'><meta property='article:tag' content='SignalR'><meta property='article:tag' content='WebSocket'><meta property='article:published_time' content='2025-01-04T21:00:00+08:00'><meta property='article:modified_time' content='2025-01-04T21:00:00+08:00'><meta name=twitter:title content="簡單網頁聊天室"><meta name=twitter:description content=".NET SignalR 的學習與應用（1）"><script async src="https://www.googletagmanager.com/gtag/js?id=G-WDCDS5VPR1"></script><script>var dnt,doNotTrack=!1;if(!1&&(dnt=navigator.doNotTrack||window.doNotTrack||navigator.msDoNotTrack,doNotTrack=dnt=="1"||dnt=="yes"),!doNotTrack){window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag("js",new Date),gtag("config","G-WDCDS5VPR1")}</script></head><body class=article-page><script>(function(){const e="StackColorScheme";localStorage.getItem(e)||localStorage.setItem(e,"auto")})()</script><script>(function(){const t="StackColorScheme",e=localStorage.getItem(t),n=window.matchMedia("(prefers-color-scheme: dark)").matches===!0;e=="dark"||e==="auto"&&n?document.documentElement.dataset.scheme="dark":document.documentElement.dataset.scheme="light"})()</script><div class="container main-container flex on-phone--column extended"><aside class="sidebar left-sidebar sticky"><button class="hamburger hamburger--spin" type=button id=toggle-menu aria-label="Toggle Menu">
+<span class=hamburger-box><span class=hamburger-inner></span></span></button><header><figure class=site-avatar><a href=/><img src=/img/avatar_hu_d8c2fe4d260f28d7.png width=300 height=300 class=site-logo loading=lazy alt=Avatar></a></figure><div class=site-meta><h1 class=site-name><a href=/>Anthea's Blog</a></h1><h2 class=site-description>Titansoft / Product Developer</h2></div></header><ol class=menu-social><li><a href=https://github.com/anthea-wu target=_blank title=GitHub rel=me><svg class="icon icon-tabler icon-tabler-brand-github" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M9 19c-4.3 1.4-4.3-2.5-6-3m12 5v-3.5c0-1 .1-1.4-.5-2 2.8-.3 5.5-1.4 5.5-6a4.6 4.6.0 00-1.3-3.2 4.2 4.2.0 00-.1-3.2s-1.1-.3-3.5 1.3a12.3 12.3.0 00-6.2.0C6.5 2.8 5.4 3.1 5.4 3.1a4.2 4.2.0 00-.1 3.2A4.6 4.6.0 004 9.5c0 4.6 2.7 5.7 5.5 6-.6.6-.6 1.2-.5 2V21"/></svg></a></li></ol><ol class=menu id=main-menu><li><a href=/><svg class="icon icon-tabler icon-tabler-home" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><polyline points="5 12 3 12 12 3 21 12 19 12"/><path d="M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7"/><path d="M9 21v-6a2 2 0 012-2h2a2 2 0 012 2v6"/></svg>
+<span>Home</span></a></li><li><a href=/page/about/><svg class="icon icon-tabler icon-tabler-user" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="7" r="4"/><path d="M6 21v-2a4 4 0 014-4h4a4 4 0 014 4v2"/></svg>
+<span>About</span></a></li><li><a href=/page/archives/><svg class="icon icon-tabler icon-tabler-archive" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><rect x="3" y="4" width="18" height="4" rx="2"/><path d="M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8"/><line x1="10" y1="12" x2="14" y2="12"/></svg>
+<span>Archives</span></a></li><li><a href=/page/search/><svg class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="10" cy="10" r="7"/><line x1="21" y1="21" x2="15" y2="15"/></svg>
+<span>Search</span></a></li><li><a href=/books target=_blank><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-book"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M3 19a9 9 0 019 0 9 9 0 019 0"/><path d="M3 6a9 9 0 019 0 9 9 0 019 0"/><path d="M3 6v13"/><path d="M12 6v13"/><path d="M21 6v13"/></svg>
+<span>Books</span></a></li><li class=menu-bottom-section><ol class=menu><li id=dark-mode-toggle><svg class="icon icon-tabler icon-tabler-toggle-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="8" cy="12" r="2"/><rect x="2" y="6" width="20" height="12" rx="6"/></svg>
+<svg class="icon icon-tabler icon-tabler-toggle-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="16" cy="12" r="2"/><rect x="2" y="6" width="20" height="12" rx="6"/></svg>
+<span>Dark Mode</span></li></ol></li></ol></aside><aside class="sidebar right-sidebar sticky"><section class="widget archives"><div class=widget-icon><svg class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><line x1="5" y1="9" x2="19" y2="9"/><line x1="5" y1="15" x2="19" y2="15"/><line x1="11" y1="4" x2="7" y2="20"/><line x1="17" y1="4" x2="13" y2="20"/></svg></div><h2 class="widget-title section-title">Table of contents</h2><div class=widget--toc><nav id=TableOfContents><ul><li><a href=#signalr-簡介>SignalR 簡介</a></li><li><a href=#傳輸協議>傳輸協議</a></li><li><a href=#實作步驟>實作步驟</a><ul><li><a href=#1-建立專案並添加-signalr>1. 建立專案並添加 SignalR</a></li><li><a href=#2-創建-hub>2. 創建 Hub</a></li><li><a href=#3-客戶端實現>3. 客戶端實現</a></li></ul></li></ul></nav></div></section></aside><main class="main full-width"><article class=main-article><header class=article-header><div class=article-details><header class=article-category><a href=/categories/technical/>Technical</a></header><div class=article-title-wrapper><h2 class=article-title><a href=/post/%E7%B0%A1%E5%96%AE%E7%B6%B2%E9%A0%81%E8%81%8A%E5%A4%A9%E5%AE%A4/>簡單網頁聊天室</a></h2><h3 class=article-subtitle>.NET SignalR 的學習與應用（1）</h3></div><footer class=article-time><div><svg class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M11.795 21H5a2 2 0 01-2-2V7a2 2 0 012-2h12a2 2 0 012 2v4"/><circle cx="18" cy="18" r="4"/><path d="M15 3v4"/><path d="M7 3v4"/><path d="M3 11h16"/><path d="M18 16.496V18l1 1"/></svg>
+<time class=article-time--published>2025/01/04</time></div><div><svg class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/></svg>
+<time class=article-time--reading>3 minute read</time></div></footer></div></header><section class=article-content><h2 id=signalr-簡介>SignalR 簡介</h2><p>如果你是第一次接觸 SignalR，可以想像它是一個幫你處理即時通訊的工具。它會自動幫你搞定誰在線上、誰下線了，還能讓你輕鬆把訊息送給所有人或指定的人，而且可以應付很多人同時使用。簡單來說，不用煩惱那些複雜的底層細節，SignalR 幫你包好了！</p><h2 id=傳輸協議>傳輸協議</h2><p>你可能會想問，SignalR 到底怎麼做到讓訊息這麼即時的呢？其實它會自動幫你選擇最適合的傳輸方式：</p><ul><li><strong>WebSocket</strong>：就像一直開著的專線，速度最快，也是首選。</li><li><strong>Server-Sent Events (SSE)</strong>：伺服器主動推消息給你，像訂閱新聞一樣。</li><li><strong>Long Polling</strong>：不斷問伺服器「有新消息嗎？」來達成即時效果。</li></ul><p>不用擔心怎麼挑，SignalR 會幫你搞定！</p><h2 id=實作步驟>實作步驟</h2><h3 id=1-建立專案並添加-signalr>1. 建立專案並添加 SignalR</h3><p>在 .NET Core/.NET 5+ 中，SignalR 已經被整合到 ASP.NET Core 框架中了，所以我們不需要額外安裝 SignalR 的服務器端套件，只需要在 <code>Program.cs</code> 中配置 SignalR：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-csharp data-lang=csharp><span class=line><span class=cl><span class=k>using</span> <span class=nn>WebApiDemo.Hubs</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=kt>var</span> <span class=n>builder</span> <span class=p>=</span> <span class=n>WebApplication</span><span class=p>.</span><span class=n>CreateBuilder</span><span class=p>(</span><span class=n>args</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1>// 添加 SignalR 服務到 DI 容器</span>
+</span></span><span class=line><span class=cl><span class=n>builder</span><span class=p>.</span><span class=n>Services</span><span class=p>.</span><span class=n>AddSignalR</span><span class=p>();</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=kt>var</span> <span class=n>app</span> <span class=p>=</span> <span class=n>builder</span><span class=p>.</span><span class=n>Build</span><span class=p>();</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=n>app</span><span class=p>.</span><span class=n>UseStaticFiles</span><span class=p>();</span>
+</span></span><span class=line><span class=cl><span class=n>app</span><span class=p>.</span><span class=n>UseRouting</span><span class=p>();</span>     <span class=c1>// 啟用路由</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1>// 配置 SignalR Hub 路由</span>
+</span></span><span class=line><span class=cl><span class=n>app</span><span class=p>.</span><span class=n>MapHub</span><span class=p>&lt;</span><span class=n>ChatHub</span><span class=p>&gt;(</span><span class=s>&#34;/chatHub&#34;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1>// 設置默認頁面</span>
+</span></span><span class=line><span class=cl><span class=n>app</span><span class=p>.</span><span class=n>MapGet</span><span class=p>(</span><span class=s>&#34;/&#34;</span><span class=p>,</span> <span class=p>()</span> <span class=p>=&gt;</span> <span class=n>Results</span><span class=p>.</span><span class=n>File</span><span class=p>(</span><span class=s>&#34;wwwroot/index.html&#34;</span><span class=p>,</span> <span class=s>&#34;text/html&#34;</span><span class=p>));</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=n>app</span><span class=p>.</span><span class=n>Run</span><span class=p>();</span>
+</span></span></code></pre></td></tr></table></div></div><h3 id=2-創建-hub>2. 創建 Hub</h3><p>Hub 是 SignalR 的核心角色，可以想成「訊息小幫手」，負責在用戶的瀏覽器和伺服器之間傳遞訊息。基本的 Hub 需要做的事很簡單：收到使用者的訊息並轉送給其他人，處理使用者連線和斷線的通知。</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-csharp data-lang=csharp><span class=line><span class=cl><span class=k>using</span> <span class=nn>Microsoft.AspNetCore.SignalR</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=k>namespace</span> <span class=nn>WebApiDemo.Hubs</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=kd>public</span> <span class=k>class</span> <span class=nc>ChatHub</span> <span class=p>:</span> <span class=n>Hub</span>
+</span></span><span class=line><span class=cl><span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=c1>// 這個方法用來接收使用者的訊息並廣播給所有人</span>
+</span></span><span class=line><span class=cl>    <span class=kd>public</span> <span class=kd>async</span> <span class=n>Task</span> <span class=n>SendMessage</span><span class=p>(</span><span class=kt>string</span> <span class=n>user</span><span class=p>,</span> <span class=kt>string</span> <span class=n>message</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>    <span class=p>{</span>
+</span></span><span class=line><span class=cl>        <span class=k>await</span> <span class=n>Clients</span><span class=p>.</span><span class=n>All</span><span class=p>.</span><span class=n>SendAsync</span><span class=p>(</span><span class=s>&#34;ReceiveMessage&#34;</span><span class=p>,</span> <span class=n>user</span><span class=p>,</span> <span class=n>message</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=c1>// 使用者連線時會觸發這裡，把新加入的使用者通知給大家</span>
+</span></span><span class=line><span class=cl>    <span class=kd>public</span> <span class=kd>override</span> <span class=kd>async</span> <span class=n>Task</span> <span class=n>OnConnectedAsync</span><span class=p>()</span>
+</span></span><span class=line><span class=cl>    <span class=p>{</span>
+</span></span><span class=line><span class=cl>        <span class=k>await</span> <span class=n>Clients</span><span class=p>.</span><span class=n>All</span><span class=p>.</span><span class=n>SendAsync</span><span class=p>(</span><span class=s>&#34;UserConnected&#34;</span><span class=p>,</span> <span class=n>Context</span><span class=p>.</span><span class=n>ConnectionId</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>        <span class=k>await</span> <span class=k>base</span><span class=p>.</span><span class=n>OnConnectedAsync</span><span class=p>();</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=c1>// 使用者斷線時會執行這裡，把誰離開的通知發給所有人</span>
+</span></span><span class=line><span class=cl>    <span class=kd>public</span> <span class=kd>override</span> <span class=kd>async</span> <span class=n>Task</span> <span class=n>OnDisconnectedAsync</span><span class=p>(</span><span class=n>Exception</span><span class=p>?</span> <span class=n>exception</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>    <span class=p>{</span>
+</span></span><span class=line><span class=cl>        <span class=k>await</span> <span class=n>Clients</span><span class=p>.</span><span class=n>All</span><span class=p>.</span><span class=n>SendAsync</span><span class=p>(</span><span class=s>&#34;UserDisconnected&#34;</span><span class=p>,</span> <span class=n>Context</span><span class=p>.</span><span class=n>ConnectionId</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>        <span class=k>await</span> <span class=k>base</span><span class=p>.</span><span class=n>OnDisconnectedAsync</span><span class=p>(</span><span class=n>exception</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span></code></pre></td></tr></table></div></div><h4 id=hub-重要屬性>Hub 重要屬性</h4><p><strong>Clients</strong>：負責把訊息發送給誰，例如：</p><ul><li><code>Clients.All</code>：送給所有人，不管是誰</li><li><code>Clients.Caller</code>：只回傳給發送訊息的人</li><li><code>Clients.Others</code>：送給除了發訊息的人以外的所有人</li></ul><p><strong>Context</strong>：提供關於這次連線的資訊，例如：</p><ul><li><code>Context.ConnectionId</code>：每個使用者連上來後都有一個獨一無二的編號</li><li><code>Context.User</code>：使用者的身份資訊，適用在需要登入或認證的應用程式</li></ul><h3 id=3-客戶端實現>3. 客戶端實現</h3><p>在 root 目錄底下建立 <code>wwwroot</code> 的資料夾，並且建立 <code>index.html</code> 輸入以下內容：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span><span class=lnt>28
+</span><span class=lnt>29
+</span><span class=lnt>30
+</span><span class=lnt>31
+</span><span class=lnt>32
+</span><span class=lnt>33
+</span><span class=lnt>34
+</span><span class=lnt>35
+</span><span class=lnt>36
+</span><span class=lnt>37
+</span><span class=lnt>38
+</span><span class=lnt>39
+</span><span class=lnt>40
+</span><span class=lnt>41
+</span><span class=lnt>42
+</span><span class=lnt>43
+</span><span class=lnt>44
+</span><span class=lnt>45
+</span><span class=lnt>46
+</span><span class=lnt>47
+</span><span class=lnt>48
+</span><span class=lnt>49
+</span><span class=lnt>50
+</span><span class=lnt>51
+</span><span class=lnt>52
+</span><span class=lnt>53
+</span><span class=lnt>54
+</span><span class=lnt>55
+</span><span class=lnt>56
+</span><span class=lnt>57
+</span><span class=lnt>58
+</span><span class=lnt>59
+</span><span class=lnt>60
+</span><span class=lnt>61
+</span><span class=lnt>62
+</span><span class=lnt>63
+</span><span class=lnt>64
+</span><span class=lnt>65
+</span><span class=lnt>66
+</span><span class=lnt>67
+</span><span class=lnt>68
+</span><span class=lnt>69
+</span><span class=lnt>70
+</span><span class=lnt>71
+</span><span class=lnt>72
+</span><span class=lnt>73
+</span><span class=lnt>74
+</span><span class=lnt>75
+</span><span class=lnt>76
+</span><span class=lnt>77
+</span><span class=lnt>78
+</span><span class=lnt>79
+</span><span class=lnt>80
+</span><span class=lnt>81
+</span><span class=lnt>82
+</span><span class=lnt>83
+</span><span class=lnt>84
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-html data-lang=html><span class=line><span class=cl><span class=cp>&lt;!DOCTYPE html&gt;</span>
+</span></span><span class=line><span class=cl><span class=p>&lt;</span><span class=nt>html</span><span class=p>&gt;</span>
+</span></span><span class=line><span class=cl><span class=p>&lt;</span><span class=nt>head</span><span class=p>&gt;</span>
+</span></span><span class=line><span class=cl>    <span class=p>&lt;</span><span class=nt>meta</span> <span class=na>charset</span><span class=o>=</span><span class=s>&#34;UTF-8&#34;</span><span class=p>&gt;</span>
+</span></span><span class=line><span class=cl>    <span class=p>&lt;</span><span class=nt>title</span><span class=p>&gt;</span>SignalR 聊天室<span class=p>&lt;/</span><span class=nt>title</span><span class=p>&gt;</span>
+</span></span><span class=line><span class=cl>    <span class=p>&lt;</span><span class=nt>style</span><span class=p>&gt;</span>
+</span></span><span class=line><span class=cl>        <span class=p>#</span><span class=nn>messagesList</span> <span class=p>{</span> <span class=k>border</span><span class=p>:</span> <span class=mi>1</span><span class=kt>px</span> <span class=kc>solid</span> <span class=mh>#ccc</span><span class=p>;</span> <span class=k>height</span><span class=p>:</span> <span class=mi>300</span><span class=kt>px</span><span class=p>;</span> <span class=k>overflow-y</span><span class=p>:</span> <span class=kc>auto</span><span class=p>;</span> <span class=k>padding</span><span class=p>:</span> <span class=mi>10</span><span class=kt>px</span><span class=p>;</span> <span class=k>margin-bottom</span><span class=p>:</span> <span class=mi>10</span><span class=kt>px</span><span class=p>;</span> <span class=p>}</span>
+</span></span><span class=line><span class=cl>        <span class=p>.</span><span class=nc>form-group</span> <span class=p>{</span> <span class=k>margin</span><span class=p>:</span> <span class=mi>10</span><span class=kt>px</span> <span class=mi>0</span><span class=p>;</span> <span class=p>}</span>
+</span></span><span class=line><span class=cl>        <span class=p>.</span><span class=nc>form-group</span> <span class=nt>label</span> <span class=p>{</span> <span class=k>display</span><span class=p>:</span> <span class=kc>inline-block</span><span class=p>;</span> <span class=k>width</span><span class=p>:</span> <span class=mi>70</span><span class=kt>px</span><span class=p>;</span> <span class=p>}</span>
+</span></span><span class=line><span class=cl>        <span class=p>.</span><span class=nc>form-group</span> <span class=nt>input</span> <span class=p>{</span> <span class=k>padding</span><span class=p>:</span> <span class=mi>5</span><span class=kt>px</span><span class=p>;</span> <span class=k>width</span><span class=p>:</span> <span class=mi>200</span><span class=kt>px</span><span class=p>;</span> <span class=p>}</span>
+</span></span><span class=line><span class=cl>        <span class=p>#</span><span class=nn>sendButton</span> <span class=p>{</span> <span class=k>padding</span><span class=p>:</span> <span class=mi>5</span><span class=kt>px</span> <span class=mi>15</span><span class=kt>px</span><span class=p>;</span> <span class=k>margin-top</span><span class=p>:</span> <span class=mi>10</span><span class=kt>px</span><span class=p>;</span> <span class=p>}</span>
+</span></span><span class=line><span class=cl>    <span class=p>&lt;/</span><span class=nt>style</span><span class=p>&gt;</span>
+</span></span><span class=line><span class=cl><span class=p>&lt;/</span><span class=nt>head</span><span class=p>&gt;</span>
+</span></span><span class=line><span class=cl><span class=p>&lt;</span><span class=nt>body</span><span class=p>&gt;</span>
+</span></span><span class=line><span class=cl>    <span class=p>&lt;</span><span class=nt>div</span> <span class=na>class</span><span class=o>=</span><span class=s>&#34;container&#34;</span><span class=p>&gt;</span>
+</span></span><span class=line><span class=cl>        <span class=p>&lt;</span><span class=nt>h2</span><span class=p>&gt;</span>SignalR 聊天室<span class=p>&lt;/</span><span class=nt>h2</span><span class=p>&gt;</span>
+</span></span><span class=line><span class=cl>        <span class=p>&lt;</span><span class=nt>div</span> <span class=na>id</span><span class=o>=</span><span class=s>&#34;messagesList&#34;</span><span class=p>&gt;&lt;/</span><span class=nt>div</span><span class=p>&gt;</span>
+</span></span><span class=line><span class=cl>        
+</span></span><span class=line><span class=cl>        <span class=p>&lt;</span><span class=nt>div</span> <span class=na>class</span><span class=o>=</span><span class=s>&#34;form-group&#34;</span><span class=p>&gt;</span>
+</span></span><span class=line><span class=cl>            <span class=p>&lt;</span><span class=nt>label</span> <span class=na>for</span><span class=o>=</span><span class=s>&#34;userInput&#34;</span><span class=p>&gt;</span>用戶名:<span class=p>&lt;/</span><span class=nt>label</span><span class=p>&gt;</span>
+</span></span><span class=line><span class=cl>            <span class=p>&lt;</span><span class=nt>input</span> <span class=na>type</span><span class=o>=</span><span class=s>&#34;text&#34;</span> <span class=na>id</span><span class=o>=</span><span class=s>&#34;userInput&#34;</span> <span class=p>/&gt;</span>
+</span></span><span class=line><span class=cl>        <span class=p>&lt;/</span><span class=nt>div</span><span class=p>&gt;</span>
+</span></span><span class=line><span class=cl>        <span class=p>&lt;</span><span class=nt>div</span> <span class=na>class</span><span class=o>=</span><span class=s>&#34;form-group&#34;</span><span class=p>&gt;</span>
+</span></span><span class=line><span class=cl>            <span class=p>&lt;</span><span class=nt>label</span> <span class=na>for</span><span class=o>=</span><span class=s>&#34;messageInput&#34;</span><span class=p>&gt;</span>消息:<span class=p>&lt;/</span><span class=nt>label</span><span class=p>&gt;</span>
+</span></span><span class=line><span class=cl>            <span class=p>&lt;</span><span class=nt>input</span> <span class=na>type</span><span class=o>=</span><span class=s>&#34;text&#34;</span> <span class=na>id</span><span class=o>=</span><span class=s>&#34;messageInput&#34;</span> <span class=p>/&gt;</span>
+</span></span><span class=line><span class=cl>        <span class=p>&lt;/</span><span class=nt>div</span><span class=p>&gt;</span>
+</span></span><span class=line><span class=cl>        <span class=p>&lt;</span><span class=nt>button</span> <span class=na>id</span><span class=o>=</span><span class=s>&#34;sendButton&#34;</span><span class=p>&gt;</span>發送<span class=p>&lt;/</span><span class=nt>button</span><span class=p>&gt;</span>
+</span></span><span class=line><span class=cl>    <span class=p>&lt;/</span><span class=nt>div</span><span class=p>&gt;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=p>&lt;</span><span class=nt>script</span> <span class=na>src</span><span class=o>=</span><span class=s>&#34;https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/8.0.0/signalr.min.js&#34;</span><span class=p>&gt;&lt;/</span><span class=nt>script</span><span class=p>&gt;</span>
+</span></span><span class=line><span class=cl>    <span class=p>&lt;</span><span class=nt>script</span><span class=p>&gt;</span>
+</span></span><span class=line><span class=cl>        <span class=c1>// 建立連接
+</span></span></span><span class=line><span class=cl><span class=c1></span>        <span class=kr>const</span> <span class=nx>connection</span> <span class=o>=</span> <span class=k>new</span> <span class=nx>signalR</span><span class=p>.</span><span class=nx>HubConnectionBuilder</span><span class=p>()</span>
+</span></span><span class=line><span class=cl>            <span class=p>.</span><span class=nx>withUrl</span><span class=p>(</span><span class=s2>&#34;/chatHub&#34;</span><span class=p>)</span>  <span class=c1>// Hub 的路由
+</span></span></span><span class=line><span class=cl><span class=c1></span>            <span class=p>.</span><span class=nx>build</span><span class=p>();</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>        <span class=nb>document</span><span class=p>.</span><span class=nx>getElementById</span><span class=p>(</span><span class=s2>&#34;sendButton&#34;</span><span class=p>).</span><span class=nx>disabled</span> <span class=o>=</span> <span class=kc>true</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>        <span class=c1>// 註冊接收消息的處理函數
+</span></span></span><span class=line><span class=cl><span class=c1></span>        <span class=nx>connection</span><span class=p>.</span><span class=nx>on</span><span class=p>(</span><span class=s2>&#34;ReceiveMessage&#34;</span><span class=p>,</span> <span class=kd>function</span> <span class=p>(</span><span class=nx>user</span><span class=p>,</span> <span class=nx>message</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>            <span class=kr>const</span> <span class=nx>msg</span> <span class=o>=</span> <span class=sb>`</span><span class=si>${</span><span class=nx>user</span><span class=si>}</span><span class=sb>: </span><span class=si>${</span><span class=nx>message</span><span class=si>}</span><span class=sb>`</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>            <span class=kr>const</span> <span class=nx>li</span> <span class=o>=</span> <span class=nb>document</span><span class=p>.</span><span class=nx>createElement</span><span class=p>(</span><span class=s2>&#34;div&#34;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>            <span class=nx>li</span><span class=p>.</span><span class=nx>textContent</span> <span class=o>=</span> <span class=nx>msg</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>            <span class=nb>document</span><span class=p>.</span><span class=nx>getElementById</span><span class=p>(</span><span class=s2>&#34;messagesList&#34;</span><span class=p>).</span><span class=nx>appendChild</span><span class=p>(</span><span class=nx>li</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>        <span class=p>});</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>        <span class=c1>// 處理用戶連接事件
+</span></span></span><span class=line><span class=cl><span class=c1></span>        <span class=nx>connection</span><span class=p>.</span><span class=nx>on</span><span class=p>(</span><span class=s2>&#34;UserConnected&#34;</span><span class=p>,</span> <span class=kd>function</span> <span class=p>(</span><span class=nx>connectionId</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>            <span class=kr>const</span> <span class=nx>msg</span> <span class=o>=</span> <span class=sb>`用戶已連接 (</span><span class=si>${</span><span class=nx>connectionId</span><span class=si>}</span><span class=sb>)`</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>            <span class=kr>const</span> <span class=nx>li</span> <span class=o>=</span> <span class=nb>document</span><span class=p>.</span><span class=nx>createElement</span><span class=p>(</span><span class=s2>&#34;div&#34;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>            <span class=nx>li</span><span class=p>.</span><span class=nx>textContent</span> <span class=o>=</span> <span class=nx>msg</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>            <span class=nx>li</span><span class=p>.</span><span class=nx>style</span><span class=p>.</span><span class=nx>color</span> <span class=o>=</span> <span class=s2>&#34;green&#34;</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>            <span class=nb>document</span><span class=p>.</span><span class=nx>getElementById</span><span class=p>(</span><span class=s2>&#34;messagesList&#34;</span><span class=p>).</span><span class=nx>appendChild</span><span class=p>(</span><span class=nx>li</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>        <span class=p>});</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>        <span class=nx>connection</span><span class=p>.</span><span class=nx>on</span><span class=p>(</span><span class=s2>&#34;UserDisconnected&#34;</span><span class=p>,</span> <span class=kd>function</span> <span class=p>(</span><span class=nx>connectionId</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>            <span class=kr>const</span> <span class=nx>msg</span> <span class=o>=</span> <span class=sb>`用戶已斷開連接 (</span><span class=si>${</span><span class=nx>connectionId</span><span class=si>}</span><span class=sb>)`</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>            <span class=kr>const</span> <span class=nx>li</span> <span class=o>=</span> <span class=nb>document</span><span class=p>.</span><span class=nx>createElement</span><span class=p>(</span><span class=s2>&#34;div&#34;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>            <span class=nx>li</span><span class=p>.</span><span class=nx>textContent</span> <span class=o>=</span> <span class=nx>msg</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>            <span class=nx>li</span><span class=p>.</span><span class=nx>style</span><span class=p>.</span><span class=nx>color</span> <span class=o>=</span> <span class=s2>&#34;red&#34;</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>            <span class=nb>document</span><span class=p>.</span><span class=nx>getElementById</span><span class=p>(</span><span class=s2>&#34;messagesList&#34;</span><span class=p>).</span><span class=nx>appendChild</span><span class=p>(</span><span class=nx>li</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>        <span class=p>});</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>        <span class=c1>// 啟動連接
+</span></span></span><span class=line><span class=cl><span class=c1></span>        <span class=nx>connection</span><span class=p>.</span><span class=nx>start</span><span class=p>().</span><span class=nx>then</span><span class=p>(</span><span class=kd>function</span> <span class=p>()</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>            <span class=nb>document</span><span class=p>.</span><span class=nx>getElementById</span><span class=p>(</span><span class=s2>&#34;sendButton&#34;</span><span class=p>).</span><span class=nx>disabled</span> <span class=o>=</span> <span class=kc>false</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>        <span class=p>}).</span><span class=k>catch</span><span class=p>(</span><span class=kd>function</span> <span class=p>(</span><span class=nx>err</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>            <span class=k>return</span> <span class=nx>console</span><span class=p>.</span><span class=nx>error</span><span class=p>(</span><span class=nx>err</span><span class=p>.</span><span class=nx>toString</span><span class=p>());</span>
+</span></span><span class=line><span class=cl>        <span class=p>});</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>        <span class=c1>// 發送消息
+</span></span></span><span class=line><span class=cl><span class=c1></span>        <span class=nb>document</span><span class=p>.</span><span class=nx>getElementById</span><span class=p>(</span><span class=s2>&#34;sendButton&#34;</span><span class=p>).</span><span class=nx>addEventListener</span><span class=p>(</span><span class=s2>&#34;click&#34;</span><span class=p>,</span> <span class=kd>function</span> <span class=p>(</span><span class=nx>event</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>            <span class=kr>const</span> <span class=nx>user</span> <span class=o>=</span> <span class=nb>document</span><span class=p>.</span><span class=nx>getElementById</span><span class=p>(</span><span class=s2>&#34;userInput&#34;</span><span class=p>).</span><span class=nx>value</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>            <span class=kr>const</span> <span class=nx>message</span> <span class=o>=</span> <span class=nb>document</span><span class=p>.</span><span class=nx>getElementById</span><span class=p>(</span><span class=s2>&#34;messageInput&#34;</span><span class=p>).</span><span class=nx>value</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>            <span class=c1>// 調用服務器端的 SendMessage 方法
+</span></span></span><span class=line><span class=cl><span class=c1></span>            <span class=nx>connection</span><span class=p>.</span><span class=nx>invoke</span><span class=p>(</span><span class=s2>&#34;SendMessage&#34;</span><span class=p>,</span> <span class=nx>user</span><span class=p>,</span> <span class=nx>message</span><span class=p>).</span><span class=k>catch</span><span class=p>(</span><span class=kd>function</span> <span class=p>(</span><span class=nx>err</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>                <span class=k>return</span> <span class=nx>console</span><span class=p>.</span><span class=nx>error</span><span class=p>(</span><span class=nx>err</span><span class=p>.</span><span class=nx>toString</span><span class=p>());</span>
+</span></span><span class=line><span class=cl>            <span class=p>});</span>
+</span></span><span class=line><span class=cl>            <span class=nb>document</span><span class=p>.</span><span class=nx>getElementById</span><span class=p>(</span><span class=s2>&#34;messageInput&#34;</span><span class=p>).</span><span class=nx>value</span> <span class=o>=</span> <span class=s2>&#34;&#34;</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>            <span class=nx>event</span><span class=p>.</span><span class=nx>preventDefault</span><span class=p>();</span>
+</span></span><span class=line><span class=cl>        <span class=p>});</span>
+</span></span><span class=line><span class=cl>    <span class=p>&lt;/</span><span class=nt>script</span><span class=p>&gt;</span>
+</span></span><span class=line><span class=cl><span class=p>&lt;/</span><span class=nt>body</span><span class=p>&gt;</span>
+</span></span><span class=line><span class=cl><span class=p>&lt;/</span><span class=nt>html</span><span class=p>&gt;</span>
+</span></span></code></pre></td></tr></table></div></div><p>這時候運行你的專案（記得設定 <code>launchSettings.json</code>），輸入 <code>localhost:5000/index.html</code>，就可以看到以下的畫面。</p><p><img src=/post/%E7%B0%A1%E5%96%AE%E7%B6%B2%E9%A0%81%E8%81%8A%E5%A4%A9%E5%AE%A4/signalR-1.png width=365 height=632 srcset="/post/%E7%B0%A1%E5%96%AE%E7%B6%B2%E9%A0%81%E8%81%8A%E5%A4%A9%E5%AE%A4/signalR-1_hu_89344af5111a86ec.png 480w, /post/%E7%B0%A1%E5%96%AE%E7%B6%B2%E9%A0%81%E8%81%8A%E5%A4%A9%E5%AE%A4/signalR-1_hu_1fae0dd31fee068.png 1024w" loading=lazy class=gallery-image data-flex-grow=57 data-flex-basis=138px></p><p>如果你再多開一個新的 tab，就會看到第一個 tab 多了一行連接的用戶：</p><p><img src=/post/%E7%B0%A1%E5%96%AE%E7%B6%B2%E9%A0%81%E8%81%8A%E5%A4%A9%E5%AE%A4/signalR-2.png width=716 height=749 srcset="/post/%E7%B0%A1%E5%96%AE%E7%B6%B2%E9%A0%81%E8%81%8A%E5%A4%A9%E5%AE%A4/signalR-2_hu_17ca8e4a55d81549.png 480w, /post/%E7%B0%A1%E5%96%AE%E7%B6%B2%E9%A0%81%E8%81%8A%E5%A4%A9%E5%AE%A4/signalR-2_hu_e461304e71175446.png 1024w" loading=lazy class=gallery-image data-flex-grow=95 data-flex-basis=229px></p><p>兩個不同的人可以輸入訊息，按下發送後，另外一邊也會收到：</p><p><img src=/post/%E7%B0%A1%E5%96%AE%E7%B6%B2%E9%A0%81%E8%81%8A%E5%A4%A9%E5%AE%A4/signalR-3.png width=667 height=745 srcset="/post/%E7%B0%A1%E5%96%AE%E7%B6%B2%E9%A0%81%E8%81%8A%E5%A4%A9%E5%AE%A4/signalR-3_hu_3e166db4e7d39449.png 480w, /post/%E7%B0%A1%E5%96%AE%E7%B6%B2%E9%A0%81%E8%81%8A%E5%A4%A9%E5%AE%A4/signalR-3_hu_17e6c9068f30a097.png 1024w" loading=lazy class=gallery-image data-flex-grow=89 data-flex-basis=214px></p><p>有人離開的話就可以送出通知：</p><p><img src=/post/%E7%B0%A1%E5%96%AE%E7%B6%B2%E9%A0%81%E8%81%8A%E5%A4%A9%E5%AE%A4/signalR-4.png width=366 height=640 srcset="/post/%E7%B0%A1%E5%96%AE%E7%B6%B2%E9%A0%81%E8%81%8A%E5%A4%A9%E5%AE%A4/signalR-4_hu_89ce57513092bb5e.png 480w, /post/%E7%B0%A1%E5%96%AE%E7%B6%B2%E9%A0%81%E8%81%8A%E5%A4%A9%E5%AE%A4/signalR-4_hu_555d6b7285c441b6.png 1024w" loading=lazy class=gallery-image data-flex-grow=57 data-flex-basis=137px></p></section><footer class=article-footer><section class=article-tags><a href=/tags/.net/>.NET</a>
+<a href=/tags/signalr/>SignalR</a>
+<a href=/tags/websocket/>WebSocket</a></section></footer></article><aside class=related-content--wrapper><h2 class=section-title>Related content</h2><div class=related-content><div class="flex article-list--tile"><article><a href=/post/gdal-shapefile-3/><div class=article-details><h2 class=article-title>GDAL 操作 ShapeFile (3)</h2></div></a></article><article><a href=/post/gdal-shapefile-2/><div class=article-details><h2 class=article-title>GDAL 操作 ShapeFile (2)</h2></div></a></article><article><a href=/post/gdal-shapefile-1/><div class=article-details><h2 class=article-title>GDAL 操作 ShapeFile (1)</h2></div></a></article><article><a href=/post/%E5%90%8C%E4%B8%80%E5%80%8B%E4%BB%8B%E9%9D%A2%E5%A4%9A%E5%80%8B%E5%AF%A6%E4%BD%9C%E7%9A%84%E8%A8%BB%E5%86%8A/><div class=article-details><h2 class=article-title>同一個介面多個實作的註冊</h2></div></a></article><article><a href=/post/google-calendar-api/><div class=article-details><h2 class=article-title>Google Calendar API</h2></div></a></article></div></div></aside><footer class=site-footer><section class=copyright>&copy;
+2022 -
+2025 Anthea's Blog</section><section class=powerby>Built with <a href=https://gohugo.io/ target=_blank rel=noopener>Hugo</a><br>Theme <b><a href=https://github.com/CaiJimmy/hugo-theme-stack target=_blank rel=noopener data-version=3.30.0>Stack</a></b> designed by <a href=https://jimmycai.com target=_blank rel=noopener>Jimmy</a></section></footer><div class=pswp tabindex=-1 role=dialog aria-hidden=true><div class=pswp__bg></div><div class=pswp__scroll-wrap><div class=pswp__container><div class=pswp__item></div><div class=pswp__item></div><div class=pswp__item></div></div><div class="pswp__ui pswp__ui--hidden"><div class=pswp__top-bar><div class=pswp__counter></div><button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+<button class="pswp__button pswp__button--share" title=Share></button>
+<button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+<button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button><div class=pswp__preloader><div class=pswp__preloader__icn><div class=pswp__preloader__cut><div class=pswp__preloader__donut></div></div></div></div></div><div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap"><div class=pswp__share-tooltip></div></div><button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+</button>
+<button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)"></button><div class=pswp__caption><div class=pswp__caption__center></div></div></div></div></div><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo=" crossorigin=anonymous defer></script><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU=" crossorigin=anonymous defer></script><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css crossorigin=anonymous><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css crossorigin=anonymous></main></div><script src=https://cdn.jsdelivr.net/npm/node-vibrant@3.1.6/dist/vibrant.min.js integrity="sha256-awcR2jno4kI5X0zL8ex0vi2z+KMkF24hUW8WePSA9HM=" crossorigin=anonymous></script><script type=text/javascript src=/ts/main.1e9a3bafd846ced4c345d084b355fb8c7bae75701c338f8a1f8a82c780137826.js defer></script><script>(function(){const e=document.createElement("link");e.href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap",e.type="text/css",e.rel="stylesheet",document.head.appendChild(e)})()</script></body></html>
