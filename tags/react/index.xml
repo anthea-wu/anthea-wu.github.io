@@ -1,4 +1,128 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>React on Anthea's Blog</title><link>https://anthea-wu.github.io/tags/react/</link><description>Recent content in React on Anthea's Blog</description><generator>Hugo -- gohugo.io</generator><language>en</language><lastBuildDate>Thu, 29 May 2025 16:00:00 +0800</lastBuildDate><atom:link href="https://anthea-wu.github.io/tags/react/index.xml" rel="self" type="application/rss+xml"/><item><title>React 初心者大補帖（2）</title><link>https://anthea-wu.github.io/post/react-juniors-2/</link><pubDate>Thu, 29 May 2025 16:00:00 +0800</pubDate><guid>https://anthea-wu.github.io/post/react-juniors-2/</guid><description>&lt;p>最近在幫一個有使用到 react-query 的元件寫測試時遇到一個狀況：&lt;/p>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>React on Anthea's Blog</title><link>https://anthea-wu.github.io/tags/react/</link><description>Recent content in React on Anthea's Blog</description><generator>Hugo -- gohugo.io</generator><language>en</language><lastBuildDate>Fri, 06 Jun 2025 15:30:00 +0800</lastBuildDate><atom:link href="https://anthea-wu.github.io/tags/react/index.xml" rel="self" type="application/rss+xml"/><item><title>React 初心者大補帖（3）</title><link>https://anthea-wu.github.io/post/react-june-3/</link><pubDate>Fri, 06 Jun 2025 15:30:00 +0800</pubDate><guid>https://anthea-wu.github.io/post/react-june-3/</guid><description>&lt;p>在 React 裡，父元件通常 無法直接控制子元件的內部狀態或行為。但有時候，我們希望 父元件可以透過某些方法操作子元件，例如：重置狀態、讀取資料或觸發某些事件——這時候，&lt;code>useImperativeHandle&lt;/code> 就能派上用場。&lt;/p>
+&lt;p>這篇文章將透過一個「自動販賣機」的範例，一步步了解：&lt;/p>
+&lt;ul>
+&lt;li>什麼是 &lt;code>useImperativeHandle&lt;/code>&lt;/li>
+&lt;li>它為什麼需要搭配 forwardRef&lt;/li>
+&lt;li>如何在實務中運用它來建立一個「可由父元件遙控的子元件」&lt;/li>
+&lt;/ul>
+&lt;h2 id="-什麼是-useimperativehandle">💡 什麼是 &lt;code>useImperativeHandle&lt;/code>
+&lt;/h2>&lt;p>&lt;code>useImperativeHandle&lt;/code> 是一個 React Hook，讓你可以 自訂一個 ref 對應的物件內容。這樣父元件在透過 ref 取得子元件時，不會拿到整個 DOM 或元件實例，而是取得你「想要暴露出去的功能」。&lt;/p>
+&lt;p>它通常要和 &lt;code>forwardRef&lt;/code> 一起使用，才能讓函式型元件支援 ref。&lt;/p>
+&lt;h2 id="-範例介紹一台自動販賣機">🧪 範例介紹：一台自動販賣機
+&lt;/h2>&lt;p>假設我們有一個 VendingMachine 元件，他有自己的內部狀態，包含已選擇的商品、投入的金額等等。但通常來說，我們還會需要一些其他的功能，例如客人發現他選錯飲料了，想要取消購買；或是販賣機異常了，工程師來維修的時候想要重置整個飲料機的狀態，這兩個行為都會牽涉到 VendingMachine 的內部狀態，但因為 這些操作是在父元件中觸發的行為，子元件自己無法預測，也不應該自行處理。&lt;/p>
+&lt;p>這樣做有幾個好處：&lt;/p>
+&lt;ul>
+&lt;li>&lt;strong>保持封裝性&lt;/strong>：子元件仍然控制自己的 state，外部只能透過「指定的介面」來操作它。&lt;/li>
+&lt;li>&lt;strong>提供明確 API&lt;/strong>：讓元件的使用者知道有哪些功能可以用，不會亂操作。&lt;/li>
+&lt;li>&lt;strong>應付複雜交互邏輯&lt;/strong>：像是「取消交易」、「重置系統」這類跨元件操作就能被妥善處理。&lt;/li>
+&lt;/ul>
+&lt;p>因此，在我們的自動販賣機範例中，我們選擇將以下三個功能透過 &lt;code>useImperativeHandle&lt;/code> 提供給外部元件使用：&lt;/p>
+&lt;ul>
+&lt;li>&lt;code>cancelSelection&lt;/code>: 客人取消交易&lt;/li>
+&lt;li>&lt;code>resetMachine&lt;/code>: 工程師重置機器&lt;/li>
+&lt;li>&lt;code>getCurrentStatus&lt;/code>: 查詢目前販賣機的狀態&lt;/li>
+&lt;/ul>
+&lt;p>下一步就讓我們來看要怎麼使用 &lt;code>useImperativeHandle&lt;/code> 吧。&lt;/p>
+&lt;h2 id="-建立可控制的子元件vendingmachine">👷 建立可控制的子元件：VendingMachine
+&lt;/h2>&lt;h3 id="第一步使用-forwardref-包裝元件">第一步：使用 &lt;code>forwardRef&lt;/code> 包裝元件
+&lt;/h3>&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;span class="lnt">2
+&lt;/span>&lt;span class="lnt">3
+&lt;/span>&lt;span class="lnt">4
+&lt;/span>&lt;span class="lnt">5
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-javascript" data-lang="javascript">&lt;span class="line">&lt;span class="cl">&lt;span class="kr">const&lt;/span> &lt;span class="nx">VendingMachine&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="nx">forwardRef&lt;/span>&lt;span class="o">&amp;lt;&lt;/span>&lt;span class="nx">VendingMachineRef&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nx">VendingMachineProps&lt;/span>&lt;span class="o">&amp;gt;&lt;/span>&lt;span class="p">(&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">()&lt;/span> &lt;span class="p">=&amp;gt;&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="c1">// component
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">&lt;/span> &lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">);&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;h3 id="第二步定義要暴露給外部的功能">第二步：定義要暴露給外部的功能
+&lt;/h3>&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt"> 1
+&lt;/span>&lt;span class="lnt"> 2
+&lt;/span>&lt;span class="lnt"> 3
+&lt;/span>&lt;span class="lnt"> 4
+&lt;/span>&lt;span class="lnt"> 5
+&lt;/span>&lt;span class="lnt"> 6
+&lt;/span>&lt;span class="lnt"> 7
+&lt;/span>&lt;span class="lnt"> 8
+&lt;/span>&lt;span class="lnt"> 9
+&lt;/span>&lt;span class="lnt">10
+&lt;/span>&lt;span class="lnt">11
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-javascript" data-lang="javascript">&lt;span class="line">&lt;span class="cl">&lt;span class="nx">useImperativeHandle&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">ref&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="p">()&lt;/span> &lt;span class="p">=&amp;gt;&lt;/span> &lt;span class="p">({&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">cancelSelection&lt;/span>&lt;span class="o">:&lt;/span> &lt;span class="p">()&lt;/span> &lt;span class="p">=&amp;gt;&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="c1">// 清除狀態並通知取消
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">&lt;/span> &lt;span class="p">},&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">resetMachine&lt;/span>&lt;span class="o">:&lt;/span> &lt;span class="p">()&lt;/span> &lt;span class="p">=&amp;gt;&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="c1">// 將狀態重置為初始狀態
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">&lt;/span> &lt;span class="p">},&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">getCurrentStatus&lt;/span>&lt;span class="o">:&lt;/span> &lt;span class="p">()&lt;/span> &lt;span class="p">=&amp;gt;&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="c1">// 回傳目前的狀態描述字串
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">&lt;/span> &lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">}),&lt;/span> &lt;span class="p">[&lt;/span>&lt;span class="nx">selectedItem&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nx">insertedMoney&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nx">status&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nx">onCancel&lt;/span>&lt;span class="p">]);&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;h2 id="-父元件透過-ref-呼叫子元件方法">👨‍🔧 父元件：透過 ref 呼叫子元件方法
+&lt;/h2>&lt;h3 id="第三步使用-useref-建立-ref">第三步：使用 &lt;code>useRef&lt;/code> 建立 ref
+&lt;/h3>&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-javascript" data-lang="javascript">&lt;span class="line">&lt;span class="cl">&lt;span class="kr">const&lt;/span> &lt;span class="nx">vendingMachineRef&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="nx">useRef&lt;/span>&lt;span class="o">&amp;lt;&lt;/span>&lt;span class="nx">VendingMachineRef&lt;/span>&lt;span class="o">&amp;gt;&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="kc">null&lt;/span>&lt;span class="p">);&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;h3 id="第四步在父元件中呼叫子元件方法">第四步：在父元件中呼叫子元件方法
+&lt;/h3>&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt"> 1
+&lt;/span>&lt;span class="lnt"> 2
+&lt;/span>&lt;span class="lnt"> 3
+&lt;/span>&lt;span class="lnt"> 4
+&lt;/span>&lt;span class="lnt"> 5
+&lt;/span>&lt;span class="lnt"> 6
+&lt;/span>&lt;span class="lnt"> 7
+&lt;/span>&lt;span class="lnt"> 8
+&lt;/span>&lt;span class="lnt"> 9
+&lt;/span>&lt;span class="lnt">10
+&lt;/span>&lt;span class="lnt">11
+&lt;/span>&lt;span class="lnt">12
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-javascript" data-lang="javascript">&lt;span class="line">&lt;span class="cl">&lt;span class="kr">const&lt;/span> &lt;span class="nx">customerCancel&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="p">()&lt;/span> &lt;span class="p">=&amp;gt;&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">vendingMachineRef&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">current&lt;/span>&lt;span class="o">?&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">cancelSelection&lt;/span>&lt;span class="p">();&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">};&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="kr">const&lt;/span> &lt;span class="nx">technicianReset&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="p">()&lt;/span> &lt;span class="p">=&amp;gt;&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">vendingMachineRef&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">current&lt;/span>&lt;span class="o">?&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">resetMachine&lt;/span>&lt;span class="p">();&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">};&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="kr">const&lt;/span> &lt;span class="nx">checkStatus&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="p">()&lt;/span> &lt;span class="p">=&amp;gt;&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="kr">const&lt;/span> &lt;span class="nx">status&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="nx">vendingMachineRef&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">current&lt;/span>&lt;span class="o">?&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">getCurrentStatus&lt;/span>&lt;span class="p">();&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">setMachineStatus&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">status&lt;/span> &lt;span class="o">??&lt;/span> &lt;span class="s2">&amp;#34;無法獲取狀態&amp;#34;&lt;/span>&lt;span class="p">);&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">};&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;h2 id="-useimperativehandle-的應用情境">✅ &lt;code>useImperativeHandle&lt;/code> 的應用情境
+&lt;/h2>&lt;p>這種做法特別適合用在：&lt;/p>
+&lt;ul>
+&lt;li>&lt;strong>表單控制&lt;/strong>：例如讓父元件觸發表單驗證、重置欄位&lt;/li>
+&lt;li>&lt;strong>外部控制元件&lt;/strong>：像 modal、canvas、圖表、音樂播放器等需要控制的 UI&lt;/li>
+&lt;li>&lt;strong>設計可複用元件 API&lt;/strong>：把內部邏輯包在元件中，只暴露必要的 API 給使用者&lt;/li>
+&lt;/ul>
+&lt;p>不過要注意的是，&lt;code>useImperativeHandle&lt;/code> 不會讓你繞過 React 的「單向資料流」原則，因為你只能操作子元件「允許」的部分。&lt;/p>
+&lt;p>若父元件可以直接控制全部狀態，那就不需要這個 hook，只有在子元件內部邏輯複雜、但又需要提供部分控制給外部時才用得到。&lt;/p>
+&lt;h2 id="-結語">📎 結語
+&lt;/h2>&lt;p>&lt;code>useImperativeHandle&lt;/code> 在實務中雖然使用頻率不高，但在處理一些進階的互動場景（例如這個自動販賣機）時，可以幫你建立乾淨又可控制的元件 API，讓元件設計更彈性、更模組化。&lt;/p>
+&lt;p>希望你喜歡今天的文章，我們下次再見 👋🏻&lt;/p></description></item><item><title>React 初心者大補帖（2）</title><link>https://anthea-wu.github.io/post/react-juniors-2/</link><pubDate>Thu, 29 May 2025 16:00:00 +0800</pubDate><guid>https://anthea-wu.github.io/post/react-juniors-2/</guid><description>&lt;p>最近在幫一個有使用到 react-query 的元件寫測試時遇到一個狀況：&lt;/p>
 &lt;p>&lt;img src="https://anthea-wu.github.io/post/react-juniors-2/react-1.png"
 width="1400"
 height="1449"
