@@ -1,4 +1,122 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Posts on Anthea's Blog</title><link>https://anthea-wu.github.io/post/</link><description>Recent content in Posts on Anthea's Blog</description><generator>Hugo -- gohugo.io</generator><language>en</language><lastBuildDate>Sun, 16 Mar 2025 10:00:00 +0800</lastBuildDate><atom:link href="https://anthea-wu.github.io/post/index.xml" rel="self" type="application/rss+xml"/><item><title>如何在 local 設置 Git Pre-commit Hook</title><link>https://anthea-wu.github.io/post/git-pre-commit-hook-local-setup/</link><pubDate>Sun, 16 Mar 2025 10:00:00 +0800</pubDate><guid>https://anthea-wu.github.io/post/git-pre-commit-hook-local-setup/</guid><description>&lt;h2 id="什麼是-pre-commit-hook">什麼是 Pre-commit Hook
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Posts on Anthea's Blog</title><link>https://anthea-wu.github.io/post/</link><description>Recent content in Posts on Anthea's Blog</description><generator>Hugo -- gohugo.io</generator><language>en</language><lastBuildDate>Thu, 29 May 2025 16:00:00 +0800</lastBuildDate><atom:link href="https://anthea-wu.github.io/post/index.xml" rel="self" type="application/rss+xml"/><item><title>React 初心者大補帖（2）</title><link>https://anthea-wu.github.io/post/react-juniors-2/</link><pubDate>Thu, 29 May 2025 16:00:00 +0800</pubDate><guid>https://anthea-wu.github.io/post/react-juniors-2/</guid><description>&lt;p>最近在幫一個有使用到 react-query 的元件寫測試時遇到一個狀況：&lt;/p>
+&lt;p>&lt;img src="https://anthea-wu.github.io/post/react-juniors-2/react-1.png"
+width="1400"
+height="1449"
+srcset="https://anthea-wu.github.io/post/react-juniors-2/react-1_hu_b14a05e355e7b0c9.png 480w, https://anthea-wu.github.io/post/react-juniors-2/react-1_hu_33760f67a8bd424b.png 1024w"
+loading="lazy"
+class="gallery-image"
+data-flex-grow="96"
+data-flex-basis="231px"
+>&lt;/p>
+&lt;p>可以看到在上面的程式碼中，我有針對 error 做一些處理，因此我想寫個測試確認當我的 API 回傳錯誤後有正確的被處理：&lt;/p>
+&lt;p>&lt;img src="https://anthea-wu.github.io/post/react-juniors-2/react-2.png"
+width="1400"
+height="1491"
+srcset="https://anthea-wu.github.io/post/react-juniors-2/react-2_hu_71aa5c78a10743ec.png 480w, https://anthea-wu.github.io/post/react-juniors-2/react-2_hu_4031da0e6086326b.png 1024w"
+loading="lazy"
+class="gallery-image"
+data-flex-grow="93"
+data-flex-basis="225px"
+>&lt;/p>
+&lt;p>但當我這執行測試後，卻發現測試執行不過：&lt;/p>
+&lt;p>&lt;img src="https://anthea-wu.github.io/post/react-juniors-2/react-3.png"
+width="1166"
+height="750"
+srcset="https://anthea-wu.github.io/post/react-juniors-2/react-3_hu_504b9639f1ad70e9.png 480w, https://anthea-wu.github.io/post/react-juniors-2/react-3_hu_7aaea932c0aba0f1.png 1024w"
+loading="lazy"
+class="gallery-image"
+data-flex-grow="155"
+data-flex-basis="373px"
+>&lt;/p>
+&lt;p>可以從 console 中看到，錯誤是在驗證錯誤處理就被拋出了，在這裡下了 console log 之後可以看到目前的 result &lt;code>isLoading = true&lt;/code> ：&lt;/p>
+&lt;p>&lt;img src="https://anthea-wu.github.io/post/react-juniors-2/react-4.png"
+width="1400"
+height="2081"
+srcset="https://anthea-wu.github.io/post/react-juniors-2/react-4_hu_528895f53bc200c7.png 480w, https://anthea-wu.github.io/post/react-juniors-2/react-4_hu_93f681ac9fac975.png 1024w"
+loading="lazy"
+class="gallery-image"
+data-flex-grow="67"
+data-flex-basis="161px"
+>&lt;/p>
+&lt;h2 id="為什麼會這樣">為什麼會這樣？
+&lt;/h2>&lt;p>根據 &lt;a class="link" href="https://tanstack.com/query/latest/docs/framework/react/guides/query-retries" target="_blank" rel="noopener"
+>TanStack Query 官方文件&lt;/a> 的說明，react-query 預設會對失敗的請求重試三次，並使用指數退避（exponential backoff）策略，初始延遲為 1 秒，每次加倍，最多延遲 30 秒。&lt;/p>
+&lt;p>這就是為什麼我們的測試會噴掉的原因：&lt;/p>
+&lt;p>&lt;img src="https://anthea-wu.github.io/post/react-juniors-2/react-5.png"
+width="1400"
+height="1006"
+srcset="https://anthea-wu.github.io/post/react-juniors-2/react-5_hu_566a512020fd2fb1.png 480w, https://anthea-wu.github.io/post/react-juniors-2/react-5_hu_56274ad38b882fe6.png 1024w"
+loading="lazy"
+class="gallery-image"
+data-flex-grow="139"
+data-flex-basis="333px"
+>&lt;/p>
+&lt;h2 id="怎麼修正">怎麼修正？
+&lt;/h2>&lt;p>為了避免在測試中出現非預期的重試行為，可以在建立 QueryClient 時設定：&lt;/p>
+&lt;p>&lt;img src="https://anthea-wu.github.io/post/react-juniors-2/react-6.png"
+width="1400"
+height="866"
+srcset="https://anthea-wu.github.io/post/react-juniors-2/react-6_hu_92d53e5463f1cfe1.png 480w, https://anthea-wu.github.io/post/react-juniors-2/react-6_hu_fb8c73782d85928a.png 1024w"
+loading="lazy"
+class="gallery-image"
+data-flex-grow="161"
+data-flex-basis="387px"
+>&lt;/p>
+&lt;p>這樣除非在個別查詢中另行設定，不然預設就是禁用全域重試囉。&lt;/p></description></item><item><title>React 初心者大補帖（1）</title><link>https://anthea-wu.github.io/post/react-junior-1/</link><pubDate>Fri, 23 May 2025 16:00:00 +0800</pubDate><guid>https://anthea-wu.github.io/post/react-junior-1/</guid><description>&lt;p>在開發 React Component 或 Hook 時，常會看到像這樣的程式碼：&lt;/p>
+&lt;p>&lt;img src="https://anthea-wu.github.io/post/react-junior-1/react-1.png"
+width="1400"
+height="945"
+srcset="https://anthea-wu.github.io/post/react-junior-1/react-1_hu_6b359d5bc58ca69a.png 480w, https://anthea-wu.github.io/post/react-junior-1/react-1_hu_4a75a3c6a48d7690.png 1024w"
+loading="lazy"
+class="gallery-image"
+data-flex-grow="148"
+data-flex-basis="355px"
+>&lt;/p>
+&lt;p>這看起來像是違反了 JavaScript 的規則，因為你在宣告 someStrategy 之前就用了它，但實際上這是合法的行為，也是 JavaScript 的預期表現。&lt;/p>
+&lt;p>一般來說，我們會在學習 JavaScript 的過程中看到這件事情：在 JavaScript 中，使用 const 或 let 宣告的變數不能在宣告之前被使用，否則會拋出 ReferenceError，這段期間稱為 TDZ（Temporal Dead Zone，暫時性死區）。&lt;/p>
+&lt;p>也就是說，如果你在變數「初始化之前」就嘗試使用它，JS 會拒絕執行：&lt;/p>
+&lt;p>&lt;img src="https://anthea-wu.github.io/post/react-junior-1/react-2.png"
+width="1400"
+height="255"
+srcset="https://anthea-wu.github.io/post/react-junior-1/react-2_hu_31e457ab09524d7f.png 480w, https://anthea-wu.github.io/post/react-junior-1/react-2_hu_2f52b61fd00fcada.png 1024w"
+loading="lazy"
+class="gallery-image"
+data-flex-grow="549"
+data-flex-basis="1317px"
+>&lt;/p>
+&lt;p>所以我們直覺上會認為：&lt;/p>
+&lt;blockquote>
+&lt;p>變數宣告在下面，上面就不該能用了吧？&lt;/p>&lt;/blockquote>
+&lt;p>但實際上，在 React 函式（或 Hook）中這種結構是合法的，讓我們一起看下去吧。&lt;/p>
+&lt;h2 id="react-並沒有魔法">React 並沒有魔法
+&lt;/h2>&lt;p>看起來在 React 中很神奇的事情，其實背後還是離不開 JavaScript 原本的行為。讓我們先來看看兩件事情的運作：Hoisting &amp;amp; 函式延遲執行（Deferred Execution）。&lt;/p>
+&lt;h3 id="1-模組層級的-hoisting提升">1. 模組層級的 Hoisting（提升）
+&lt;/h3>&lt;p>在 ES Module 中，所有頂層的變數（const、let、var）、函式（function）在解析階段都會被「提升（hoist）」，意思是：JavaScript 會先掃描整個模組，把變數名稱、函式簽名都「先登記起來」。&lt;/p>
+&lt;p>不過 const/let 會處在 Temporal Dead Zone（暫時性死區，TDZ） 中，直到程式執行到那行才初始化。因此：&lt;/p>
+&lt;p>&lt;img src="https://anthea-wu.github.io/post/react-junior-1/react-3.png"
+width="1400"
+height="419"
+srcset="https://anthea-wu.github.io/post/react-junior-1/react-3_hu_295000377c022f86.png 480w, https://anthea-wu.github.io/post/react-junior-1/react-3_hu_9eada2c27593b852.png 1024w"
+loading="lazy"
+class="gallery-image"
+data-flex-grow="334"
+data-flex-basis="801px"
+>&lt;/p>
+&lt;h3 id="2-函式是延遲執行deferred-execution">2. 函式是延遲執行（Deferred Execution）
+&lt;/h3>&lt;p>在 JavaScript 中，函式的「定義」和「執行」是兩回事。&lt;/p>
+&lt;p>當 JS 解讀一段程式時，它會先記住你定義了哪些函式，但不會馬上執行它們，直到你主動「呼叫」它們為止。&lt;/p>
+&lt;p>舉個例子：&lt;/p>
+&lt;p>&lt;img src="https://anthea-wu.github.io/post/react-junior-1/react-4.png"
+width="1400"
+height="703"
+srcset="https://anthea-wu.github.io/post/react-junior-1/react-4_hu_c462b53b8410ec59.png 480w, https://anthea-wu.github.io/post/react-junior-1/react-4_hu_51208dfcf57bf221.png 1024w"
+loading="lazy"
+class="gallery-image"
+data-flex-grow="199"
+data-flex-basis="477px"
+>&lt;/p>
+&lt;p>在 React 裡也是一樣，useHello 是一個函式，它的內容直到被呼叫時才會執行。因此即使 strategy 使用了尚未「寫到」的 helloStrategy，只要函式呼叫的時候 helloStrategy 已經初始化完，就不會有問題。&lt;/p>
+&lt;p>綜合以上兩點，我們可以理解到 React 並沒有魔法，在 const 定義前先呼叫並使用 const 的值是 JavaScript 裡正常的行為，只是因為 模組先執行、函式後呼叫 所帶來的結果。&lt;/p></description></item><item><title>如何在 local 設置 Git Pre-commit Hook</title><link>https://anthea-wu.github.io/post/git-pre-commit-hook-local-setup/</link><pubDate>Sun, 16 Mar 2025 10:00:00 +0800</pubDate><guid>https://anthea-wu.github.io/post/git-pre-commit-hook-local-setup/</guid><description>&lt;h2 id="什麼是-pre-commit-hook">什麼是 Pre-commit Hook
 &lt;/h2>&lt;p>Git pre-commit hook 是一種本地腳本，在跑 git commit 命令時會自動執行。這些 hook 可以用來確保程式碼品質，例如 run test、TypeScript 型別檢查、執行 ES Lint 等等，確保只有合格的程式碼才能被提交。&lt;/p>
 &lt;h2 id="local-hook-的好處">Local Hook 的好處
 &lt;/h2>&lt;ul>
