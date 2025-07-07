@@ -1,4 +1,91 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>React on Anthea's Blog</title><link>https://anthea-wu.github.io/tags/react/</link><description>Recent content in React on Anthea's Blog</description><generator>Hugo -- gohugo.io</generator><language>en</language><lastBuildDate>Fri, 06 Jun 2025 15:30:00 +0800</lastBuildDate><atom:link href="https://anthea-wu.github.io/tags/react/index.xml" rel="self" type="application/rss+xml"/><item><title>React 初心者大補帖（3）</title><link>https://anthea-wu.github.io/post/react-june-3/</link><pubDate>Fri, 06 Jun 2025 15:30:00 +0800</pubDate><guid>https://anthea-wu.github.io/post/react-june-3/</guid><description>&lt;p>在 React 裡，父元件通常 無法直接控制子元件的內部狀態或行為。但有時候，我們希望 父元件可以透過某些方法操作子元件，例如：重置狀態、讀取資料或觸發某些事件——這時候，&lt;code>useImperativeHandle&lt;/code> 就能派上用場。&lt;/p>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>React on Anthea's Blog</title><link>https://anthea-wu.github.io/tags/react/</link><description>Recent content in React on Anthea's Blog</description><generator>Hugo -- gohugo.io</generator><language>en</language><lastBuildDate>Tue, 10 Jun 2025 00:00:00 +0800</lastBuildDate><atom:link href="https://anthea-wu.github.io/tags/react/index.xml" rel="self" type="application/rss+xml"/><item><title>React 初心者大補帖（4）</title><link>https://anthea-wu.github.io/post/react-junior-4/</link><pubDate>Tue, 10 Jun 2025 00:00:00 +0800</pubDate><guid>https://anthea-wu.github.io/post/react-junior-4/</guid><description>&lt;p>在學習 React 的過程中，&lt;code>useEffect&lt;/code> 是許多初學者常常感到困惑的一個 Hook。今天的筆記會記錄一下：&lt;/p>
+&lt;ul>
+&lt;li>&lt;code>useEffect&lt;/code> 的基本概念&lt;/li>
+&lt;li>使用時機&lt;/li>
+&lt;li>潛藏陷阱&lt;/li>
+&lt;/ul>
+&lt;h2 id="-effect-是什麼">🔍 Effect 是什麼？
+&lt;/h2>&lt;p>Effect（副作用）是指 &lt;strong>除了 return 值之外還會與外部互動或產生更大影響的行為&lt;/strong>。這些通常包含：&lt;/p>
+&lt;ul>
+&lt;li>向伺服器發送資料（如 API 請求）&lt;/li>
+&lt;li>註冊事件監聽器（如 `window.addEventListener``)&lt;/li>
+&lt;li>操作 DOM（例如 &lt;code>document.title = &amp;quot;...&amp;quot;&lt;/code>)&lt;/li>
+&lt;li>設定或清除定時器（如 &lt;code>setTimeout&lt;/code>, &lt;code>setInterval&lt;/code>）&lt;/li>
+&lt;/ul>
+&lt;p>這些副作用行為通常會超出 React 元件本身的範疇，因此 React 提供了 &lt;code>useEffect&lt;/code> 來集中管理這些副作用。&lt;/p>
+&lt;h2 id="-effect-可能造成的問題">⚠️ Effect 可能造成的問題
+&lt;/h2>&lt;p>如果沒有妥善管理 effect 的執行與清除，可能會出現以下問題：&lt;/p>
+&lt;ul>
+&lt;li>&lt;strong>記憶體洩漏&lt;/strong>：例如註冊了事件但沒清除&lt;/li>
+&lt;li>&lt;strong>多次重複執行&lt;/strong>：依賴沒寫齊，導致每次 render 都重新執行&lt;/li>
+&lt;li>&lt;strong>畫面狀態錯亂&lt;/strong>：例如過時的資料仍被使用，造成顯示不一致&lt;/li>
+&lt;li>&lt;strong>效能低落&lt;/strong>：頻繁 re-render 導致效能下降&lt;/li>
+&lt;/ul>
+&lt;h2 id="-useeffect-是什麼">💡 &lt;code>useEffect&lt;/code> 是什麼？
+&lt;/h2>&lt;p>&lt;code>useEffect&lt;/code> 是 React 中用來處理副作用的 Hook。它的主要功能有兩個：&lt;/p>
+&lt;ol>
+&lt;li>&lt;strong>執行副作用程式碼&lt;/strong>：如前述的 API 呼叫、DOM 操作等。&lt;/li>
+&lt;li>&lt;strong>清除副作用&lt;/strong>：透過 &lt;code>useEffect&lt;/code> 傳回的清除函式（cleanup function），可以在元件 unmount 或重新執行 effect 前清除先前的副作用，避免記憶體洩漏或非預期行為。&lt;/li>
+&lt;/ol>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;span class="lnt">2
+&lt;/span>&lt;span class="lnt">3
+&lt;/span>&lt;span class="lnt">4
+&lt;/span>&lt;span class="lnt">5
+&lt;/span>&lt;span class="lnt">6
+&lt;/span>&lt;span class="lnt">7
+&lt;/span>&lt;span class="lnt">8
+&lt;/span>&lt;span class="lnt">9
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-javascript" data-lang="javascript">&lt;span class="line">&lt;span class="cl">&lt;span class="nx">useEffect&lt;/span>&lt;span class="p">(()&lt;/span> &lt;span class="p">=&amp;gt;&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="kr">const&lt;/span> &lt;span class="nx">timer&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="nx">setInterval&lt;/span>&lt;span class="p">(()&lt;/span> &lt;span class="p">=&amp;gt;&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">console&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">log&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s2">&amp;#34;每秒執行一次&amp;#34;&lt;/span>&lt;span class="p">);&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">},&lt;/span> &lt;span class="mi">1000&lt;/span>&lt;span class="p">);&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">return&lt;/span> &lt;span class="p">()&lt;/span> &lt;span class="p">=&amp;gt;&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">clearInterval&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">timer&lt;/span>&lt;span class="p">);&lt;/span> &lt;span class="c1">// 清除副作用
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">&lt;/span> &lt;span class="p">};&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">},&lt;/span> &lt;span class="p">[]);&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;h2 id="-useeffect-的用法">🛠️ &lt;code>useEffect&lt;/code> 的用法
+&lt;/h2>&lt;p>基本語法如下：&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;span class="lnt">2
+&lt;/span>&lt;span class="lnt">3
+&lt;/span>&lt;span class="lnt">4
+&lt;/span>&lt;span class="lnt">5
+&lt;/span>&lt;span class="lnt">6
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-javascript" data-lang="javascript">&lt;span class="line">&lt;span class="cl">&lt;span class="nx">useEffect&lt;/span>&lt;span class="p">(()&lt;/span> &lt;span class="p">=&amp;gt;&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="c1">// 副作用邏輯
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">&lt;/span> &lt;span class="k">return&lt;/span> &lt;span class="p">()&lt;/span> &lt;span class="p">=&amp;gt;&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="c1">// 清除副作用邏輯（可選）
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">&lt;/span> &lt;span class="p">};&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">},&lt;/span> &lt;span class="p">[&lt;/span>&lt;span class="nx">dependencies&lt;/span>&lt;span class="p">]);&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;h3 id="-根據依賴的不同行為會有所差異">📌 根據依賴的不同，行為會有所差異：
+&lt;/h3>&lt;ul>
+&lt;li>&lt;code>useEffect(someActions)&lt;/code>：沒有指定依賴陣列，每次 render 都會執行，即使狀態沒改變也一樣&lt;/li>
+&lt;li>&lt;code>useEffect(someActions, [])&lt;/code>：傳入空陣列作為依賴，在第一次 render 時執行一次，後續 re-render 時會被安全的跳過&lt;/li>
+&lt;li>&lt;code>useEffect(someActions, [foo, bar])&lt;/code>：傳入依賴陣列，當 foo 或 bar 的值改變時才會重新執行 effect&lt;/li>
+&lt;/ul>
+&lt;h2 id="安全的跳過--保證會跳過">❗安全的跳過 ≠ 保證會跳過
+&lt;/h2>&lt;p>很多人會誤以為傳入 &lt;code>[]&lt;/code> 就一定不會重新執行，但實際上：&lt;/p>
+&lt;ul>
+&lt;li>&lt;strong>安全地跳過&lt;/strong>是指跳過沒問題、不跳過也沒問題：有時候依賴沒列齊（例如漏掉某個 context 或 props），會導致效果不如預期&lt;/li>
+&lt;li>&lt;strong>dependencies 是效能優化的手段&lt;/strong>，而不是執行時機的主邏輯控制工具&lt;/li>
+&lt;/ul>
+&lt;p>最好的做法是：&lt;/p>
+&lt;blockquote>
+&lt;p>&lt;strong>寫出正確的 effect 邏輯，然後再優化 dependencies。&lt;/strong>&lt;/p>&lt;/blockquote></description></item><item><title>React 初心者大補帖（3）</title><link>https://anthea-wu.github.io/post/react-junior-3/</link><pubDate>Fri, 06 Jun 2025 15:30:00 +0800</pubDate><guid>https://anthea-wu.github.io/post/react-junior-3/</guid><description>&lt;p>在 React 裡，父元件通常 無法直接控制子元件的內部狀態或行為。但有時候，我們希望 父元件可以透過某些方法操作子元件，例如：重置狀態、讀取資料或觸發某些事件——這時候，&lt;code>useImperativeHandle&lt;/code> 就能派上用場。&lt;/p>
 &lt;p>這篇文章將透過一個「自動販賣機」的範例，一步步了解：&lt;/p>
 &lt;ul>
 &lt;li>什麼是 &lt;code>useImperativeHandle&lt;/code>&lt;/li>
