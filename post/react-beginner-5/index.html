@@ -1,0 +1,418 @@
+<!doctype html><html lang=en dir=ltr><head><meta charset=utf-8><meta name=viewport content='width=device-width,initial-scale=1'><meta name=description content="使用 useReducer 的正確姿勢"><title>React 初心者大補帖（5）</title><link rel=canonical href=https://anthea-wu.github.io/post/react-beginner-5/><link rel=stylesheet href=/scss/style.min.946cca6c6259ef94ac55abfae7c7bf3291ea3ed5eea17ef77500b257217c6710.css><meta property='og:title' content="React 初心者大補帖（5）"><meta property='og:description' content="使用 useReducer 的正確姿勢"><meta property='og:url' content='https://anthea-wu.github.io/post/react-beginner-5/'><meta property='og:site_name' content="Anthea's Blog"><meta property='og:type' content='article'><meta property='article:section' content='Post'><meta property='article:tag' content='JavaScript'><meta property='article:tag' content='React'><meta property='article:published_time' content='2025-07-07T17:00:00+08:00'><meta property='article:modified_time' content='2025-07-07T17:00:00+08:00'><meta name=twitter:title content="React 初心者大補帖（5）"><meta name=twitter:description content="使用 useReducer 的正確姿勢"><script async src="https://www.googletagmanager.com/gtag/js?id=G-WDCDS5VPR1"></script><script>var dnt,doNotTrack=!1;if(!1&&(dnt=navigator.doNotTrack||window.doNotTrack||navigator.msDoNotTrack,doNotTrack=dnt=="1"||dnt=="yes"),!doNotTrack){window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag("js",new Date),gtag("config","G-WDCDS5VPR1")}</script></head><body class=article-page><script>(function(){const e="StackColorScheme";localStorage.getItem(e)||localStorage.setItem(e,"auto")})()</script><script>(function(){const t="StackColorScheme",e=localStorage.getItem(t),n=window.matchMedia("(prefers-color-scheme: dark)").matches===!0;e=="dark"||e==="auto"&&n?document.documentElement.dataset.scheme="dark":document.documentElement.dataset.scheme="light"})()</script><div class="container main-container flex on-phone--column extended"><aside class="sidebar left-sidebar sticky"><button class="hamburger hamburger--spin" type=button id=toggle-menu aria-label="Toggle Menu">
+<span class=hamburger-box><span class=hamburger-inner></span></span></button><header><figure class=site-avatar><a href=/><img src=/img/avatar_hu_d8c2fe4d260f28d7.png width=300 height=300 class=site-logo loading=lazy alt=Avatar></a></figure><div class=site-meta><h1 class=site-name><a href=/>Anthea's Blog</a></h1><h2 class=site-description>Engineer</h2></div></header><ol class=menu-social><li><a href=https://github.com/anthea-wu target=_blank title=GitHub rel=me><svg class="icon icon-tabler icon-tabler-brand-github" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M9 19c-4.3 1.4-4.3-2.5-6-3m12 5v-3.5c0-1 .1-1.4-.5-2 2.8-.3 5.5-1.4 5.5-6a4.6 4.6.0 00-1.3-3.2 4.2 4.2.0 00-.1-3.2s-1.1-.3-3.5 1.3a12.3 12.3.0 00-6.2.0C6.5 2.8 5.4 3.1 5.4 3.1a4.2 4.2.0 00-.1 3.2A4.6 4.6.0 004 9.5c0 4.6 2.7 5.7 5.5 6-.6.6-.6 1.2-.5 2V21"/></svg></a></li></ol><ol class=menu id=main-menu><li><a href=/><svg class="icon icon-tabler icon-tabler-home" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><polyline points="5 12 3 12 12 3 21 12 19 12"/><path d="M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7"/><path d="M9 21v-6a2 2 0 012-2h2a2 2 0 012 2v6"/></svg>
+<span>Home</span></a></li><li><a href=/page/about/><svg class="icon icon-tabler icon-tabler-user" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="7" r="4"/><path d="M6 21v-2a4 4 0 014-4h4a4 4 0 014 4v2"/></svg>
+<span>About</span></a></li><li><a href=/page/archives/><svg class="icon icon-tabler icon-tabler-archive" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><rect x="3" y="4" width="18" height="4" rx="2"/><path d="M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8"/><line x1="10" y1="12" x2="14" y2="12"/></svg>
+<span>Archives</span></a></li><li><a href=/page/search/><svg class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="10" cy="10" r="7"/><line x1="21" y1="21" x2="15" y2="15"/></svg>
+<span>Search</span></a></li><li><a href=/books target=_blank><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-book"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M3 19a9 9 0 019 0 9 9 0 019 0"/><path d="M3 6a9 9 0 019 0 9 9 0 019 0"/><path d="M3 6v13"/><path d="M12 6v13"/><path d="M21 6v13"/></svg>
+<span>Books</span></a></li><li class=menu-bottom-section><ol class=menu><li id=dark-mode-toggle><svg class="icon icon-tabler icon-tabler-toggle-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="8" cy="12" r="2"/><rect x="2" y="6" width="20" height="12" rx="6"/></svg>
+<svg class="icon icon-tabler icon-tabler-toggle-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="16" cy="12" r="2"/><rect x="2" y="6" width="20" height="12" rx="6"/></svg>
+<span>Dark Mode</span></li></ol></li></ol></aside><aside class="sidebar right-sidebar sticky"><section class="widget archives"><div class=widget-icon><svg class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><line x1="5" y1="9" x2="19" y2="9"/><line x1="5" y1="15" x2="19" y2="15"/><line x1="11" y1="4" x2="7" y2="20"/><line x1="17" y1="4" x2="13" y2="20"/></svg></div><h2 class="widget-title section-title">Table of contents</h2><div class=widget--toc><nav id=TableOfContents><ul><li><a href=#usereducer-是什麼>useReducer 是什麼？</a></li><li><a href=#基本語法和概念>基本語法和概念</a><ul><li><a href=#什麼時候需要機器人管家>什麼時候需要機器人管家？</a></li></ul></li><li><a href=#管理零用錢>管理零用錢</a><ul><li><a href=#什麼時候-usestate-比較好>什麼時候 <code>useState</code> 比較好？</a></li><li><a href=#什麼時候-usereducer-才真正有價值>什麼時候 <code>useReducer</code> 才真正有價值？</a></li></ul></li><li><a href=#真正複雜的情境智慧零用錢管理系統>真正複雜的情境：智慧零用錢管理系統</a></li><li><a href=#什麼時候該選擇什麼>什麼時候該選擇什麼？</a></li></ul></nav></div></section></aside><main class="main full-width"><article class=main-article><header class=article-header><div class=article-details><header class=article-category><a href=/categories/technical/>Technical</a></header><div class=article-title-wrapper><h2 class=article-title><a href=/post/react-beginner-5/>React 初心者大補帖（5）</a></h2><h3 class=article-subtitle>使用 useReducer 的正確姿勢</h3></div><footer class=article-time><div><svg class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M11.795 21H5a2 2 0 01-2-2V7a2 2 0 012-2h12a2 2 0 012 2v4"/><circle cx="18" cy="18" r="4"/><path d="M15 3v4"/><path d="M7 3v4"/><path d="M3 11h16"/><path d="M18 16.496V18l1 1"/></svg>
+<time class=article-time--published>2025/07/07</time></div><div><svg class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/></svg>
+<time class=article-time--reading>4 minute read</time></div></footer></div></header><section class=article-content><h2 id=usereducer-是什麼>useReducer 是什麼？</h2><p>想像你有一個玩具盒：</p><ul><li><strong><code>useState</code></strong>：直接把玩具丟進盒子裡，想要什麼就直接拿什麼</li><li><strong><code>useReducer</code></strong>：你有一個聰明的機器人管家，你跟機器人說「我要做什麼」，機器人就幫你整理玩具盒</li></ul><p><strong>舉個例子：管理零用錢</strong></p><p><code>useState</code> 方式（自己管理每件事）</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-javascript data-lang=javascript><span class=line><span class=cl><span class=c1>// 就像直接數錢包裡的錢
+</span></span></span><span class=line><span class=cl><span class=c1></span><span class=kr>const</span> <span class=p>[</span><span class=nx>money</span><span class=p>,</span> <span class=nx>setMoney</span><span class=p>]</span> <span class=o>=</span> <span class=nx>useState</span><span class=p>(</span><span class=mi>100</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1>// 想買東西就直接減錢
+</span></span></span><span class=line><span class=cl><span class=c1></span><span class=nx>setMoney</span><span class=p>(</span><span class=nx>money</span> <span class=o>-</span> <span class=mi>50</span><span class=p>);</span> <span class=c1>// 買了50元的東西
+</span></span></span></code></pre></td></tr></table></div></div><p><code>useReducer</code> 方式（機器人管家）</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span><span class=lnt>8
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-javascript data-lang=javascript><span class=line><span class=cl><span class=c1>// 告訴機器人：「我要買東西」
+</span></span></span><span class=line><span class=cl><span class=c1></span><span class=nx>dispatch</span><span class=p>({</span> <span class=nx>type</span><span class=o>:</span> <span class=s2>&#34;買東西&#34;</span><span class=p>,</span> <span class=nx>price</span><span class=o>:</span> <span class=mi>50</span> <span class=p>});</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1>// 機器人會自動幫你：
+</span></span></span><span class=line><span class=cl><span class=c1>// 1. 檢查錢夠不夠
+</span></span></span><span class=line><span class=cl><span class=c1>// 2. 記錄你買了什麼
+</span></span></span><span class=line><span class=cl><span class=c1>// 3. 算出剩下多少錢
+</span></span></span><span class=line><span class=cl><span class=c1>// 4. 整理好你的帳本
+</span></span></span></code></pre></td></tr></table></div></div><h2 id=基本語法和概念>基本語法和概念</h2><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-javascript data-lang=javascript><span class=line><span class=cl><span class=kr>const</span> <span class=p>[</span><span class=nx>state</span><span class=p>,</span> <span class=nx>dispatch</span><span class=p>]</span> <span class=o>=</span> <span class=nx>useReducer</span><span class=p>(</span><span class=nx>reducer</span><span class=p>,</span> <span class=nx>initialState</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1>// reducer: 純函數，接收當前 state 和 action，返回新的 state
+</span></span></span><span class=line><span class=cl><span class=c1>// initialState: 初始狀態值
+</span></span></span><span class=line><span class=cl><span class=c1>// state: 當前狀態
+</span></span></span><span class=line><span class=cl><span class=c1>// dispatch: 觸發狀態更新的函數
+</span></span></span></code></pre></td></tr></table></div></div><h3 id=什麼時候需要機器人管家>什麼時候需要機器人管家？</h3><ul><li><strong>事情很複雜時</strong>：要記錄很多東西（零用錢、存款、借錢記錄）並做很多計算，如果散開來寫很容易造成閱讀上的困難</li><li><strong>避免搞錯</strong>：不會忘記記帳、不會算錯錢、按照固定步驟做，自行處理的話很容易在龐大的邏輯中迷失，漏掉一些驗證</li></ul><h2 id=管理零用錢>管理零用錢</h2><p>讓我們用程式碼來看四個步驟的差異：</p><ol><li>檢查錢夠不夠</li><li>記錄你買了什麼</li><li>算出剩下多少錢</li><li>整理好你的帳本</li></ol><p><strong><code>useState</code> 方式（自己管理每件事）</strong></p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span><span class=lnt>28
+</span><span class=lnt>29
+</span><span class=lnt>30
+</span><span class=lnt>31
+</span><span class=lnt>32
+</span><span class=lnt>33
+</span><span class=lnt>34
+</span><span class=lnt>35
+</span><span class=lnt>36
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-javascript data-lang=javascript><span class=line><span class=cl><span class=kd>function</span> <span class=nx>MoneyManagerWithUseState</span><span class=p>()</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>  <span class=kr>const</span> <span class=p>[</span><span class=nx>money</span><span class=p>,</span> <span class=nx>setMoney</span><span class=p>]</span> <span class=o>=</span> <span class=nx>useState</span><span class=p>(</span><span class=mi>100</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>  <span class=kr>const</span> <span class=p>[</span><span class=nx>history</span><span class=p>,</span> <span class=nx>setHistory</span><span class=p>]</span> <span class=o>=</span> <span class=nx>useState</span><span class=o>&lt;</span><span class=nx>string</span><span class=p>[]</span><span class=o>&gt;</span><span class=p>([]);</span>
+</span></span><span class=line><span class=cl>  <span class=kr>const</span> <span class=p>[</span><span class=nx>error</span><span class=p>,</span> <span class=nx>setError</span><span class=p>]</span> <span class=o>=</span> <span class=nx>useState</span><span class=p>(</span><span class=s2>&#34;&#34;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>  <span class=kr>const</span> <span class=p>[</span><span class=nx>lastPurchase</span><span class=p>,</span> <span class=nx>setLastPurchase</span><span class=p>]</span> <span class=o>=</span> <span class=nx>useState</span><span class=p>(</span><span class=s2>&#34;&#34;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>  
+</span></span><span class=line><span class=cl>  <span class=kr>const</span> <span class=nx>buyThing</span> <span class=o>=</span> <span class=p>(</span><span class=nx>itemName</span><span class=o>:</span> <span class=nx>string</span><span class=p>,</span> <span class=nx>price</span><span class=o>:</span> <span class=nx>number</span><span class=p>)</span> <span class=p>=&gt;</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=c1>// 1. 檢查錢夠不夠
+</span></span></span><span class=line><span class=cl><span class=c1></span>    <span class=k>if</span> <span class=p>(</span><span class=nx>money</span> <span class=o>&lt;</span> <span class=nx>price</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>      <span class=nx>setError</span><span class=p>(</span><span class=s2>&#34;錢不夠！&#34;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>      <span class=k>return</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl>    <span class=nx>setError</span><span class=p>(</span><span class=s2>&#34;&#34;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>    
+</span></span><span class=line><span class=cl>    <span class=c1>// 2. 記錄你買了什麼
+</span></span></span><span class=line><span class=cl><span class=c1></span>    <span class=nx>setHistory</span><span class=p>(</span><span class=nx>prev</span> <span class=p>=&gt;</span> <span class=p>[...</span><span class=nx>prev</span><span class=p>,</span> <span class=sb>`買了</span><span class=si>${</span><span class=nx>itemName</span><span class=si>}</span><span class=sb> -</span><span class=si>${</span><span class=nx>price</span><span class=si>}</span><span class=sb>元`</span><span class=p>]);</span>
+</span></span><span class=line><span class=cl>    <span class=nx>setLastPurchase</span><span class=p>(</span><span class=nx>itemName</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>    
+</span></span><span class=line><span class=cl>    <span class=c1>// 3. 算出剩下多少錢
+</span></span></span><span class=line><span class=cl><span class=c1></span>    <span class=nx>setMoney</span><span class=p>(</span><span class=nx>prev</span> <span class=p>=&gt;</span> <span class=nx>prev</span> <span class=o>-</span> <span class=nx>price</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>    
+</span></span><span class=line><span class=cl>    <span class=c1>// 4. 整理好你的帳本
+</span></span></span><span class=line><span class=cl><span class=c1></span>    <span class=nx>console</span><span class=p>.</span><span class=nx>log</span><span class=p>(</span><span class=s2>&#34;帳本更新完成&#34;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>  <span class=p>};</span>
+</span></span><span class=line><span class=cl>  
+</span></span><span class=line><span class=cl>  <span class=k>return</span> <span class=p>(</span>
+</span></span><span class=line><span class=cl>    <span class=o>&lt;</span><span class=nx>div</span><span class=o>&gt;</span>
+</span></span><span class=line><span class=cl>      <span class=o>&lt;</span><span class=nx>p</span><span class=o>&gt;</span><span class=nx>剩餘金額</span><span class=err>：</span><span class=p>{</span><span class=nx>money</span><span class=p>}</span><span class=nx>元</span><span class=o>&lt;</span><span class=err>/p&gt;</span>
+</span></span><span class=line><span class=cl>      <span class=o>&lt;</span><span class=nx>p</span><span class=o>&gt;</span><span class=nx>最後購買</span><span class=err>：</span><span class=p>{</span><span class=nx>lastPurchase</span><span class=p>}</span><span class=o>&lt;</span><span class=err>/p&gt;</span>
+</span></span><span class=line><span class=cl>      <span class=o>&lt;</span><span class=nx>p</span><span class=o>&gt;</span><span class=nx>錯誤訊息</span><span class=err>：</span><span class=p>{</span><span class=nx>error</span><span class=p>}</span><span class=o>&lt;</span><span class=err>/p&gt;</span>
+</span></span><span class=line><span class=cl>      <span class=o>&lt;</span><span class=nx>button</span> <span class=nx>onClick</span><span class=o>=</span><span class=p>{()</span> <span class=p>=&gt;</span> <span class=nx>buyThing</span><span class=p>(</span><span class=s2>&#34;玩具車&#34;</span><span class=p>,</span> <span class=mi>30</span><span class=p>)}</span><span class=o>&gt;</span>
+</span></span><span class=line><span class=cl>        <span class=nx>買玩具車</span> <span class=p>(</span><span class=mi>30</span><span class=nx>元</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>      <span class=o>&lt;</span><span class=err>/button&gt;</span>
+</span></span><span class=line><span class=cl>    <span class=o>&lt;</span><span class=err>/div&gt;</span>
+</span></span><span class=line><span class=cl>  <span class=p>);</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span></code></pre></td></tr></table></div></div><p><strong><code>useReducer</code> 方式（機器人管家）</strong></p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span><span class=lnt>28
+</span><span class=lnt>29
+</span><span class=lnt>30
+</span><span class=lnt>31
+</span><span class=lnt>32
+</span><span class=lnt>33
+</span><span class=lnt>34
+</span><span class=lnt>35
+</span><span class=lnt>36
+</span><span class=lnt>37
+</span><span class=lnt>38
+</span><span class=lnt>39
+</span><span class=lnt>40
+</span><span class=lnt>41
+</span><span class=lnt>42
+</span><span class=lnt>43
+</span><span class=lnt>44
+</span><span class=lnt>45
+</span><span class=lnt>46
+</span><span class=lnt>47
+</span><span class=lnt>48
+</span><span class=lnt>49
+</span><span class=lnt>50
+</span><span class=lnt>51
+</span><span class=lnt>52
+</span><span class=lnt>53
+</span><span class=lnt>54
+</span><span class=lnt>55
+</span><span class=lnt>56
+</span><span class=lnt>57
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-javascript data-lang=javascript><span class=line><span class=cl><span class=c1>// 機器人管家的「工作手冊」
+</span></span></span><span class=line><span class=cl><span class=c1></span><span class=kd>function</span> <span class=nx>moneyReducer</span><span class=p>(</span><span class=nx>state</span><span class=p>,</span> <span class=nx>action</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>  <span class=k>switch</span> <span class=p>(</span><span class=nx>action</span><span class=p>.</span><span class=nx>type</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=k>case</span> <span class=s2>&#34;買東西&#34;</span><span class=o>:</span>
+</span></span><span class=line><span class=cl>      <span class=kr>const</span> <span class=p>{</span> <span class=nx>itemName</span><span class=p>,</span> <span class=nx>price</span> <span class=p>}</span> <span class=o>=</span> <span class=nx>action</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>      
+</span></span><span class=line><span class=cl>      <span class=c1>// 1. 檢查錢夠不夠
+</span></span></span><span class=line><span class=cl><span class=c1></span>      <span class=k>if</span> <span class=p>(</span><span class=nx>state</span><span class=p>.</span><span class=nx>money</span> <span class=o>&lt;</span> <span class=nx>price</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>        <span class=k>return</span> <span class=p>{</span> <span class=p>...</span><span class=nx>state</span><span class=p>,</span> <span class=nx>error</span><span class=o>:</span> <span class=s2>&#34;錢不夠！&#34;</span> <span class=p>};</span>
+</span></span><span class=line><span class=cl>      <span class=p>}</span>
+</span></span><span class=line><span class=cl>      
+</span></span><span class=line><span class=cl>      <span class=c1>// 2. 記錄你買了什麼
+</span></span></span><span class=line><span class=cl><span class=c1></span>      <span class=kr>const</span> <span class=nx>newHistory</span> <span class=o>=</span> <span class=p>[...</span><span class=nx>state</span><span class=p>.</span><span class=nx>history</span><span class=p>,</span> <span class=sb>`買了</span><span class=si>${</span><span class=nx>itemName</span><span class=si>}</span><span class=sb>-</span><span class=si>${</span><span class=nx>price</span><span class=si>}</span><span class=sb>元`</span><span class=p>];</span>
+</span></span><span class=line><span class=cl>      
+</span></span><span class=line><span class=cl>      <span class=c1>// 3. 算出剩下多少錢
+</span></span></span><span class=line><span class=cl><span class=c1></span>      <span class=kr>const</span> <span class=nx>newMoney</span> <span class=o>=</span> <span class=nx>state</span><span class=p>.</span><span class=nx>money</span> <span class=o>-</span> <span class=nx>price</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>      
+</span></span><span class=line><span class=cl>      <span class=c1>// 4. 整理好你的帳本
+</span></span></span><span class=line><span class=cl><span class=c1></span>      <span class=k>return</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>        <span class=nx>money</span><span class=o>:</span> <span class=nx>newMoney</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>        <span class=nx>history</span><span class=o>:</span> <span class=nx>newHistory</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>        <span class=nx>lastPurchase</span><span class=o>:</span> <span class=nx>itemName</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>        <span class=nx>error</span><span class=o>:</span> <span class=s2>&#34;&#34;</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>        <span class=nx>totalSpent</span><span class=o>:</span> <span class=nx>state</span><span class=p>.</span><span class=nx>totalSpent</span> <span class=o>+</span> <span class=nx>price</span>
+</span></span><span class=line><span class=cl>      <span class=p>};</span>
+</span></span><span class=line><span class=cl>      
+</span></span><span class=line><span class=cl>    <span class=k>default</span><span class=o>:</span>
+</span></span><span class=line><span class=cl>      <span class=k>return</span> <span class=nx>state</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>  <span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=kd>function</span> <span class=nx>MoneyManagerWithUseReducer</span><span class=p>()</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>  <span class=kr>const</span> <span class=p>[</span><span class=nx>state</span><span class=p>,</span> <span class=nx>dispatch</span><span class=p>]</span> <span class=o>=</span> <span class=nx>useReducer</span><span class=p>(</span><span class=nx>moneyReducer</span><span class=p>,</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=nx>money</span><span class=o>:</span> <span class=mi>100</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>    <span class=nx>history</span><span class=o>:</span> <span class=p>[],</span>
+</span></span><span class=line><span class=cl>    <span class=nx>lastPurchase</span><span class=o>:</span> <span class=s2>&#34;&#34;</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>    <span class=nx>error</span><span class=o>:</span> <span class=s2>&#34;&#34;</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>    <span class=nx>totalSpent</span><span class=o>:</span> <span class=mi>0</span>
+</span></span><span class=line><span class=cl>  <span class=p>});</span>
+</span></span><span class=line><span class=cl>  
+</span></span><span class=line><span class=cl>  <span class=kr>const</span> <span class=nx>buyThing</span> <span class=o>=</span> <span class=p>(</span><span class=nx>itemName</span><span class=o>:</span> <span class=nx>string</span><span class=p>,</span> <span class=nx>price</span><span class=o>:</span> <span class=nx>number</span><span class=p>)</span> <span class=p>=&gt;</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=c1>// 只要跟機器人說：「我要買東西」
+</span></span></span><span class=line><span class=cl><span class=c1></span>    <span class=nx>dispatch</span><span class=p>({</span> <span class=nx>type</span><span class=o>:</span> <span class=s2>&#34;買東西&#34;</span><span class=p>,</span> <span class=nx>itemName</span><span class=p>,</span> <span class=nx>price</span> <span class=p>});</span>
+</span></span><span class=line><span class=cl>  <span class=p>};</span>
+</span></span><span class=line><span class=cl>  
+</span></span><span class=line><span class=cl>  <span class=k>return</span> <span class=p>(</span>
+</span></span><span class=line><span class=cl>    <span class=o>&lt;</span><span class=nx>div</span><span class=o>&gt;</span>
+</span></span><span class=line><span class=cl>      <span class=o>&lt;</span><span class=nx>p</span><span class=o>&gt;</span><span class=nx>剩餘金額</span><span class=err>：</span><span class=p>{</span><span class=nx>state</span><span class=p>.</span><span class=nx>money</span><span class=p>}</span><span class=nx>元</span><span class=o>&lt;</span><span class=err>/p&gt;</span>
+</span></span><span class=line><span class=cl>      <span class=o>&lt;</span><span class=nx>p</span><span class=o>&gt;</span><span class=nx>最後購買</span><span class=err>：</span><span class=p>{</span><span class=nx>state</span><span class=p>.</span><span class=nx>lastPurchase</span><span class=p>}</span><span class=o>&lt;</span><span class=err>/p&gt;</span>
+</span></span><span class=line><span class=cl>      <span class=o>&lt;</span><span class=nx>p</span><span class=o>&gt;</span><span class=nx>總共花費</span><span class=err>：</span><span class=p>{</span><span class=nx>state</span><span class=p>.</span><span class=nx>totalSpent</span><span class=p>}</span><span class=nx>元</span><span class=o>&lt;</span><span class=err>/p&gt;</span>
+</span></span><span class=line><span class=cl>      <span class=o>&lt;</span><span class=nx>p</span><span class=o>&gt;</span><span class=nx>錯誤訊息</span><span class=err>：</span><span class=p>{</span><span class=nx>state</span><span class=p>.</span><span class=nx>error</span><span class=p>}</span><span class=o>&lt;</span><span class=err>/p&gt;</span>
+</span></span><span class=line><span class=cl>      <span class=o>&lt;</span><span class=nx>button</span> <span class=nx>onClick</span><span class=o>=</span><span class=p>{()</span> <span class=p>=&gt;</span> <span class=nx>buyThing</span><span class=p>(</span><span class=s2>&#34;玩具車&#34;</span><span class=p>,</span> <span class=mi>30</span><span class=p>)}</span><span class=o>&gt;</span>
+</span></span><span class=line><span class=cl>        <span class=nx>買玩具車</span> <span class=p>(</span><span class=mi>30</span><span class=nx>元</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>      <span class=o>&lt;</span><span class=err>/button&gt;</span>
+</span></span><span class=line><span class=cl>    <span class=o>&lt;</span><span class=err>/div&gt;</span>
+</span></span><span class=line><span class=cl>  <span class=p>);</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span></code></pre></td></tr></table></div></div><p>看著變長的程式碼，你的心裡會不會浮現一個疑問：</p><blockquote><p>「等等，這樣真的比較好嗎？
+如果我只在一個地方使用，直接用 <code>useState</code> 寫在那裡不是比較簡單嗎？」</p></blockquote><h3 id=什麼時候-usestate-比較好>什麼時候 <code>useState</code> 比較好？</h3><p>如果只是簡單的計數器，而且只在一個地方使用的話，直接用 <code>useState</code> 寫就好，不需要炫技，把程式碼變得複雜。</p><h3 id=什麼時候-usereducer-才真正有價值>什麼時候 <code>useReducer</code> 才真正有價值？</h3><ul><li><strong>邏輯會被重複使用</strong>：像是購物車的邏輯可以在商品頁面、購物車頁面、結帳頁面使用，這時候就可以寫成 reducer</li><li><strong>邏輯真的很複雜</strong></li><li><strong>需要測試邏輯</strong></li></ul><h2 id=真正複雜的情境智慧零用錢管理系統>真正複雜的情境：智慧零用錢管理系統</h2><p>讓我們擴展剛才的例子，讓小明不只管零用錢，還要：</p><ul><li>管理多個錢包（現金、存款、紅包錢）</li><li>設定預算限制</li><li>記錄收入和支出</li><li>自動儲蓄規則</li><li>達成目標獎勵</li></ul><p>如果使用 <code>useState</code> 會變成災難：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-javascript data-lang=javascript><span class=line><span class=cl><span class=kd>function</span> <span class=nx>MoneyManagerComplex</span><span class=p>()</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>  
+</span></span><span class=line><span class=cl>  <span class=c1>// 一卡車 state...
+</span></span></span><span class=line><span class=cl><span class=c1></span>  <span class=kr>const</span> <span class=p>[</span><span class=nx>cash</span><span class=p>,</span> <span class=nx>setCash</span><span class=p>]</span> <span class=o>=</span> <span class=nx>useState</span><span class=p>(</span><span class=mi>100</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>  <span class=kr>const</span> <span class=p>[</span><span class=nx>savings</span><span class=p>,</span> <span class=nx>setSavings</span><span class=p>]</span> <span class=o>=</span> <span class=nx>useState</span><span class=p>(</span><span class=mi>500</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>  <span class=kr>const</span> <span class=p>[</span><span class=nx>redEnvelope</span><span class=p>,</span> <span class=nx>setRedEnvelope</span><span class=p>]</span> <span class=o>=</span> <span class=nx>useState</span><span class=p>(</span><span class=mi>200</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>  <span class=kr>const</span> <span class=p>[</span><span class=nx>dailyBudget</span><span class=p>,</span> <span class=nx>setDailyBudget</span><span class=p>]</span> <span class=o>=</span> <span class=nx>useState</span><span class=p>(</span><span class=mi>50</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>  <span class=kr>const</span> <span class=p>[</span><span class=nx>todaySpent</span><span class=p>,</span> <span class=nx>setTodaySpent</span><span class=p>]</span> <span class=o>=</span> <span class=nx>useState</span><span class=p>(</span><span class=mi>0</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>  <span class=kr>const</span> <span class=p>[</span><span class=nx>purchaseHistory</span><span class=p>,</span> <span class=nx>setPurchaseHistory</span><span class=p>]</span> <span class=o>=</span> <span class=nx>useState</span><span class=p>([]);</span>
+</span></span><span class=line><span class=cl>  <span class=kr>const</span> <span class=p>[</span><span class=nx>incomeHistory</span><span class=p>,</span> <span class=nx>setIncomeHistory</span><span class=p>]</span> <span class=o>=</span> <span class=nx>useState</span><span class=p>([]);</span>
+</span></span><span class=line><span class=cl>  <span class=kr>const</span> <span class=p>[</span><span class=nx>savingsGoal</span><span class=p>,</span> <span class=nx>setSavingsGoal</span><span class=p>]</span> <span class=o>=</span> <span class=nx>useState</span><span class=p>(</span><span class=mi>1000</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>  <span class=kr>const</span> <span class=p>[</span><span class=nx>autoSaveRate</span><span class=p>,</span> <span class=nx>setAutoSaveRate</span><span class=p>]</span> <span class=o>=</span> <span class=nx>useState</span><span class=p>(</span><span class=mf>0.2</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>  <span class=kr>const</span> <span class=p>[</span><span class=nx>errors</span><span class=p>,</span> <span class=nx>setErrors</span><span class=p>]</span> <span class=o>=</span> <span class=nx>useState</span><span class=p>([]);</span>
+</span></span><span class=line><span class=cl>  <span class=kr>const</span> <span class=p>[</span><span class=nx>achievements</span><span class=p>,</span> <span class=nx>setAchievements</span><span class=p>]</span> <span class=o>=</span> <span class=nx>useState</span><span class=p>([]);</span>
+</span></span><span class=line><span class=cl>  <span class=kr>const</span> <span class=p>[</span><span class=nx>monthlyReport</span><span class=p>,</span> <span class=nx>setMonthlyReport</span><span class=p>]</span> <span class=o>=</span> <span class=nx>useState</span><span class=p>({});</span>
+</span></span><span class=line><span class=cl>  
+</span></span><span class=line><span class=cl>  <span class=kr>const</span> <span class=nx>buyThing</span> <span class=o>=</span> <span class=p>(</span><span class=nx>itemName</span><span class=o>:</span> <span class=nx>string</span><span class=p>,</span> <span class=nx>price</span><span class=o>:</span> <span class=nx>number</span><span class=p>,</span> <span class=nx>category</span><span class=o>:</span> <span class=nx>string</span><span class=p>)</span> <span class=p>=&gt;</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=c1>// 超級複雜的邏輯...
+</span></span></span><span class=line><span class=cl><span class=c1></span>    <span class=nx>setErrors</span><span class=p>([]);</span>
+</span></span><span class=line><span class=cl>    <span class=c1>// 檢查預算、計算金額、更新歷史、檢查成就...
+</span></span></span><span class=line><span class=cl><span class=c1></span>    <span class=c1>// 一大堆 setState 呼叫
+</span></span></span><span class=line><span class=cl><span class=c1></span>    <span class=c1>// 代碼變得超級複雜和難維護
+</span></span></span><span class=line><span class=cl><span class=c1></span>  <span class=p>};</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span></code></pre></td></tr></table></div></div><p><code>useReducer</code> 則會拯救我們的程式碼：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span><span class=lnt>28
+</span><span class=lnt>29
+</span><span class=lnt>30
+</span><span class=lnt>31
+</span><span class=lnt>32
+</span><span class=lnt>33
+</span><span class=lnt>34
+</span><span class=lnt>35
+</span><span class=lnt>36
+</span><span class=lnt>37
+</span><span class=lnt>38
+</span><span class=lnt>39
+</span><span class=lnt>40
+</span><span class=lnt>41
+</span><span class=lnt>42
+</span><span class=lnt>43
+</span><span class=lnt>44
+</span><span class=lnt>45
+</span><span class=lnt>46
+</span><span class=lnt>47
+</span><span class=lnt>48
+</span><span class=lnt>49
+</span><span class=lnt>50
+</span><span class=lnt>51
+</span><span class=lnt>52
+</span><span class=lnt>53
+</span><span class=lnt>54
+</span><span class=lnt>55
+</span><span class=lnt>56
+</span><span class=lnt>57
+</span><span class=lnt>58
+</span><span class=lnt>59
+</span><span class=lnt>60
+</span><span class=lnt>61
+</span><span class=lnt>62
+</span><span class=lnt>63
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-javascript data-lang=javascript><span class=line><span class=cl><span class=c1>// 所有複雜邏輯都集中在這個「超級管家」裡
+</span></span></span><span class=line><span class=cl><span class=c1></span><span class=kd>function</span> <span class=nx>moneyManagerReducer</span><span class=p>(</span><span class=nx>state</span><span class=p>,</span> <span class=nx>action</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>  <span class=k>switch</span> <span class=p>(</span><span class=nx>action</span><span class=p>.</span><span class=nx>type</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=k>case</span> <span class=s1>&#39;BUY_ITEM&#39;</span><span class=o>:</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>      <span class=c1>// 檢查預算
+</span></span></span><span class=line><span class=cl><span class=c1></span>      <span class=c1>// 智慧計算邏輯
+</span></span></span><span class=line><span class=cl><span class=c1></span>      <span class=c1>// 一次處理所有更新
+</span></span></span><span class=line><span class=cl><span class=c1></span>      <span class=k>return</span> <span class=p>{};</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl>    
+</span></span><span class=line><span class=cl>    <span class=k>case</span> <span class=s1>&#39;RECEIVE_INCOME&#39;</span><span class=o>:</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>      <span class=kr>const</span> <span class=p>{</span> <span class=nx>amount</span><span class=p>,</span> <span class=nx>source</span> <span class=p>}</span> <span class=o>=</span> <span class=nx>action</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>      <span class=kr>const</span> <span class=nx>autoSaveAmount</span> <span class=o>=</span> <span class=nx>amount</span> <span class=o>*</span> <span class=nx>state</span><span class=p>.</span><span class=nx>settings</span><span class=p>.</span><span class=nx>autoSaveRate</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>      <span class=kr>const</span> <span class=nx>cashAmount</span> <span class=o>=</span> <span class=nx>amount</span> <span class=o>-</span> <span class=nx>autoSaveAmount</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>      
+</span></span><span class=line><span class=cl>      <span class=k>return</span> <span class=p>{};</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl>    
+</span></span><span class=line><span class=cl>    <span class=k>default</span><span class=o>:</span>
+</span></span><span class=line><span class=cl>      <span class=k>return</span> <span class=nx>state</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>  <span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=kd>function</span> <span class=nx>SmartMoneyManager</span><span class=p>()</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>  <span class=kr>const</span> <span class=p>[</span><span class=nx>state</span><span class=p>,</span> <span class=nx>dispatch</span><span class=p>]</span> <span class=o>=</span> <span class=nx>useReducer</span><span class=p>(</span><span class=nx>moneyManagerReducer</span><span class=p>,</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=nx>wallets</span><span class=o>:</span> <span class=p>{</span> <span class=nx>cash</span><span class=o>:</span> <span class=mi>100</span><span class=p>,</span> <span class=nx>savings</span><span class=o>:</span> <span class=mi>500</span><span class=p>,</span> <span class=nx>redEnvelope</span><span class=o>:</span> <span class=mi>200</span> <span class=p>},</span>
+</span></span><span class=line><span class=cl>    <span class=nx>settings</span><span class=o>:</span> <span class=p>{</span> <span class=nx>dailyBudget</span><span class=o>:</span> <span class=mi>50</span><span class=p>,</span> <span class=nx>autoSaveRate</span><span class=o>:</span> <span class=mf>0.2</span><span class=p>,</span> <span class=nx>savingsGoal</span><span class=o>:</span> <span class=mi>1000</span> <span class=p>},</span>
+</span></span><span class=line><span class=cl>    <span class=nx>todaySpent</span><span class=o>:</span> <span class=mi>0</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>    <span class=nx>history</span><span class=o>:</span> <span class=p>{</span> <span class=nx>purchases</span><span class=o>:</span> <span class=p>[],</span> <span class=nx>income</span><span class=o>:</span> <span class=p>[]</span> <span class=p>},</span>
+</span></span><span class=line><span class=cl>    <span class=nx>achievements</span><span class=o>:</span> <span class=p>[],</span>
+</span></span><span class=line><span class=cl>    <span class=nx>monthlyReport</span><span class=o>:</span> <span class=p>{},</span>
+</span></span><span class=line><span class=cl>    <span class=nx>errors</span><span class=o>:</span> <span class=p>[]</span>
+</span></span><span class=line><span class=cl>  <span class=p>});</span>
+</span></span><span class=line><span class=cl>  
+</span></span><span class=line><span class=cl>  <span class=c1>// 使用變得超級簡單！
+</span></span></span><span class=line><span class=cl><span class=c1></span>  <span class=kr>const</span> <span class=nx>buyThing</span> <span class=o>=</span> <span class=p>(</span><span class=nx>itemName</span><span class=o>:</span> <span class=nx>string</span><span class=p>,</span> <span class=nx>price</span><span class=o>:</span> <span class=nx>number</span><span class=p>,</span> <span class=nx>category</span><span class=o>:</span> <span class=nx>string</span><span class=p>)</span> <span class=p>=&gt;</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=nx>dispatch</span><span class=p>({</span> <span class=nx>type</span><span class=o>:</span> <span class=s1>&#39;BUY_ITEM&#39;</span><span class=p>,</span> <span class=nx>itemName</span><span class=p>,</span> <span class=nx>price</span><span class=p>,</span> <span class=nx>category</span> <span class=p>});</span>
+</span></span><span class=line><span class=cl>  <span class=p>};</span>
+</span></span><span class=line><span class=cl>  
+</span></span><span class=line><span class=cl>  <span class=kr>const</span> <span class=nx>receiveIncome</span> <span class=o>=</span> <span class=p>(</span><span class=nx>amount</span><span class=o>:</span> <span class=nx>number</span><span class=p>,</span> <span class=nx>source</span><span class=o>:</span> <span class=nx>string</span><span class=p>)</span> <span class=p>=&gt;</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=nx>dispatch</span><span class=p>({</span> <span class=nx>type</span><span class=o>:</span> <span class=s1>&#39;RECEIVE_INCOME&#39;</span><span class=p>,</span> <span class=nx>amount</span><span class=p>,</span> <span class=nx>source</span> <span class=p>});</span>
+</span></span><span class=line><span class=cl>  <span class=p>};</span>
+</span></span><span class=line><span class=cl>  
+</span></span><span class=line><span class=cl>  <span class=k>return</span> <span class=p>(</span>
+</span></span><span class=line><span class=cl>    <span class=o>&lt;</span><span class=nx>div</span><span class=o>&gt;</span>
+</span></span><span class=line><span class=cl>      <span class=o>&lt;</span><span class=nx>h3</span><span class=o>&gt;</span><span class=nx>智慧零用錢管理系統</span><span class=o>&lt;</span><span class=err>/h3&gt;</span>
+</span></span><span class=line><span class=cl>      <span class=o>&lt;</span><span class=nx>p</span><span class=o>&gt;</span><span class=nx>現金</span><span class=err>：</span><span class=p>{</span><span class=nx>state</span><span class=p>.</span><span class=nx>wallets</span><span class=p>.</span><span class=nx>cash</span><span class=p>}</span><span class=nx>元</span><span class=o>&lt;</span><span class=err>/p&gt;</span>
+</span></span><span class=line><span class=cl>      <span class=o>&lt;</span><span class=nx>p</span><span class=o>&gt;</span><span class=nx>存款</span><span class=err>：</span><span class=p>{</span><span class=nx>state</span><span class=p>.</span><span class=nx>wallets</span><span class=p>.</span><span class=nx>savings</span><span class=p>}</span><span class=nx>元</span><span class=o>&lt;</span><span class=err>/p&gt;</span>
+</span></span><span class=line><span class=cl>      <span class=o>&lt;</span><span class=nx>p</span><span class=o>&gt;</span><span class=nx>今日花費</span><span class=err>：</span><span class=p>{</span><span class=nx>state</span><span class=p>.</span><span class=nx>todaySpent</span><span class=p>}</span><span class=o>/</span><span class=p>{</span><span class=nx>state</span><span class=p>.</span><span class=nx>settings</span><span class=p>.</span><span class=nx>dailyBudget</span><span class=p>}</span><span class=nx>元</span><span class=o>&lt;</span><span class=err>/p&gt;</span>
+</span></span><span class=line><span class=cl>      
+</span></span><span class=line><span class=cl>      <span class=p>{</span><span class=nx>state</span><span class=p>.</span><span class=nx>errors</span><span class=p>.</span><span class=nx>length</span> <span class=o>&gt;</span> <span class=mi>0</span> <span class=o>&amp;&amp;</span> <span class=p>(</span>
+</span></span><span class=line><span class=cl>        <span class=o>&lt;</span><span class=nx>div</span><span class=o>&gt;</span><span class=nx>錯誤</span><span class=err>：</span><span class=p>{</span><span class=nx>state</span><span class=p>.</span><span class=nx>errors</span><span class=p>.</span><span class=nx>join</span><span class=p>(</span><span class=s1>&#39;, &#39;</span><span class=p>)}</span><span class=o>&lt;</span><span class=err>/div&gt;</span>
+</span></span><span class=line><span class=cl>      <span class=p>)}</span>
+</span></span><span class=line><span class=cl>      
+</span></span><span class=line><span class=cl>      <span class=o>&lt;</span><span class=nx>button</span> <span class=nx>onClick</span><span class=o>=</span><span class=p>{()</span> <span class=p>=&gt;</span> <span class=nx>buyThing</span><span class=p>(</span><span class=s1>&#39;玩具車&#39;</span><span class=p>,</span> <span class=mi>30</span><span class=p>,</span> <span class=s1>&#39;玩具&#39;</span><span class=p>)}</span><span class=o>&gt;</span>
+</span></span><span class=line><span class=cl>        <span class=nx>買玩具車</span> <span class=p>(</span><span class=mi>30</span><span class=nx>元</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>      <span class=o>&lt;</span><span class=err>/button&gt;</span>
+</span></span><span class=line><span class=cl>      <span class=o>&lt;</span><span class=nx>button</span> <span class=nx>onClick</span><span class=o>=</span><span class=p>{()</span> <span class=p>=&gt;</span> <span class=nx>receiveIncome</span><span class=p>(</span><span class=mi>100</span><span class=p>,</span> <span class=s1>&#39;幫忙做家事&#39;</span><span class=p>)}</span><span class=o>&gt;</span>
+</span></span><span class=line><span class=cl>        <span class=nx>收入100元</span>
+</span></span><span class=line><span class=cl>      <span class=o>&lt;</span><span class=err>/button&gt;</span>
+</span></span><span class=line><span class=cl>    <span class=o>&lt;</span><span class=err>/div&gt;</span>
+</span></span><span class=line><span class=cl>  <span class=p>);</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span></code></pre></td></tr></table></div></div><p><code>useReducer</code> 的優點在這時候就會很明顯：</p><ul><li><strong>邏輯集中</strong>：所有複雜的業務邏輯都在 reducer 裡</li><li><strong>狀態一致</strong>：不會出現狀態不同步的問題</li><li><strong>容易測試</strong>：可以單獨測試 reducer 的每個情境</li><li><strong>容易理解</strong>：組件只負責 UI，邏輯都在 reducer</li><li><strong>容易擴展</strong>：要加新功能就加新的 action type</li></ul><h2 id=什麼時候該選擇什麼>什麼時候該選擇什麼？</h2><ul><li><strong>狀態簡單</strong> → <code>useState</code></li><li><strong>邏輯簡單且只用一次</strong> → <code>useState</code></li><li><strong>邏輯複雜或會重複使用</strong> → <code>useReducer</code></li></ul><p><code>useReducer</code> 不是為了炫技，而是為了解決真正的問題。</p><p>就像你整理房間，如果只是放幾本書，你自己來就好；但如果要整理很多玩具、衣服、書本，找個會整理的機器人幫忙會更好。</p><p>大部分情況下，<code>useState</code> 就很好用了。但當你的狀態管理變得複雜時，<code>useReducer</code> 就是你的救星。</p><p>不要為了用而用，要為了解決問題而用。</p><p>以上就是今天的分享，我們下次見 👋🏻</p></section><footer class=article-footer><section class=article-tags><a href=/tags/javascript/>JavaScript</a>
+<a href=/tags/react/>React</a></section></footer></article><aside class=related-content--wrapper><h2 class=section-title>Related content</h2><div class=related-content><div class="flex article-list--tile"><article><a href=/post/react-junior-4/><div class=article-details><h2 class=article-title>React 初心者大補帖（4）</h2></div></a></article><article><a href=/post/react-junior-3/><div class=article-details><h2 class=article-title>React 初心者大補帖（3）</h2></div></a></article><article><a href=/post/react-juniors-2/><div class=article-details><h2 class=article-title>React 初心者大補帖（2）</h2></div></a></article><article><a href=/post/react-junior-1/><div class=article-details><h2 class=article-title>React 初心者大補帖（1）</h2></div></a></article><article><a href=/post/javascript-%E5%B7%A5%E7%A8%8B%E5%B8%AB%E7%9A%84%E4%BF%AE%E8%A1%8C%E4%B9%8B%E8%B7%AF1/><div class=article-details><h2 class=article-title>JavaScript 工程師的修行之路（1）</h2></div></a></article></div></div></aside><footer class=site-footer><section class=copyright>&copy;
+2022 -
+2025 Anthea's Blog</section><section class=powerby>Built with <a href=https://gohugo.io/ target=_blank rel=noopener>Hugo</a><br>Theme <b><a href=https://github.com/CaiJimmy/hugo-theme-stack target=_blank rel=noopener data-version=3.30.0>Stack</a></b> designed by <a href=https://jimmycai.com target=_blank rel=noopener>Jimmy</a></section></footer><div class=pswp tabindex=-1 role=dialog aria-hidden=true><div class=pswp__bg></div><div class=pswp__scroll-wrap><div class=pswp__container><div class=pswp__item></div><div class=pswp__item></div><div class=pswp__item></div></div><div class="pswp__ui pswp__ui--hidden"><div class=pswp__top-bar><div class=pswp__counter></div><button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+<button class="pswp__button pswp__button--share" title=Share></button>
+<button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+<button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button><div class=pswp__preloader><div class=pswp__preloader__icn><div class=pswp__preloader__cut><div class=pswp__preloader__donut></div></div></div></div></div><div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap"><div class=pswp__share-tooltip></div></div><button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+</button>
+<button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)"></button><div class=pswp__caption><div class=pswp__caption__center></div></div></div></div></div><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo=" crossorigin=anonymous defer></script><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU=" crossorigin=anonymous defer></script><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css crossorigin=anonymous><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css crossorigin=anonymous></main></div><script src=https://cdn.jsdelivr.net/npm/node-vibrant@3.1.6/dist/vibrant.min.js integrity="sha256-awcR2jno4kI5X0zL8ex0vi2z+KMkF24hUW8WePSA9HM=" crossorigin=anonymous></script><script type=text/javascript src=/ts/main.1e9a3bafd846ced4c345d084b355fb8c7bae75701c338f8a1f8a82c780137826.js defer></script><script>(function(){const e=document.createElement("link");e.href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap",e.type="text/css",e.rel="stylesheet",document.head.appendChild(e)})()</script></body></html>
