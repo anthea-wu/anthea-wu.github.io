@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>MSSQL on Anthea's Blog</title><link>https://anthea-wu.github.io/tags/mssql/</link><description>Recent content in MSSQL on Anthea's Blog</description><generator>Hugo -- gohugo.io</generator><language>en</language><lastBuildDate>Fri, 31 Jan 2025 22:00:56 +0800</lastBuildDate><atom:link href="https://anthea-wu.github.io/tags/mssql/index.xml" rel="self" type="application/rss+xml"/><item><title>About</title><link>https://anthea-wu.github.io/page/about/</link><pubDate>Fri, 31 Jan 2025 22:00:56 +0800</pubDate><guid>https://anthea-wu.github.io/page/about/</guid><description>&lt;h2 id="anthea-wu"&gt;Anthea Wu
-&lt;/h2&gt;&lt;p&gt;來自台北，畢業於逢甲大學，喜歡團隊合作的氣氛勝過於單打獨鬥的成就。&lt;br&gt;
-目前任職於鈦坦科技，擔任 Product Developer，負責網頁的前後端維護。&lt;/p&gt;
+&lt;/h2&gt;&lt;p&gt;來自台北，畢業於逢甲大學，喜歡團隊合作的氣氛勝過於單打獨鬥的成就。&lt;/p&gt;
 &lt;h3 id="經歷"&gt;經歷
 &lt;/h3&gt;&lt;table&gt;
 &lt;thead&gt;
@@ -19,8 +18,12 @@
 &lt;td&gt;宸訊科技有限公司 / GIS 後端工程師&lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr&gt;
-&lt;td&gt;2023-04~&lt;/td&gt;
+&lt;td&gt;2023-04~2025-03&lt;/td&gt;
 &lt;td&gt;新加坡商鈦坦科技股份有限公司 / Product Developer&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;2025-05~&lt;/td&gt;
+&lt;td&gt;緯雲股份有限公司 / 前端工程師&lt;/td&gt;
 &lt;/tr&gt;
 &lt;/tbody&gt;
 &lt;/table&gt;
@@ -28,4 +31,6 @@
 &lt;/h3&gt;&lt;ul&gt;
 &lt;li&gt;&lt;a class="link" href="https://ithelp.ithome.com.tw/users/20151635/ironman/5827" target="_blank" rel="noopener"
 &gt;2022 鐵人賽：歡迎來到 GIS 的世界！&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a class="link" href="https://ithelp.ithome.com.tw/users/20151635/ironman/8593" target="_blank" rel="noopener"
+&gt;2025 鐵人賽：我與 AI pair programming&lt;/a&gt;&lt;/li&gt;
 &lt;/ul&gt;</description></item></channel></rss>

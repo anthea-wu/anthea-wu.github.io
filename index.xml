@@ -1763,8 +1763,7 @@ data-flex-grow="365"
 data-flex-basis="877px"
 &gt;&lt;/p&gt;
 &lt;p&gt;以上就是今天的分享，我們下篇文章見 👋🏻&lt;/p&gt;</description></item><item><title>About</title><link>https://anthea-wu.github.io/page/about/</link><pubDate>Fri, 31 Jan 2025 22:00:56 +0800</pubDate><guid>https://anthea-wu.github.io/page/about/</guid><description>&lt;h2 id="anthea-wu"&gt;Anthea Wu
-&lt;/h2&gt;&lt;p&gt;來自台北，畢業於逢甲大學，喜歡團隊合作的氣氛勝過於單打獨鬥的成就。&lt;br&gt;
-目前任職於鈦坦科技，擔任 Product Developer，負責網頁的前後端維護。&lt;/p&gt;
+&lt;/h2&gt;&lt;p&gt;來自台北，畢業於逢甲大學，喜歡團隊合作的氣氛勝過於單打獨鬥的成就。&lt;/p&gt;
 &lt;h3 id="經歷"&gt;經歷
 &lt;/h3&gt;&lt;table&gt;
 &lt;thead&gt;
@@ -1783,8 +1782,12 @@ data-flex-basis="877px"
 &lt;td&gt;宸訊科技有限公司 / GIS 後端工程師&lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr&gt;
-&lt;td&gt;2023-04~&lt;/td&gt;
+&lt;td&gt;2023-04~2025-03&lt;/td&gt;
 &lt;td&gt;新加坡商鈦坦科技股份有限公司 / Product Developer&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;2025-05~&lt;/td&gt;
+&lt;td&gt;緯雲股份有限公司 / 前端工程師&lt;/td&gt;
 &lt;/tr&gt;
 &lt;/tbody&gt;
 &lt;/table&gt;
@@ -1792,6 +1795,8 @@ data-flex-basis="877px"
 &lt;/h3&gt;&lt;ul&gt;
 &lt;li&gt;&lt;a class="link" href="https://ithelp.ithome.com.tw/users/20151635/ironman/5827" target="_blank" rel="noopener"
 &gt;2022 鐵人賽：歡迎來到 GIS 的世界！&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a class="link" href="https://ithelp.ithome.com.tw/users/20151635/ironman/8593" target="_blank" rel="noopener"
+&gt;2025 鐵人賽：我與 AI pair programming&lt;/a&gt;&lt;/li&gt;
 &lt;/ul&gt;</description></item><item><title>.NET SignalR 的學習與應用（2）</title><link>https://anthea-wu.github.io/post/%E8%81%8A%E5%A4%A9%E5%AE%A4%E7%9A%84%E5%B0%8F%E6%88%BF%E9%96%93/</link><pubDate>Tue, 07 Jan 2025 21:00:00 +0800</pubDate><guid>https://anthea-wu.github.io/post/%E8%81%8A%E5%A4%A9%E5%AE%A4%E7%9A%84%E5%B0%8F%E6%88%BF%E9%96%93/</guid><description>&lt;h2 id="signalr-groups-簡介"&gt;SignalR Groups 簡介
 &lt;/h2&gt;&lt;p&gt;延續上一篇文章介紹的 SignalR 聊天室概念，這次要來聊聊「小房間」功能。如果你熟悉 Discord，可以把 SignalR Groups 想像成 Discord 的語音或文字頻道，每個頻道就是一個 Group，使用者可以進出不同的頻道來交流。&lt;/p&gt;
 &lt;p&gt;SignalR 的 Groups 讓我們可以把連接的使用者分成不同的「小房間」，用來實現群組聊天、特定用戶廣播等功能。每個使用者可以同時在多個房間裡，這讓訊息傳遞變得很彈性。&lt;/p&gt;
