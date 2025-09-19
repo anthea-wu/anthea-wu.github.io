@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>CSS on Anthea's Blog</title><link>https://anthea-wu.github.io/tags/css/</link><description>Recent content in CSS on Anthea's Blog</description><generator>Hugo -- gohugo.io</generator><language>en</language><lastBuildDate>Fri, 05 Sep 2025 17:55:43 +0800</lastBuildDate><atom:link href="https://anthea-wu.github.io/tags/css/index.xml" rel="self" type="application/rss+xml"/><item><title>前端切版便利貼（1）</title><link>https://anthea-wu.github.io/post/frontend-layout-tips-1/</link><pubDate>Fri, 05 Sep 2025 17:55:43 +0800</pubDate><guid>https://anthea-wu.github.io/post/frontend-layout-tips-1/</guid><description>&lt;p&gt;想像一下，你正在逛台北的誠品書店，突然被一本日式設計的書籍封面吸引住了。書名不是我們習慣的橫排文字，而是優雅地垂直排列，彷彿每個字都在向下流淌，形成一道獨特的視覺瀑布。這種垂直文字的美感，不僅在傳統的東方文化中常見，在現代網頁設計中也越來越受歡迎。&lt;/p&gt;
+&lt;p&gt;無論是製作一個復古風格的網站標題，還是設計一個創意十足的側邊導航欄，都少不了垂直文字的貢獻。但是，以下面這行文字為例，該如何在 CSS 中實現這個效果呢？&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://anthea-wu.github.io/post/frontend-layout-tips-1/origin.png"
+width="1362"
+height="107"
+srcset="https://anthea-wu.github.io/post/frontend-layout-tips-1/origin_hu_122dad8f45197209.png 480w, https://anthea-wu.github.io/post/frontend-layout-tips-1/origin_hu_f8508e2d09c216ed.png 1024w"
+loading="lazy"
+class="gallery-image"
+data-flex-grow="1272"
+data-flex-basis="3054px"
+&gt;&lt;/p&gt;
+&lt;h2 id="最簡單的方法使用-rotate-旋轉"&gt;&lt;strong&gt;最簡單的方法：使用 rotate 旋轉&lt;/strong&gt;
+&lt;/h2&gt;&lt;p&gt;最直觀的想法就是使用 CSS 的 &lt;code&gt;transform: rotate()&lt;/code&gt; 來旋轉文字：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;div class="chroma"&gt;
+&lt;table class="lntable"&gt;&lt;tr&gt;&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code&gt;&lt;span class="lnt"&gt;1
+&lt;/span&gt;&lt;span class="lnt"&gt;2
+&lt;/span&gt;&lt;span class="lnt"&gt;3
+&lt;/span&gt;&lt;span class="lnt"&gt;4
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-fallback" data-lang="fallback"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;.vertical-text-rotate {
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; transform: rotate(90deg);
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; /* 或者 rotate(-90deg) 根據需要的方向 */
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;這個方法看起來很簡單，文字確實會垂直顯示。對於簡單的場景，這個解決方案可能就足夠了。但我們在套用後，可能會遇到一些問題。&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://anthea-wu.github.io/post/frontend-layout-tips-1/rotate.png"
+width="1396"
+height="720"
+srcset="https://anthea-wu.github.io/post/frontend-layout-tips-1/rotate_hu_5e261851e53ba38a.png 480w, https://anthea-wu.github.io/post/frontend-layout-tips-1/rotate_hu_da1519ce871e49f9.png 1024w"
+loading="lazy"
+class="gallery-image"
+data-flex-grow="193"
+data-flex-basis="465px"
+&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;1. 佔用空間混亂&lt;/strong&gt;：旋轉後的元素仍然保持原本的寬高比例，這會導致佈局空間計算錯誤。原本應該是細長的垂直文字區塊，卻佔用了一個正方形或橫向矩形的空間。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;2. 定位偏移&lt;/strong&gt;：文字旋轉後，其基準點（通常是中心點）會發生位移，導致文字出現在你意想不到的位置。你需要額外使用 &lt;code&gt;transform-origin&lt;/code&gt; 和位置調整來修正。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;3. 容器適應困難&lt;/strong&gt;：父容器很難根據旋轉後的文字自動調整大小，經常需要手動設定寬度和高度，這讓響應式設計變得複雜。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;4. 文字方向不自然&lt;/strong&gt;：最重要的是，&lt;code&gt;rotate&lt;/code&gt; 只是把橫排文字整體旋轉了 90 度，但每個字元本身並沒有按照垂直文字的規範來排列。在中文或日文的傳統垂直排版中，某些字元（如標點符號）應該有特定的顯示方式，但 &lt;code&gt;rotate&lt;/code&gt; 無法處理這些細節。&lt;/p&gt;
+&lt;h2 id="更優雅的方案writing-mode"&gt;&lt;strong&gt;更優雅的方案：writing-mode&lt;/strong&gt;
+&lt;/h2&gt;&lt;p&gt;CSS 提供了一個更專業的屬性來處理垂直文字：&lt;code&gt;writing-mode&lt;/code&gt;&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;div class="chroma"&gt;
+&lt;table class="lntable"&gt;&lt;tr&gt;&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code&gt;&lt;span class="lnt"&gt;1
+&lt;/span&gt;&lt;span class="lnt"&gt;2
+&lt;/span&gt;&lt;span class="lnt"&gt;3
+&lt;/span&gt;&lt;span class="lnt"&gt;4
+&lt;/span&gt;&lt;span class="lnt"&gt;5
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-css" data-lang="css"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nc"&gt;vertical-text-writing-mode&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="k"&gt;writing-mode&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="kc"&gt;vertical&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;rl&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="c"&gt;/* 垂直方向，從右到左 */&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="c"&gt;/* 或者 */&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="k"&gt;writing-mode&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="kc"&gt;vertical&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;lr&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="c"&gt;/* 垂直方向，從左到右 */&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="p"&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;&lt;img src="https://anthea-wu.github.io/post/frontend-layout-tips-1/writing-mode.png"
+width="1412"
+height="522"
+srcset="https://anthea-wu.github.io/post/frontend-layout-tips-1/writing-mode_hu_e92c35e855037343.png 480w, https://anthea-wu.github.io/post/frontend-layout-tips-1/writing-mode_hu_2ef8249f9eae7615.png 1024w"
+loading="lazy"
+class="gallery-image"
+data-flex-grow="270"
+data-flex-basis="649px"
+&gt;&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;自然的文字流向&lt;/strong&gt;：&lt;code&gt;writing-mode&lt;/code&gt; 是專門為處理文字書寫方向而設計的，它會讓文字按照正確的垂直排版規範顯示，包括標點符號的正確位置。&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;準確的空間佔用&lt;/strong&gt;：使用 &lt;code&gt;writing-mode&lt;/code&gt; 後，元素會按照實際的文字排列方式佔用空間，不會出現 &lt;code&gt;rotate&lt;/code&gt; 那樣的空間計算問題。&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;更好的響應式支援&lt;/strong&gt;：容器可以根據垂直文字的實際尺寸自動調整，讓響應式設計更加簡單。&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;語義化更強&lt;/strong&gt;：從語義角度來說，&lt;code&gt;writing-mode&lt;/code&gt; 更清楚地表達了「這是垂直文字」的意圖，而不是「這是旋轉的橫向文字」。&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h2 id="總結"&gt;&lt;strong&gt;總結&lt;/strong&gt;
+&lt;/h2&gt;&lt;p&gt;雖然 &lt;code&gt;transform: rotate()&lt;/code&gt; 看起來是個快速的解決方案，但對於真正的垂直文字需求，&lt;code&gt;writing-mode&lt;/code&gt; 才是正確的選擇。它不僅解決了佈局和定位的技術問題，更重要的是提供了符合文字排版傳統的顯示效果。&lt;/p&gt;
+&lt;p&gt;下次當你需要實現垂直文字時，不妨試試這個更專業的方法，讓你的網頁文字像書店裡那些優雅的書籍封面一樣，散發出獨特的魅力。&lt;/p&gt;</description></item></channel></rss>

@@ -1,5 +1,5 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>React Query on Anthea's Blog</title><link>https://anthea-wu.github.io/tags/react-query/</link><description>Recent content in React Query on Anthea's Blog</description><generator>Hugo -- gohugo.io</generator><language>en</language><lastBuildDate>Thu, 29 May 2025 16:00:00 +0800</lastBuildDate><atom:link href="https://anthea-wu.github.io/tags/react-query/index.xml" rel="self" type="application/rss+xml"/><item><title>React 初心者大補帖（2）</title><link>https://anthea-wu.github.io/post/react-juniors-2/</link><pubDate>Thu, 29 May 2025 16:00:00 +0800</pubDate><guid>https://anthea-wu.github.io/post/react-juniors-2/</guid><description>&lt;p>最近在幫一個有使用到 react-query 的元件寫測試時遇到一個狀況：&lt;/p>
-&lt;p>&lt;img src="https://anthea-wu.github.io/post/react-juniors-2/react-1.png"
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>React Query on Anthea's Blog</title><link>https://anthea-wu.github.io/tags/react-query/</link><description>Recent content in React Query on Anthea's Blog</description><generator>Hugo -- gohugo.io</generator><language>en</language><lastBuildDate>Thu, 29 May 2025 16:00:00 +0800</lastBuildDate><atom:link href="https://anthea-wu.github.io/tags/react-query/index.xml" rel="self" type="application/rss+xml"/><item><title>React 初心者大補帖（2）</title><link>https://anthea-wu.github.io/post/react-juniors-2/</link><pubDate>Thu, 29 May 2025 16:00:00 +0800</pubDate><guid>https://anthea-wu.github.io/post/react-juniors-2/</guid><description>&lt;p&gt;最近在幫一個有使用到 react-query 的元件寫測試時遇到一個狀況：&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://anthea-wu.github.io/post/react-juniors-2/react-1.png"
 width="1400"
 height="1449"
 srcset="https://anthea-wu.github.io/post/react-juniors-2/react-1_hu_b14a05e355e7b0c9.png 480w, https://anthea-wu.github.io/post/react-juniors-2/react-1_hu_33760f67a8bd424b.png 1024w"
@@ -7,9 +7,9 @@ loading="lazy"
 class="gallery-image"
 data-flex-grow="96"
 data-flex-basis="231px"
->&lt;/p>
-&lt;p>可以看到在上面的程式碼中，我有針對 error 做一些處理，因此我想寫個測試確認當我的 API 回傳錯誤後有正確的被處理：&lt;/p>
-&lt;p>&lt;img src="https://anthea-wu.github.io/post/react-juniors-2/react-2.png"
+&gt;&lt;/p&gt;
+&lt;p&gt;可以看到在上面的程式碼中，我有針對 error 做一些處理，因此我想寫個測試確認當我的 API 回傳錯誤後有正確的被處理：&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://anthea-wu.github.io/post/react-juniors-2/react-2.png"
 width="1400"
 height="1491"
 srcset="https://anthea-wu.github.io/post/react-juniors-2/react-2_hu_71aa5c78a10743ec.png 480w, https://anthea-wu.github.io/post/react-juniors-2/react-2_hu_4031da0e6086326b.png 1024w"
@@ -17,9 +17,9 @@ loading="lazy"
 class="gallery-image"
 data-flex-grow="93"
 data-flex-basis="225px"
->&lt;/p>
-&lt;p>但當我這執行測試後，卻發現測試執行不過：&lt;/p>
-&lt;p>&lt;img src="https://anthea-wu.github.io/post/react-juniors-2/react-3.png"
+&gt;&lt;/p&gt;
+&lt;p&gt;但當我這執行測試後，卻發現測試執行不過：&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://anthea-wu.github.io/post/react-juniors-2/react-3.png"
 width="1166"
 height="750"
 srcset="https://anthea-wu.github.io/post/react-juniors-2/react-3_hu_504b9639f1ad70e9.png 480w, https://anthea-wu.github.io/post/react-juniors-2/react-3_hu_7aaea932c0aba0f1.png 1024w"
@@ -27,9 +27,9 @@ loading="lazy"
 class="gallery-image"
 data-flex-grow="155"
 data-flex-basis="373px"
->&lt;/p>
-&lt;p>可以從 console 中看到，錯誤是在驗證錯誤處理就被拋出了，在這裡下了 console log 之後可以看到目前的 result &lt;code>isLoading = true&lt;/code> ：&lt;/p>
-&lt;p>&lt;img src="https://anthea-wu.github.io/post/react-juniors-2/react-4.png"
+&gt;&lt;/p&gt;
+&lt;p&gt;可以從 console 中看到，錯誤是在驗證錯誤處理就被拋出了，在這裡下了 console log 之後可以看到目前的 result &lt;code&gt;isLoading = true&lt;/code&gt; ：&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://anthea-wu.github.io/post/react-juniors-2/react-4.png"
 width="1400"
 height="2081"
 srcset="https://anthea-wu.github.io/post/react-juniors-2/react-4_hu_528895f53bc200c7.png 480w, https://anthea-wu.github.io/post/react-juniors-2/react-4_hu_93f681ac9fac975.png 1024w"
@@ -37,12 +37,12 @@ loading="lazy"
 class="gallery-image"
 data-flex-grow="67"
 data-flex-basis="161px"
->&lt;/p>
-&lt;h2 id="為什麼會這樣">為什麼會這樣？
-&lt;/h2>&lt;p>根據 &lt;a class="link" href="https://tanstack.com/query/latest/docs/framework/react/guides/query-retries" target="_blank" rel="noopener"
->TanStack Query 官方文件&lt;/a> 的說明，react-query 預設會對失敗的請求重試三次，並使用指數退避（exponential backoff）策略，初始延遲為 1 秒，每次加倍，最多延遲 30 秒。&lt;/p>
-&lt;p>這就是為什麼我們的測試會噴掉的原因：&lt;/p>
-&lt;p>&lt;img src="https://anthea-wu.github.io/post/react-juniors-2/react-5.png"
+&gt;&lt;/p&gt;
+&lt;h2 id="為什麼會這樣"&gt;為什麼會這樣？
+&lt;/h2&gt;&lt;p&gt;根據 &lt;a class="link" href="https://tanstack.com/query/latest/docs/framework/react/guides/query-retries" target="_blank" rel="noopener"
+&gt;TanStack Query 官方文件&lt;/a&gt; 的說明，react-query 預設會對失敗的請求重試三次，並使用指數退避（exponential backoff）策略，初始延遲為 1 秒，每次加倍，最多延遲 30 秒。&lt;/p&gt;
+&lt;p&gt;這就是為什麼我們的測試會噴掉的原因：&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://anthea-wu.github.io/post/react-juniors-2/react-5.png"
 width="1400"
 height="1006"
 srcset="https://anthea-wu.github.io/post/react-juniors-2/react-5_hu_566a512020fd2fb1.png 480w, https://anthea-wu.github.io/post/react-juniors-2/react-5_hu_56274ad38b882fe6.png 1024w"
@@ -50,10 +50,10 @@ loading="lazy"
 class="gallery-image"
 data-flex-grow="139"
 data-flex-basis="333px"
->&lt;/p>
-&lt;h2 id="怎麼修正">怎麼修正？
-&lt;/h2>&lt;p>為了避免在測試中出現非預期的重試行為，可以在建立 QueryClient 時設定：&lt;/p>
-&lt;p>&lt;img src="https://anthea-wu.github.io/post/react-juniors-2/react-6.png"
+&gt;&lt;/p&gt;
+&lt;h2 id="怎麼修正"&gt;怎麼修正？
+&lt;/h2&gt;&lt;p&gt;為了避免在測試中出現非預期的重試行為，可以在建立 QueryClient 時設定：&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://anthea-wu.github.io/post/react-juniors-2/react-6.png"
 width="1400"
 height="866"
 srcset="https://anthea-wu.github.io/post/react-juniors-2/react-6_hu_92d53e5463f1cfe1.png 480w, https://anthea-wu.github.io/post/react-juniors-2/react-6_hu_fb8c73782d85928a.png 1024w"
@@ -61,5 +61,5 @@ loading="lazy"
 class="gallery-image"
 data-flex-grow="161"
 data-flex-basis="387px"
->&lt;/p>
-&lt;p>這樣除非在個別查詢中另行設定，不然預設就是禁用全域重試囉。&lt;/p></description></item></channel></rss>
+&gt;&lt;/p&gt;
+&lt;p&gt;這樣除非在個別查詢中另行設定，不然預設就是禁用全域重試囉。&lt;/p&gt;</description></item></channel></rss>

@@ -1,93 +1,93 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>GDAL on Anthea's Blog</title><link>https://anthea-wu.github.io/tags/gdal/</link><description>Recent content in GDAL on Anthea's Blog</description><generator>Hugo -- gohugo.io</generator><language>en</language><lastBuildDate>Sun, 31 Jul 2022 00:43:50 +0800</lastBuildDate><atom:link href="https://anthea-wu.github.io/tags/gdal/index.xml" rel="self" type="application/rss+xml"/><item><title>GDAL 操作 ShapeFile (3)</title><link>https://anthea-wu.github.io/post/gdal-shapefile-3/</link><pubDate>Sun, 31 Jul 2022 00:43:50 +0800</pubDate><guid>https://anthea-wu.github.io/post/gdal-shapefile-3/</guid><description>&lt;p>前兩篇文章說明了如何讀取 Shapefile，接下來要介紹的是如何生成一個 Shapefile 檔案。&lt;/p>
-&lt;h3 id="建立-shapefile-檔案">建立 Shapefile 檔案
-&lt;/h3>&lt;p>在&lt;a class="link" href="../gdal-shapefile-2" >上一篇文章&lt;/a>中，我們讀取的檔案包含了三個資訊：ID、土地名稱還有土地面積。所以就按照這個簡單的範例，來建立一個 Shapefile 檔案吧。&lt;/p>
-&lt;div class="highlight">&lt;div class="chroma">
-&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
-&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt"> 1
-&lt;/span>&lt;span class="lnt"> 2
-&lt;/span>&lt;span class="lnt"> 3
-&lt;/span>&lt;span class="lnt"> 4
-&lt;/span>&lt;span class="lnt"> 5
-&lt;/span>&lt;span class="lnt"> 6
-&lt;/span>&lt;span class="lnt"> 7
-&lt;/span>&lt;span class="lnt"> 8
-&lt;/span>&lt;span class="lnt"> 9
-&lt;/span>&lt;span class="lnt">10
-&lt;/span>&lt;span class="lnt">11
-&lt;/span>&lt;span class="lnt">12
-&lt;/span>&lt;span class="lnt">13
-&lt;/span>&lt;span class="lnt">14
-&lt;/span>&lt;span class="lnt">15
-&lt;/span>&lt;span class="lnt">16
-&lt;/span>&lt;span class="lnt">17
-&lt;/span>&lt;span class="lnt">18
-&lt;/span>&lt;span class="lnt">19
-&lt;/span>&lt;span class="lnt">20
-&lt;/span>&lt;span class="lnt">21
-&lt;/span>&lt;span class="lnt">22
-&lt;/span>&lt;span class="lnt">23
-&lt;/span>&lt;span class="lnt">24
-&lt;/span>&lt;span class="lnt">25
-&lt;/span>&lt;span class="lnt">26
-&lt;/span>&lt;span class="lnt">27
-&lt;/span>&lt;span class="lnt">28
-&lt;/span>&lt;span class="lnt">29
-&lt;/span>&lt;span class="lnt">30
-&lt;/span>&lt;span class="lnt">31
-&lt;/span>&lt;span class="lnt">32
-&lt;/span>&lt;span class="lnt">33
-&lt;/span>&lt;span class="lnt">34
-&lt;/span>&lt;span class="lnt">35
-&lt;/span>&lt;span class="lnt">36
-&lt;/span>&lt;span class="lnt">37
-&lt;/span>&lt;span class="lnt">38
-&lt;/span>&lt;span class="lnt">39
-&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
-&lt;td class="lntd">
-&lt;pre tabindex="0" class="chroma">&lt;code class="language-C#" data-lang="C#">&lt;span class="line">&lt;span class="cl">&lt;span class="c1">// 註冊 MaxRev.Gdal.Core&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="n">GdalBase&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="n">ConfigureAll&lt;/span>&lt;span class="p">();&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">// 註冊 GDAL&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="n">Gdal&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="n">SetConfigOption&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s">&amp;#34;SHAPE_ENCODING&amp;#34;&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="s">&amp;#34;big5&amp;#34;&lt;/span>&lt;span class="p">);&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="n">Gdal&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="n">AllRegister&lt;/span>&lt;span class="p">();&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="n">Ogr&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="n">RegisterAll&lt;/span>&lt;span class="p">();&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">// 建立 Driver&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="kt">var&lt;/span> &lt;span class="n">driver&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="n">Ogr&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="n">GetDriverByName&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s">&amp;#34;ESRI Shapefile&amp;#34;&lt;/span>&lt;span class="p">);&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="kt">var&lt;/span> &lt;span class="n">source&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="n">driver&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="n">CreateDataSource&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s">&amp;#34;files/simple/create.shp&amp;#34;&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="kc">null&lt;/span>&lt;span class="p">);&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">// 座標系統設定&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="kt">var&lt;/span> &lt;span class="n">spatialReference&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="k">new&lt;/span> &lt;span class="n">SpatialReference&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s">&amp;#34;&amp;#34;&lt;/span>&lt;span class="p">);&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="n">spatialReference&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="n">SetWellKnownGeogCS&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s">&amp;#34;WGS84&amp;#34;&lt;/span>&lt;span class="p">);&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">// 建立 Field&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="kt">var&lt;/span> &lt;span class="n">layer&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="n">source&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="n">CreateLayer&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s">&amp;#34;layer one&amp;#34;&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="k">new&lt;/span> &lt;span class="n">SpatialReference&lt;/span>&lt;span class="p">(),&lt;/span> &lt;span class="n">wkbGeometryType&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="n">wkbPolygon&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="kc">null&lt;/span>&lt;span class="p">);&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="kt">var&lt;/span> &lt;span class="n">fieldId&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="k">new&lt;/span> &lt;span class="n">FieldDefn&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s">&amp;#34;Id&amp;#34;&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="n">FieldType&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="n">OFTInteger&lt;/span>&lt;span class="p">);&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="n">layer&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="n">CreateField&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">fieldId&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="p">(&lt;/span>&lt;span class="kt">int&lt;/span>&lt;span class="p">)&lt;/span>&lt;span class="n">EnumShapefileColumn&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="n">Id&lt;/span>&lt;span class="p">);&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="kt">var&lt;/span> &lt;span class="n">fieldName&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="k">new&lt;/span> &lt;span class="n">FieldDefn&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s">&amp;#34;土地名稱&amp;#34;&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="n">FieldType&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="n">OFTString&lt;/span>&lt;span class="p">);&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="n">layer&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="n">CreateField&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">fieldName&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="p">(&lt;/span>&lt;span class="kt">int&lt;/span>&lt;span class="p">)&lt;/span>&lt;span class="n">EnumShapefileColumn&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="n">Name&lt;/span>&lt;span class="p">);&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="kt">var&lt;/span> &lt;span class="n">fieldArea&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="k">new&lt;/span> &lt;span class="n">FieldDefn&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s">&amp;#34;土地面積&amp;#34;&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="n">FieldType&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="n">OFTString&lt;/span>&lt;span class="p">);&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="n">layer&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="n">CreateField&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">fieldArea&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="p">(&lt;/span>&lt;span class="kt">int&lt;/span>&lt;span class="p">)&lt;/span>&lt;span class="n">EnumShapefileColumn&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="n">Area&lt;/span>&lt;span class="p">);&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">// 建立 Feature&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="kt">var&lt;/span> &lt;span class="n">field&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="n">layer&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="n">GetLayerDefn&lt;/span>&lt;span class="p">();&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="kt">var&lt;/span> &lt;span class="n">feature&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="k">new&lt;/span> &lt;span class="n">Feature&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">field&lt;/span>&lt;span class="p">);&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">// 設定內容&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="n">feature&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="n">SetField&lt;/span>&lt;span class="p">((&lt;/span>&lt;span class="kt">int&lt;/span>&lt;span class="p">)&lt;/span>&lt;span class="n">EnumShapefileColumn&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="n">Id&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="m">1&lt;/span>&lt;span class="p">);&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="n">feature&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="n">SetField&lt;/span>&lt;span class="p">((&lt;/span>&lt;span class="kt">int&lt;/span>&lt;span class="p">)&lt;/span>&lt;span class="n">EnumShapefileColumn&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="n">Name&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="s">&amp;#34;第二塊土地&amp;#34;&lt;/span>&lt;span class="p">);&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="n">feature&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="n">SetField&lt;/span>&lt;span class="p">((&lt;/span>&lt;span class="kt">int&lt;/span>&lt;span class="p">)&lt;/span>&lt;span class="n">EnumShapefileColumn&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="n">Area&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="s">&amp;#34;123.4&amp;#34;&lt;/span>&lt;span class="p">);&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">// 設定空間資訊&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="kt">var&lt;/span> &lt;span class="n">wkt&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="s">&amp;#34;POLYGON ((-1.13755980861244 0.746411483253589,-0.350478468899522 0.488038277511962,-1.06578947368421 -0.028708133971292,-1.13755980861244 0.746411483253589))&amp;#34;&lt;/span>&lt;span class="p">;&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="kt">var&lt;/span> &lt;span class="n">geometry&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="n">Geometry&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="n">CreateFromWkt&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">wkt&lt;/span>&lt;span class="p">);&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="n">feature&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="n">SetGeometry&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">geometry&lt;/span>&lt;span class="p">);&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="n">layer&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="n">CreateFeature&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">feature&lt;/span>&lt;span class="p">);&lt;/span>
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
-&lt;/div>
-&lt;/div>&lt;h2 id="error-1-cannot-convert-to-big5">Error 1: cannot convert to big5
-&lt;/h2>&lt;p>如果你原封不動把上面的程式碼複製貼上執行的話，應該會遇到第一個錯誤：&lt;/p>
-&lt;p>&lt;img src="https://anthea-wu.github.io/post/gdal-shapefile-3/Error1.png"
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>GDAL on Anthea's Blog</title><link>https://anthea-wu.github.io/tags/gdal/</link><description>Recent content in GDAL on Anthea's Blog</description><generator>Hugo -- gohugo.io</generator><language>en</language><lastBuildDate>Sun, 31 Jul 2022 00:43:50 +0800</lastBuildDate><atom:link href="https://anthea-wu.github.io/tags/gdal/index.xml" rel="self" type="application/rss+xml"/><item><title>GDAL 操作 ShapeFile (3)</title><link>https://anthea-wu.github.io/post/gdal-shapefile-3/</link><pubDate>Sun, 31 Jul 2022 00:43:50 +0800</pubDate><guid>https://anthea-wu.github.io/post/gdal-shapefile-3/</guid><description>&lt;p&gt;前兩篇文章說明了如何讀取 Shapefile，接下來要介紹的是如何生成一個 Shapefile 檔案。&lt;/p&gt;
+&lt;h3 id="建立-shapefile-檔案"&gt;建立 Shapefile 檔案
+&lt;/h3&gt;&lt;p&gt;在&lt;a class="link" href="../gdal-shapefile-2" &gt;上一篇文章&lt;/a&gt;中，我們讀取的檔案包含了三個資訊：ID、土地名稱還有土地面積。所以就按照這個簡單的範例，來建立一個 Shapefile 檔案吧。&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;div class="chroma"&gt;
+&lt;table class="lntable"&gt;&lt;tr&gt;&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code&gt;&lt;span class="lnt"&gt; 1
+&lt;/span&gt;&lt;span class="lnt"&gt; 2
+&lt;/span&gt;&lt;span class="lnt"&gt; 3
+&lt;/span&gt;&lt;span class="lnt"&gt; 4
+&lt;/span&gt;&lt;span class="lnt"&gt; 5
+&lt;/span&gt;&lt;span class="lnt"&gt; 6
+&lt;/span&gt;&lt;span class="lnt"&gt; 7
+&lt;/span&gt;&lt;span class="lnt"&gt; 8
+&lt;/span&gt;&lt;span class="lnt"&gt; 9
+&lt;/span&gt;&lt;span class="lnt"&gt;10
+&lt;/span&gt;&lt;span class="lnt"&gt;11
+&lt;/span&gt;&lt;span class="lnt"&gt;12
+&lt;/span&gt;&lt;span class="lnt"&gt;13
+&lt;/span&gt;&lt;span class="lnt"&gt;14
+&lt;/span&gt;&lt;span class="lnt"&gt;15
+&lt;/span&gt;&lt;span class="lnt"&gt;16
+&lt;/span&gt;&lt;span class="lnt"&gt;17
+&lt;/span&gt;&lt;span class="lnt"&gt;18
+&lt;/span&gt;&lt;span class="lnt"&gt;19
+&lt;/span&gt;&lt;span class="lnt"&gt;20
+&lt;/span&gt;&lt;span class="lnt"&gt;21
+&lt;/span&gt;&lt;span class="lnt"&gt;22
+&lt;/span&gt;&lt;span class="lnt"&gt;23
+&lt;/span&gt;&lt;span class="lnt"&gt;24
+&lt;/span&gt;&lt;span class="lnt"&gt;25
+&lt;/span&gt;&lt;span class="lnt"&gt;26
+&lt;/span&gt;&lt;span class="lnt"&gt;27
+&lt;/span&gt;&lt;span class="lnt"&gt;28
+&lt;/span&gt;&lt;span class="lnt"&gt;29
+&lt;/span&gt;&lt;span class="lnt"&gt;30
+&lt;/span&gt;&lt;span class="lnt"&gt;31
+&lt;/span&gt;&lt;span class="lnt"&gt;32
+&lt;/span&gt;&lt;span class="lnt"&gt;33
+&lt;/span&gt;&lt;span class="lnt"&gt;34
+&lt;/span&gt;&lt;span class="lnt"&gt;35
+&lt;/span&gt;&lt;span class="lnt"&gt;36
+&lt;/span&gt;&lt;span class="lnt"&gt;37
+&lt;/span&gt;&lt;span class="lnt"&gt;38
+&lt;/span&gt;&lt;span class="lnt"&gt;39
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-C#" data-lang="C#"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="c1"&gt;// 註冊 MaxRev.Gdal.Core&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="n"&gt;GdalBase&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;ConfigureAll&lt;/span&gt;&lt;span class="p"&gt;();&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="c1"&gt;// 註冊 GDAL&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="n"&gt;Gdal&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;SetConfigOption&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;&amp;#34;SHAPE_ENCODING&amp;#34;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s"&gt;&amp;#34;big5&amp;#34;&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="n"&gt;Gdal&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;AllRegister&lt;/span&gt;&lt;span class="p"&gt;();&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="n"&gt;Ogr&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;RegisterAll&lt;/span&gt;&lt;span class="p"&gt;();&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="c1"&gt;// 建立 Driver&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="kt"&gt;var&lt;/span&gt; &lt;span class="n"&gt;driver&lt;/span&gt; &lt;span class="p"&gt;=&lt;/span&gt; &lt;span class="n"&gt;Ogr&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;GetDriverByName&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;&amp;#34;ESRI Shapefile&amp;#34;&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="kt"&gt;var&lt;/span&gt; &lt;span class="n"&gt;source&lt;/span&gt; &lt;span class="p"&gt;=&lt;/span&gt; &lt;span class="n"&gt;driver&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;CreateDataSource&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;&amp;#34;files/simple/create.shp&amp;#34;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="kc"&gt;null&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="c1"&gt;// 座標系統設定&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="kt"&gt;var&lt;/span&gt; &lt;span class="n"&gt;spatialReference&lt;/span&gt; &lt;span class="p"&gt;=&lt;/span&gt; &lt;span class="k"&gt;new&lt;/span&gt; &lt;span class="n"&gt;SpatialReference&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;&amp;#34;&amp;#34;&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="n"&gt;spatialReference&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;SetWellKnownGeogCS&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;&amp;#34;WGS84&amp;#34;&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="c1"&gt;// 建立 Field&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="kt"&gt;var&lt;/span&gt; &lt;span class="n"&gt;layer&lt;/span&gt; &lt;span class="p"&gt;=&lt;/span&gt; &lt;span class="n"&gt;source&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;CreateLayer&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;&amp;#34;layer one&amp;#34;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="k"&gt;new&lt;/span&gt; &lt;span class="n"&gt;SpatialReference&lt;/span&gt;&lt;span class="p"&gt;(),&lt;/span&gt; &lt;span class="n"&gt;wkbGeometryType&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;wkbPolygon&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="kc"&gt;null&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="kt"&gt;var&lt;/span&gt; &lt;span class="n"&gt;fieldId&lt;/span&gt; &lt;span class="p"&gt;=&lt;/span&gt; &lt;span class="k"&gt;new&lt;/span&gt; &lt;span class="n"&gt;FieldDefn&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;&amp;#34;Id&amp;#34;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;FieldType&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;OFTInteger&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="n"&gt;layer&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;CreateField&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;fieldId&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="kt"&gt;int&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="n"&gt;EnumShapefileColumn&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;Id&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="kt"&gt;var&lt;/span&gt; &lt;span class="n"&gt;fieldName&lt;/span&gt; &lt;span class="p"&gt;=&lt;/span&gt; &lt;span class="k"&gt;new&lt;/span&gt; &lt;span class="n"&gt;FieldDefn&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;&amp;#34;土地名稱&amp;#34;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;FieldType&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;OFTString&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="n"&gt;layer&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;CreateField&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;fieldName&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="kt"&gt;int&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="n"&gt;EnumShapefileColumn&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;Name&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="kt"&gt;var&lt;/span&gt; &lt;span class="n"&gt;fieldArea&lt;/span&gt; &lt;span class="p"&gt;=&lt;/span&gt; &lt;span class="k"&gt;new&lt;/span&gt; &lt;span class="n"&gt;FieldDefn&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;&amp;#34;土地面積&amp;#34;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;FieldType&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;OFTString&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="n"&gt;layer&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;CreateField&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;fieldArea&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="kt"&gt;int&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="n"&gt;EnumShapefileColumn&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;Area&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="c1"&gt;// 建立 Feature&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="kt"&gt;var&lt;/span&gt; &lt;span class="n"&gt;field&lt;/span&gt; &lt;span class="p"&gt;=&lt;/span&gt; &lt;span class="n"&gt;layer&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;GetLayerDefn&lt;/span&gt;&lt;span class="p"&gt;();&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="kt"&gt;var&lt;/span&gt; &lt;span class="n"&gt;feature&lt;/span&gt; &lt;span class="p"&gt;=&lt;/span&gt; &lt;span class="k"&gt;new&lt;/span&gt; &lt;span class="n"&gt;Feature&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;field&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="c1"&gt;// 設定內容&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="n"&gt;feature&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;SetField&lt;/span&gt;&lt;span class="p"&gt;((&lt;/span&gt;&lt;span class="kt"&gt;int&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="n"&gt;EnumShapefileColumn&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;Id&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="m"&gt;1&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="n"&gt;feature&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;SetField&lt;/span&gt;&lt;span class="p"&gt;((&lt;/span&gt;&lt;span class="kt"&gt;int&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="n"&gt;EnumShapefileColumn&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;Name&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s"&gt;&amp;#34;第二塊土地&amp;#34;&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="n"&gt;feature&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;SetField&lt;/span&gt;&lt;span class="p"&gt;((&lt;/span&gt;&lt;span class="kt"&gt;int&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="n"&gt;EnumShapefileColumn&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;Area&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s"&gt;&amp;#34;123.4&amp;#34;&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="c1"&gt;// 設定空間資訊&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="kt"&gt;var&lt;/span&gt; &lt;span class="n"&gt;wkt&lt;/span&gt; &lt;span class="p"&gt;=&lt;/span&gt; &lt;span class="s"&gt;&amp;#34;POLYGON ((-1.13755980861244 0.746411483253589,-0.350478468899522 0.488038277511962,-1.06578947368421 -0.028708133971292,-1.13755980861244 0.746411483253589))&amp;#34;&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="kt"&gt;var&lt;/span&gt; &lt;span class="n"&gt;geometry&lt;/span&gt; &lt;span class="p"&gt;=&lt;/span&gt; &lt;span class="n"&gt;Geometry&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;CreateFromWkt&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;wkt&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="n"&gt;feature&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;SetGeometry&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;geometry&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="n"&gt;layer&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;CreateFeature&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;feature&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;h2 id="error-1-cannot-convert-to-big5"&gt;Error 1: cannot convert to big5
+&lt;/h2&gt;&lt;p&gt;如果你原封不動把上面的程式碼複製貼上執行的話，應該會遇到第一個錯誤：&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://anthea-wu.github.io/post/gdal-shapefile-3/Error1.png"
 width="569"
 height="319"
 srcset="https://anthea-wu.github.io/post/gdal-shapefile-3/Error1_hu_5de160e9d245f11.png 480w, https://anthea-wu.github.io/post/gdal-shapefile-3/Error1_hu_32e6ed59f949fd7.png 1024w"
@@ -95,30 +95,30 @@ loading="lazy"
 class="gallery-image"
 data-flex-grow="178"
 data-flex-basis="428px"
->&lt;/p>
-&lt;p>這個錯誤的原因雖然有查詢到&lt;a class="link" href="https://github.com/conda-forge/libgdal-feedstock/issues/32" target="_blank" rel="noopener"
->相關的討論&lt;/a>，但我沒有看的很懂 😢 不過要解決這個問題最簡單的方法就是把第五行的部分進行下面的修改：&lt;/p>
-&lt;div class="highlight">&lt;div class="chroma">
-&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
-&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
-&lt;/span>&lt;span class="lnt">2
-&lt;/span>&lt;span class="lnt">3
-&lt;/span>&lt;span class="lnt">4
-&lt;/span>&lt;span class="lnt">5
-&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
-&lt;td class="lntd">
-&lt;pre tabindex="0" class="chroma">&lt;code class="language-C#" data-lang="C#">&lt;span class="line">&lt;span class="cl">&lt;span class="c1">// 造成錯誤&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">// Gdal.SetConfigOption(“SHAPE_ENCODING”, “big5”);&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">// 修復&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="n">Gdal&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="n">SetConfigOption&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="err">“&lt;/span>&lt;span class="n">SHAPE_ENCODING&lt;/span>&lt;span class="err">”&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="err">“”&lt;/span>&lt;span class="p">);&lt;/span>
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
-&lt;/div>
-&lt;/div>&lt;p>好的，程式看起來可以順利執行了！不過這樣就會讓前兩篇文章的&lt;strong>中文讀取變成亂碼&lt;/strong>，暫時還沒有更好的解法，所以就先將就一下，把讀寫的註冊分開來吧。&lt;/p>
-&lt;hr>
-&lt;h2 id="error-2-中文亂碼">Error 2: 中文亂碼
-&lt;/h2>&lt;p>接下來讓我們用 QGIS 檢視一下我們所產生的 Shapefile 檔案：&lt;/p>
-&lt;p>&lt;img src="https://anthea-wu.github.io/post/gdal-shapefile-3/Output1.png"
+&gt;&lt;/p&gt;
+&lt;p&gt;這個錯誤的原因雖然有查詢到&lt;a class="link" href="https://github.com/conda-forge/libgdal-feedstock/issues/32" target="_blank" rel="noopener"
+&gt;相關的討論&lt;/a&gt;，但我沒有看的很懂 😢 不過要解決這個問題最簡單的方法就是把第五行的部分進行下面的修改：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;div class="chroma"&gt;
+&lt;table class="lntable"&gt;&lt;tr&gt;&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code&gt;&lt;span class="lnt"&gt;1
+&lt;/span&gt;&lt;span class="lnt"&gt;2
+&lt;/span&gt;&lt;span class="lnt"&gt;3
+&lt;/span&gt;&lt;span class="lnt"&gt;4
+&lt;/span&gt;&lt;span class="lnt"&gt;5
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-C#" data-lang="C#"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="c1"&gt;// 造成錯誤&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="c1"&gt;// Gdal.SetConfigOption(“SHAPE_ENCODING”, “big5”);&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="c1"&gt;// 修復&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="n"&gt;Gdal&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;SetConfigOption&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="err"&gt;“&lt;/span&gt;&lt;span class="n"&gt;SHAPE_ENCODING&lt;/span&gt;&lt;span class="err"&gt;”&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="err"&gt;“”&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;好的，程式看起來可以順利執行了！不過這樣就會讓前兩篇文章的&lt;strong&gt;中文讀取變成亂碼&lt;/strong&gt;，暫時還沒有更好的解法，所以就先將就一下，把讀寫的註冊分開來吧。&lt;/p&gt;
+&lt;hr&gt;
+&lt;h2 id="error-2-中文亂碼"&gt;Error 2: 中文亂碼
+&lt;/h2&gt;&lt;p&gt;接下來讓我們用 QGIS 檢視一下我們所產生的 Shapefile 檔案：&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://anthea-wu.github.io/post/gdal-shapefile-3/Output1.png"
 width="398"
 height="76"
 srcset="https://anthea-wu.github.io/post/gdal-shapefile-3/Output1_hu_7f70457eb5454d56.png 480w, https://anthea-wu.github.io/post/gdal-shapefile-3/Output1_hu_c99317db28565a67.png 1024w"
@@ -126,9 +126,9 @@ loading="lazy"
 class="gallery-image"
 data-flex-grow="523"
 data-flex-basis="1256px"
->&lt;/p>
-&lt;p>第二個問題出現了，Field 如果使用中文的話會變成亂碼。不過神奇的是，當我們去 QGIS 在的設定中，把 Data Source Encoding 從 UTF-8 調整為 BIG-5 之後，亂碼的情形就反過來了：&lt;/p>
-&lt;p>&lt;img src="https://anthea-wu.github.io/post/gdal-shapefile-3/Output2.png"
+&gt;&lt;/p&gt;
+&lt;p&gt;第二個問題出現了，Field 如果使用中文的話會變成亂碼。不過神奇的是，當我們去 QGIS 在的設定中，把 Data Source Encoding 從 UTF-8 調整為 BIG-5 之後，亂碼的情形就反過來了：&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://anthea-wu.github.io/post/gdal-shapefile-3/Output2.png"
 width="398"
 height="78"
 srcset="https://anthea-wu.github.io/post/gdal-shapefile-3/Output2_hu_e042d981c368426.png 480w, https://anthea-wu.github.io/post/gdal-shapefile-3/Output2_hu_ef3c892de81164ef.png 1024w"
@@ -136,177 +136,177 @@ loading="lazy"
 class="gallery-image"
 data-flex-grow="510"
 data-flex-basis="1224px"
->&lt;/p>
-&lt;p>這個問題和上一篇文章中，中文亂碼的問題原因相似，在套件中一個有先被轉為 UTF-8 的編碼，一個沒有，所以造成這樣的情況發生。&lt;/p>
-&lt;h3 id="解決中文編碼不同的問題">解決中文編碼不同的問題
-&lt;/h3>&lt;p>最一開始以為這個問題很簡單，既然編碼不一樣，那我就先轉好再送進去就應該可以了吧！結果他的編碼是在原生的 dll 裡面進行的，我在外面先轉好一次一樣沒有用……&lt;/p>
-&lt;p>於是就想說，既然跟上一篇文章是差不多的問題，那就使用差不多的方式，讀取原生的 method 直接進行調用即可，但卻會一直遇到 &lt;code>Attempted to read or write protected memory. This is often an indication that other memory is corrupt.&lt;/code> 的問題，因此也放棄了這個解法。&lt;/p>
-&lt;p>最後是查尋到一篇文章，把 &lt;code>feature.SetField&lt;/code> 改成調用 &lt;code>SetFieldBinaryFromHexString&lt;/code> 就完美的解決問題了！不過方法名稱都明確的顯了要使用 Hex string，所以需要利用下面的方法來把原本的字串稍作轉換：&lt;/p>
-&lt;div class="highlight">&lt;div class="chroma">
-&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
-&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
-&lt;/span>&lt;span class="lnt">2
-&lt;/span>&lt;span class="lnt">3
-&lt;/span>&lt;span class="lnt">4
-&lt;/span>&lt;span class="lnt">5
-&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
-&lt;td class="lntd">
-&lt;pre tabindex="0" class="chroma">&lt;code class="language-C#" data-lang="C#">&lt;span class="line">&lt;span class="cl">&lt;span class="c1">// .NET Core 使用需安裝 Nuget 套件 System.Text.Encoding.CodePages&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">// Encoding.RegisterProvider(CodePagesEncodingProvider.Instance); // 可以加在使用前，或是 Program.cs&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="kt">var&lt;/span> &lt;span class="n">bytes&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="n">Encoding&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="n">GetEncoding&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="m">950&lt;/span>&lt;span class="p">).&lt;/span>&lt;span class="n">GetBytes&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s">&amp;#34;第二塊土地&amp;#34;&lt;/span>&lt;span class="p">);&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="kt">var&lt;/span> &lt;span class="n">hexString&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="n">Convert&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="n">ToHexString&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">bytes&lt;/span>&lt;span class="p">);&lt;/span>
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
-&lt;/div>
-&lt;/div>&lt;hr>
-&lt;p>最後檢視一下我們生產的 Shapefile 檔案，還可以發現兩個小問題：&lt;/p>
-&lt;h3 id="error-3-預設編碼">Error 3: 預設編碼
-&lt;/h3>&lt;p>如果是先轉成 BIG-5 再轉 Hex string，可以發現一開始打開的時候還是亂碼，需要到設定裡面把 Data Source Encoding 調整為 BIG-5 後才能正常顯示。這個部分只需要在建立 Layer 的時候把最後一個參數加上 Encoding 的設定即可：&lt;/p>
-&lt;div class="highlight">&lt;div class="chroma">
-&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
-&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
-&lt;/span>&lt;span class="lnt">2
-&lt;/span>&lt;span class="lnt">3
-&lt;/span>&lt;span class="lnt">4
-&lt;/span>&lt;span class="lnt">5
-&lt;/span>&lt;span class="lnt">6
-&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
-&lt;td class="lntd">
-&lt;pre tabindex="0" class="chroma">&lt;code class="language-C#" data-lang="C#">&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">// 原本的設定&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="kt">var&lt;/span> &lt;span class="n">layer&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="n">source&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="n">CreateLayer&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s">&amp;#34;layer one&amp;#34;&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="k">new&lt;/span> &lt;span class="n">SpatialReference&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s">&amp;#34;&amp;#34;&lt;/span>&lt;span class="p">),&lt;/span> &lt;span class="n">wkbGeometryType&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="n">wkbPolygon&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="kc">null&lt;/span>&lt;span class="p">);&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">// 新增 Encoding 為 BIG-5&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="kt">var&lt;/span> &lt;span class="n">layer&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="n">source&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="n">CreateLayer&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s">&amp;#34;layer one&amp;#34;&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="k">new&lt;/span> &lt;span class="n">SpatialReference&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s">&amp;#34;&amp;#34;&lt;/span>&lt;span class="p">),&lt;/span> &lt;span class="n">wkbGeometryType&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="n">wkbPolygon&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="k">new&lt;/span>&lt;span class="p">[]{&lt;/span>&lt;span class="s">&amp;#34;ENCODING=BIG5&amp;#34;&lt;/span>&lt;span class="p">});&lt;/span>
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
-&lt;/div>
-&lt;/div>&lt;h3 id="error-4-座標系統">Error 4: 座標系統
-&lt;/h3>&lt;p>一般來說，Shapefile 必須要有指定的座標系統，沒有的話可能會在讀取上遇到一些問題，造成後續的操作錯誤，例如：轉成 WKT 和現存的資料要進行比對的時候，可能就會因為座標系統的不同而需要進行轉換。&lt;/p>
-&lt;p>設定座標系統的方法很簡單：&lt;/p>
-&lt;div class="highlight">&lt;div class="chroma">
-&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
-&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
-&lt;/span>&lt;span class="lnt">2
-&lt;/span>&lt;span class="lnt">3
-&lt;/span>&lt;span class="lnt">4
-&lt;/span>&lt;span class="lnt">5
-&lt;/span>&lt;span class="lnt">6
-&lt;/span>&lt;span class="lnt">7
-&lt;/span>&lt;span class="lnt">8
-&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
-&lt;td class="lntd">
-&lt;pre tabindex="0" class="chroma">&lt;code class="language-C#" data-lang="C#">&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">// 原本&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="kt">var&lt;/span> &lt;span class="n">layer&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="n">source&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="n">CreateLayer&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s">&amp;#34;layer one&amp;#34;&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="k">new&lt;/span> &lt;span class="n">SpatialReference&lt;/span>&lt;span class="p">(),&lt;/span> &lt;span class="n">wkbGeometryType&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="n">wkbPolygon&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="k">new&lt;/span>&lt;span class="p">[]{&lt;/span>&lt;span class="s">&amp;#34;ENCODING=BIG5&amp;#34;&lt;/span>&lt;span class="p">});&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">// 設定座標系統為 WGS84&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="kt">var&lt;/span> &lt;span class="n">spatialReference&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="k">new&lt;/span> &lt;span class="n">SpatialReference&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s">&amp;#34;&amp;#34;&lt;/span>&lt;span class="p">);&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="n">spatialReference&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="n">SetWellKnownGeogCS&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s">&amp;#34;WGS84&amp;#34;&lt;/span>&lt;span class="p">);&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="kt">var&lt;/span> &lt;span class="n">layer&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="n">source&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="n">CreateLayer&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s">&amp;#34;layer one&amp;#34;&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="n">spatialReference&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="n">wkbGeometryType&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="n">wkbPolygon&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="k">new&lt;/span>&lt;span class="p">[]{&lt;/span>&lt;span class="s">&amp;#34;ENCODING=BIG5&amp;#34;&lt;/span>&lt;span class="p">});&lt;/span>
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
-&lt;/div>
-&lt;/div>&lt;hr>
-&lt;h2 id="最終版程式碼">最終版程式碼
-&lt;/h2>&lt;p>經過上面的修正和調整之後，完整的程式碼如下：&lt;/p>
-&lt;div class="highlight">&lt;div class="chroma">
-&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
-&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt"> 1
-&lt;/span>&lt;span class="lnt"> 2
-&lt;/span>&lt;span class="lnt"> 3
-&lt;/span>&lt;span class="lnt"> 4
-&lt;/span>&lt;span class="lnt"> 5
-&lt;/span>&lt;span class="lnt"> 6
-&lt;/span>&lt;span class="lnt"> 7
-&lt;/span>&lt;span class="lnt"> 8
-&lt;/span>&lt;span class="lnt"> 9
-&lt;/span>&lt;span class="lnt">10
-&lt;/span>&lt;span class="lnt">11
-&lt;/span>&lt;span class="lnt">12
-&lt;/span>&lt;span class="lnt">13
-&lt;/span>&lt;span class="lnt">14
-&lt;/span>&lt;span class="lnt">15
-&lt;/span>&lt;span class="lnt">16
-&lt;/span>&lt;span class="lnt">17
-&lt;/span>&lt;span class="lnt">18
-&lt;/span>&lt;span class="lnt">19
-&lt;/span>&lt;span class="lnt">20
-&lt;/span>&lt;span class="lnt">21
-&lt;/span>&lt;span class="lnt">22
-&lt;/span>&lt;span class="lnt">23
-&lt;/span>&lt;span class="lnt">24
-&lt;/span>&lt;span class="lnt">25
-&lt;/span>&lt;span class="lnt">26
-&lt;/span>&lt;span class="lnt">27
-&lt;/span>&lt;span class="lnt">28
-&lt;/span>&lt;span class="lnt">29
-&lt;/span>&lt;span class="lnt">30
-&lt;/span>&lt;span class="lnt">31
-&lt;/span>&lt;span class="lnt">32
-&lt;/span>&lt;span class="lnt">33
-&lt;/span>&lt;span class="lnt">34
-&lt;/span>&lt;span class="lnt">35
-&lt;/span>&lt;span class="lnt">36
-&lt;/span>&lt;span class="lnt">37
-&lt;/span>&lt;span class="lnt">38
-&lt;/span>&lt;span class="lnt">39
-&lt;/span>&lt;span class="lnt">40
-&lt;/span>&lt;span class="lnt">41
-&lt;/span>&lt;span class="lnt">42
-&lt;/span>&lt;span class="lnt">43
-&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
-&lt;td class="lntd">
-&lt;pre tabindex="0" class="chroma">&lt;code class="language-C#" data-lang="C#">&lt;span class="line">&lt;span class="cl">&lt;span class="c1">// 註冊 MaxRev.Gdal.Core&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="n">GdalBase&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="n">ConfigureAll&lt;/span>&lt;span class="p">();&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">// 註冊 GDAL&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="n">Gdal&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="n">SetConfigOption&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s">&amp;#34;SHAPE_ENCODING&amp;#34;&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="s">&amp;#34;big5&amp;#34;&lt;/span>&lt;span class="p">);&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="n">Gdal&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="n">AllRegister&lt;/span>&lt;span class="p">();&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="n">Ogr&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="n">RegisterAll&lt;/span>&lt;span class="p">();&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">// 建立 Driver&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="kt">var&lt;/span> &lt;span class="n">driver&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="n">Ogr&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="n">GetDriverByName&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s">&amp;#34;ESRI Shapefile&amp;#34;&lt;/span>&lt;span class="p">);&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="kt">var&lt;/span> &lt;span class="n">source&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="n">driver&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="n">CreateDataSource&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s">&amp;#34;files/simple/create.shp&amp;#34;&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="kc">null&lt;/span>&lt;span class="p">);&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">// 座標系統設定&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="kt">var&lt;/span> &lt;span class="n">spatialReference&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="k">new&lt;/span> &lt;span class="n">SpatialReference&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s">&amp;#34;&amp;#34;&lt;/span>&lt;span class="p">);&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="n">spatialReference&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="n">SetWellKnownGeogCS&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s">&amp;#34;WGS84&amp;#34;&lt;/span>&lt;span class="p">);&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">// 建立 Field&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="kt">var&lt;/span> &lt;span class="n">spatialReference&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="k">new&lt;/span> &lt;span class="n">SpatialReference&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s">&amp;#34;&amp;#34;&lt;/span>&lt;span class="p">);&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="n">spatialReference&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="n">SetWellKnownGeogCS&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s">&amp;#34;WGS84&amp;#34;&lt;/span>&lt;span class="p">);&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="kt">var&lt;/span> &lt;span class="n">layer&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="n">source&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="n">CreateLayer&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s">&amp;#34;layer one&amp;#34;&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="n">spatialReference&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="n">wkbGeometryType&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="n">wkbPolygon&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="k">new&lt;/span>&lt;span class="p">[]{&lt;/span>&lt;span class="s">&amp;#34;ENCODING=BIG5&amp;#34;&lt;/span>&lt;span class="p">});&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="kt">var&lt;/span> &lt;span class="n">fieldId&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="k">new&lt;/span> &lt;span class="n">FieldDefn&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s">&amp;#34;Id&amp;#34;&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="n">FieldType&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="n">OFTInteger&lt;/span>&lt;span class="p">);&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="n">layer&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="n">CreateField&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">fieldId&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="p">(&lt;/span>&lt;span class="kt">int&lt;/span>&lt;span class="p">)&lt;/span>&lt;span class="n">EnumShapefileColumn&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="n">Id&lt;/span>&lt;span class="p">);&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="kt">var&lt;/span> &lt;span class="n">fieldName&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="k">new&lt;/span> &lt;span class="n">FieldDefn&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s">&amp;#34;土地名稱&amp;#34;&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="n">FieldType&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="n">OFTString&lt;/span>&lt;span class="p">);&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="n">layer&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="n">CreateField&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">fieldName&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="p">(&lt;/span>&lt;span class="kt">int&lt;/span>&lt;span class="p">)&lt;/span>&lt;span class="n">EnumShapefileColumn&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="n">Name&lt;/span>&lt;span class="p">);&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="kt">var&lt;/span> &lt;span class="n">fieldArea&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="k">new&lt;/span> &lt;span class="n">FieldDefn&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s">&amp;#34;土地面積&amp;#34;&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="n">FieldType&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="n">OFTString&lt;/span>&lt;span class="p">);&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="n">layer&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="n">CreateField&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">fieldArea&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="p">(&lt;/span>&lt;span class="kt">int&lt;/span>&lt;span class="p">)&lt;/span>&lt;span class="n">EnumShapefileColumn&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="n">Area&lt;/span>&lt;span class="p">);&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">// 建立 Feature&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="kt">var&lt;/span> &lt;span class="n">field&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="n">layer&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="n">GetLayerDefn&lt;/span>&lt;span class="p">();&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="kt">var&lt;/span> &lt;span class="n">feature&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="k">new&lt;/span> &lt;span class="n">Feature&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">field&lt;/span>&lt;span class="p">);&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">// 設定內容&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="kt">var&lt;/span> &lt;span class="n">bytes&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="n">Encoding&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="n">GetEncoding&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="m">950&lt;/span>&lt;span class="p">).&lt;/span>&lt;span class="n">GetBytes&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s">&amp;#34;第二塊土地&amp;#34;&lt;/span>&lt;span class="p">);&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="kt">var&lt;/span> &lt;span class="n">hexString&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="n">Convert&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="n">ToHexString&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">bytes&lt;/span>&lt;span class="p">);&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="n">feature&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="n">SetField&lt;/span>&lt;span class="p">((&lt;/span>&lt;span class="kt">int&lt;/span>&lt;span class="p">)&lt;/span>&lt;span class="n">EnumShapefileColumn&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="n">Id&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="m">1&lt;/span>&lt;span class="p">);&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="n">feature&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="n">SetField&lt;/span>&lt;span class="p">((&lt;/span>&lt;span class="kt">int&lt;/span>&lt;span class="p">)&lt;/span>&lt;span class="n">EnumShapefileColumn&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="n">Name&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="n">hexString&lt;/span>&lt;span class="p">);&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="n">feature&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="n">SetField&lt;/span>&lt;span class="p">((&lt;/span>&lt;span class="kt">int&lt;/span>&lt;span class="p">)&lt;/span>&lt;span class="n">EnumShapefileColumn&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="n">Area&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="s">&amp;#34;123.4&amp;#34;&lt;/span>&lt;span class="p">);&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">// 設定空間資訊&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="kt">var&lt;/span> &lt;span class="n">wkt&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="s">&amp;#34;POLYGON ((-1.13755980861244 0.746411483253589,-0.350478468899522 0.488038277511962,-1.06578947368421 -0.028708133971292,-1.13755980861244 0.746411483253589))&amp;#34;&lt;/span>&lt;span class="p">;&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="kt">var&lt;/span> &lt;span class="n">geometry&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="n">Geometry&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="n">CreateFromWkt&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">wkt&lt;/span>&lt;span class="p">);&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="n">feature&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="n">SetGeometry&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">geometry&lt;/span>&lt;span class="p">);&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="n">layer&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="n">CreateFeature&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">feature&lt;/span>&lt;span class="p">);&lt;/span>
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
-&lt;/div>
-&lt;/div>&lt;p>感謝大家的觀看！有任何錯誤還請各位大大不吝指教，有任何問題也歡迎來信跟我討論喔 😉&lt;/p>
-&lt;blockquote>
-&lt;p>參考文章&lt;/p>
-&lt;ul>
-&lt;li>&lt;a class="link" href="https://blog.csdn.net/qq_34045114/article/details/84133815" target="_blank" rel="noopener"
->gdal for android 開發包，字段屬性為中文出現亂碼&lt;/a>&lt;/li>
-&lt;/ul>&lt;/blockquote></description></item><item><title>GDAL 操作 ShapeFile (2)</title><link>https://anthea-wu.github.io/post/gdal-shapefile-2/</link><pubDate>Sun, 24 Jul 2022 23:58:59 +0800</pubDate><guid>https://anthea-wu.github.io/post/gdal-shapefile-2/</guid><description>&lt;p>&lt;img src="https://anthea-wu.github.io/post/gdal-shapefile-2/ShpError1.png"
+&gt;&lt;/p&gt;
+&lt;p&gt;這個問題和上一篇文章中，中文亂碼的問題原因相似，在套件中一個有先被轉為 UTF-8 的編碼，一個沒有，所以造成這樣的情況發生。&lt;/p&gt;
+&lt;h3 id="解決中文編碼不同的問題"&gt;解決中文編碼不同的問題
+&lt;/h3&gt;&lt;p&gt;最一開始以為這個問題很簡單，既然編碼不一樣，那我就先轉好再送進去就應該可以了吧！結果他的編碼是在原生的 dll 裡面進行的，我在外面先轉好一次一樣沒有用……&lt;/p&gt;
+&lt;p&gt;於是就想說，既然跟上一篇文章是差不多的問題，那就使用差不多的方式，讀取原生的 method 直接進行調用即可，但卻會一直遇到 &lt;code&gt;Attempted to read or write protected memory. This is often an indication that other memory is corrupt.&lt;/code&gt; 的問題，因此也放棄了這個解法。&lt;/p&gt;
+&lt;p&gt;最後是查尋到一篇文章，把 &lt;code&gt;feature.SetField&lt;/code&gt; 改成調用 &lt;code&gt;SetFieldBinaryFromHexString&lt;/code&gt; 就完美的解決問題了！不過方法名稱都明確的顯了要使用 Hex string，所以需要利用下面的方法來把原本的字串稍作轉換：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;div class="chroma"&gt;
+&lt;table class="lntable"&gt;&lt;tr&gt;&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code&gt;&lt;span class="lnt"&gt;1
+&lt;/span&gt;&lt;span class="lnt"&gt;2
+&lt;/span&gt;&lt;span class="lnt"&gt;3
+&lt;/span&gt;&lt;span class="lnt"&gt;4
+&lt;/span&gt;&lt;span class="lnt"&gt;5
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-C#" data-lang="C#"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="c1"&gt;// .NET Core 使用需安裝 Nuget 套件 System.Text.Encoding.CodePages&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="c1"&gt;// Encoding.RegisterProvider(CodePagesEncodingProvider.Instance); // 可以加在使用前，或是 Program.cs&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="kt"&gt;var&lt;/span&gt; &lt;span class="n"&gt;bytes&lt;/span&gt; &lt;span class="p"&gt;=&lt;/span&gt; &lt;span class="n"&gt;Encoding&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;GetEncoding&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="m"&gt;950&lt;/span&gt;&lt;span class="p"&gt;).&lt;/span&gt;&lt;span class="n"&gt;GetBytes&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;&amp;#34;第二塊土地&amp;#34;&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="kt"&gt;var&lt;/span&gt; &lt;span class="n"&gt;hexString&lt;/span&gt; &lt;span class="p"&gt;=&lt;/span&gt; &lt;span class="n"&gt;Convert&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;ToHexString&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;bytes&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;hr&gt;
+&lt;p&gt;最後檢視一下我們生產的 Shapefile 檔案，還可以發現兩個小問題：&lt;/p&gt;
+&lt;h3 id="error-3-預設編碼"&gt;Error 3: 預設編碼
+&lt;/h3&gt;&lt;p&gt;如果是先轉成 BIG-5 再轉 Hex string，可以發現一開始打開的時候還是亂碼，需要到設定裡面把 Data Source Encoding 調整為 BIG-5 後才能正常顯示。這個部分只需要在建立 Layer 的時候把最後一個參數加上 Encoding 的設定即可：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;div class="chroma"&gt;
+&lt;table class="lntable"&gt;&lt;tr&gt;&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code&gt;&lt;span class="lnt"&gt;1
+&lt;/span&gt;&lt;span class="lnt"&gt;2
+&lt;/span&gt;&lt;span class="lnt"&gt;3
+&lt;/span&gt;&lt;span class="lnt"&gt;4
+&lt;/span&gt;&lt;span class="lnt"&gt;5
+&lt;/span&gt;&lt;span class="lnt"&gt;6
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-C#" data-lang="C#"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="c1"&gt;// 原本的設定&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="kt"&gt;var&lt;/span&gt; &lt;span class="n"&gt;layer&lt;/span&gt; &lt;span class="p"&gt;=&lt;/span&gt; &lt;span class="n"&gt;source&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;CreateLayer&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;&amp;#34;layer one&amp;#34;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="k"&gt;new&lt;/span&gt; &lt;span class="n"&gt;SpatialReference&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;&amp;#34;&amp;#34;&lt;/span&gt;&lt;span class="p"&gt;),&lt;/span&gt; &lt;span class="n"&gt;wkbGeometryType&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;wkbPolygon&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="kc"&gt;null&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="c1"&gt;// 新增 Encoding 為 BIG-5&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="kt"&gt;var&lt;/span&gt; &lt;span class="n"&gt;layer&lt;/span&gt; &lt;span class="p"&gt;=&lt;/span&gt; &lt;span class="n"&gt;source&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;CreateLayer&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;&amp;#34;layer one&amp;#34;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="k"&gt;new&lt;/span&gt; &lt;span class="n"&gt;SpatialReference&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;&amp;#34;&amp;#34;&lt;/span&gt;&lt;span class="p"&gt;),&lt;/span&gt; &lt;span class="n"&gt;wkbGeometryType&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;wkbPolygon&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="k"&gt;new&lt;/span&gt;&lt;span class="p"&gt;[]{&lt;/span&gt;&lt;span class="s"&gt;&amp;#34;ENCODING=BIG5&amp;#34;&lt;/span&gt;&lt;span class="p"&gt;});&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;h3 id="error-4-座標系統"&gt;Error 4: 座標系統
+&lt;/h3&gt;&lt;p&gt;一般來說，Shapefile 必須要有指定的座標系統，沒有的話可能會在讀取上遇到一些問題，造成後續的操作錯誤，例如：轉成 WKT 和現存的資料要進行比對的時候，可能就會因為座標系統的不同而需要進行轉換。&lt;/p&gt;
+&lt;p&gt;設定座標系統的方法很簡單：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;div class="chroma"&gt;
+&lt;table class="lntable"&gt;&lt;tr&gt;&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code&gt;&lt;span class="lnt"&gt;1
+&lt;/span&gt;&lt;span class="lnt"&gt;2
+&lt;/span&gt;&lt;span class="lnt"&gt;3
+&lt;/span&gt;&lt;span class="lnt"&gt;4
+&lt;/span&gt;&lt;span class="lnt"&gt;5
+&lt;/span&gt;&lt;span class="lnt"&gt;6
+&lt;/span&gt;&lt;span class="lnt"&gt;7
+&lt;/span&gt;&lt;span class="lnt"&gt;8
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-C#" data-lang="C#"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="c1"&gt;// 原本&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="kt"&gt;var&lt;/span&gt; &lt;span class="n"&gt;layer&lt;/span&gt; &lt;span class="p"&gt;=&lt;/span&gt; &lt;span class="n"&gt;source&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;CreateLayer&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;&amp;#34;layer one&amp;#34;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="k"&gt;new&lt;/span&gt; &lt;span class="n"&gt;SpatialReference&lt;/span&gt;&lt;span class="p"&gt;(),&lt;/span&gt; &lt;span class="n"&gt;wkbGeometryType&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;wkbPolygon&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="k"&gt;new&lt;/span&gt;&lt;span class="p"&gt;[]{&lt;/span&gt;&lt;span class="s"&gt;&amp;#34;ENCODING=BIG5&amp;#34;&lt;/span&gt;&lt;span class="p"&gt;});&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="c1"&gt;// 設定座標系統為 WGS84&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="kt"&gt;var&lt;/span&gt; &lt;span class="n"&gt;spatialReference&lt;/span&gt; &lt;span class="p"&gt;=&lt;/span&gt; &lt;span class="k"&gt;new&lt;/span&gt; &lt;span class="n"&gt;SpatialReference&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;&amp;#34;&amp;#34;&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="n"&gt;spatialReference&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;SetWellKnownGeogCS&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;&amp;#34;WGS84&amp;#34;&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="kt"&gt;var&lt;/span&gt; &lt;span class="n"&gt;layer&lt;/span&gt; &lt;span class="p"&gt;=&lt;/span&gt; &lt;span class="n"&gt;source&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;CreateLayer&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;&amp;#34;layer one&amp;#34;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;spatialReference&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;wkbGeometryType&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;wkbPolygon&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="k"&gt;new&lt;/span&gt;&lt;span class="p"&gt;[]{&lt;/span&gt;&lt;span class="s"&gt;&amp;#34;ENCODING=BIG5&amp;#34;&lt;/span&gt;&lt;span class="p"&gt;});&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;hr&gt;
+&lt;h2 id="最終版程式碼"&gt;最終版程式碼
+&lt;/h2&gt;&lt;p&gt;經過上面的修正和調整之後，完整的程式碼如下：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;div class="chroma"&gt;
+&lt;table class="lntable"&gt;&lt;tr&gt;&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code&gt;&lt;span class="lnt"&gt; 1
+&lt;/span&gt;&lt;span class="lnt"&gt; 2
+&lt;/span&gt;&lt;span class="lnt"&gt; 3
+&lt;/span&gt;&lt;span class="lnt"&gt; 4
+&lt;/span&gt;&lt;span class="lnt"&gt; 5
+&lt;/span&gt;&lt;span class="lnt"&gt; 6
+&lt;/span&gt;&lt;span class="lnt"&gt; 7
+&lt;/span&gt;&lt;span class="lnt"&gt; 8
+&lt;/span&gt;&lt;span class="lnt"&gt; 9
+&lt;/span&gt;&lt;span class="lnt"&gt;10
+&lt;/span&gt;&lt;span class="lnt"&gt;11
+&lt;/span&gt;&lt;span class="lnt"&gt;12
+&lt;/span&gt;&lt;span class="lnt"&gt;13
+&lt;/span&gt;&lt;span class="lnt"&gt;14
+&lt;/span&gt;&lt;span class="lnt"&gt;15
+&lt;/span&gt;&lt;span class="lnt"&gt;16
+&lt;/span&gt;&lt;span class="lnt"&gt;17
+&lt;/span&gt;&lt;span class="lnt"&gt;18
+&lt;/span&gt;&lt;span class="lnt"&gt;19
+&lt;/span&gt;&lt;span class="lnt"&gt;20
+&lt;/span&gt;&lt;span class="lnt"&gt;21
+&lt;/span&gt;&lt;span class="lnt"&gt;22
+&lt;/span&gt;&lt;span class="lnt"&gt;23
+&lt;/span&gt;&lt;span class="lnt"&gt;24
+&lt;/span&gt;&lt;span class="lnt"&gt;25
+&lt;/span&gt;&lt;span class="lnt"&gt;26
+&lt;/span&gt;&lt;span class="lnt"&gt;27
+&lt;/span&gt;&lt;span class="lnt"&gt;28
+&lt;/span&gt;&lt;span class="lnt"&gt;29
+&lt;/span&gt;&lt;span class="lnt"&gt;30
+&lt;/span&gt;&lt;span class="lnt"&gt;31
+&lt;/span&gt;&lt;span class="lnt"&gt;32
+&lt;/span&gt;&lt;span class="lnt"&gt;33
+&lt;/span&gt;&lt;span class="lnt"&gt;34
+&lt;/span&gt;&lt;span class="lnt"&gt;35
+&lt;/span&gt;&lt;span class="lnt"&gt;36
+&lt;/span&gt;&lt;span class="lnt"&gt;37
+&lt;/span&gt;&lt;span class="lnt"&gt;38
+&lt;/span&gt;&lt;span class="lnt"&gt;39
+&lt;/span&gt;&lt;span class="lnt"&gt;40
+&lt;/span&gt;&lt;span class="lnt"&gt;41
+&lt;/span&gt;&lt;span class="lnt"&gt;42
+&lt;/span&gt;&lt;span class="lnt"&gt;43
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-C#" data-lang="C#"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="c1"&gt;// 註冊 MaxRev.Gdal.Core&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="n"&gt;GdalBase&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;ConfigureAll&lt;/span&gt;&lt;span class="p"&gt;();&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="c1"&gt;// 註冊 GDAL&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="n"&gt;Gdal&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;SetConfigOption&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;&amp;#34;SHAPE_ENCODING&amp;#34;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s"&gt;&amp;#34;big5&amp;#34;&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="n"&gt;Gdal&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;AllRegister&lt;/span&gt;&lt;span class="p"&gt;();&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="n"&gt;Ogr&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;RegisterAll&lt;/span&gt;&lt;span class="p"&gt;();&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="c1"&gt;// 建立 Driver&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="kt"&gt;var&lt;/span&gt; &lt;span class="n"&gt;driver&lt;/span&gt; &lt;span class="p"&gt;=&lt;/span&gt; &lt;span class="n"&gt;Ogr&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;GetDriverByName&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;&amp;#34;ESRI Shapefile&amp;#34;&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="kt"&gt;var&lt;/span&gt; &lt;span class="n"&gt;source&lt;/span&gt; &lt;span class="p"&gt;=&lt;/span&gt; &lt;span class="n"&gt;driver&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;CreateDataSource&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;&amp;#34;files/simple/create.shp&amp;#34;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="kc"&gt;null&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="c1"&gt;// 座標系統設定&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="kt"&gt;var&lt;/span&gt; &lt;span class="n"&gt;spatialReference&lt;/span&gt; &lt;span class="p"&gt;=&lt;/span&gt; &lt;span class="k"&gt;new&lt;/span&gt; &lt;span class="n"&gt;SpatialReference&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;&amp;#34;&amp;#34;&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="n"&gt;spatialReference&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;SetWellKnownGeogCS&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;&amp;#34;WGS84&amp;#34;&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="c1"&gt;// 建立 Field&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="kt"&gt;var&lt;/span&gt; &lt;span class="n"&gt;spatialReference&lt;/span&gt; &lt;span class="p"&gt;=&lt;/span&gt; &lt;span class="k"&gt;new&lt;/span&gt; &lt;span class="n"&gt;SpatialReference&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;&amp;#34;&amp;#34;&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="n"&gt;spatialReference&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;SetWellKnownGeogCS&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;&amp;#34;WGS84&amp;#34;&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="kt"&gt;var&lt;/span&gt; &lt;span class="n"&gt;layer&lt;/span&gt; &lt;span class="p"&gt;=&lt;/span&gt; &lt;span class="n"&gt;source&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;CreateLayer&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;&amp;#34;layer one&amp;#34;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;spatialReference&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;wkbGeometryType&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;wkbPolygon&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="k"&gt;new&lt;/span&gt;&lt;span class="p"&gt;[]{&lt;/span&gt;&lt;span class="s"&gt;&amp;#34;ENCODING=BIG5&amp;#34;&lt;/span&gt;&lt;span class="p"&gt;});&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="kt"&gt;var&lt;/span&gt; &lt;span class="n"&gt;fieldId&lt;/span&gt; &lt;span class="p"&gt;=&lt;/span&gt; &lt;span class="k"&gt;new&lt;/span&gt; &lt;span class="n"&gt;FieldDefn&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;&amp;#34;Id&amp;#34;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;FieldType&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;OFTInteger&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="n"&gt;layer&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;CreateField&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;fieldId&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="kt"&gt;int&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="n"&gt;EnumShapefileColumn&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;Id&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="kt"&gt;var&lt;/span&gt; &lt;span class="n"&gt;fieldName&lt;/span&gt; &lt;span class="p"&gt;=&lt;/span&gt; &lt;span class="k"&gt;new&lt;/span&gt; &lt;span class="n"&gt;FieldDefn&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;&amp;#34;土地名稱&amp;#34;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;FieldType&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;OFTString&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="n"&gt;layer&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;CreateField&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;fieldName&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="kt"&gt;int&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="n"&gt;EnumShapefileColumn&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;Name&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="kt"&gt;var&lt;/span&gt; &lt;span class="n"&gt;fieldArea&lt;/span&gt; &lt;span class="p"&gt;=&lt;/span&gt; &lt;span class="k"&gt;new&lt;/span&gt; &lt;span class="n"&gt;FieldDefn&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;&amp;#34;土地面積&amp;#34;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;FieldType&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;OFTString&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="n"&gt;layer&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;CreateField&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;fieldArea&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="kt"&gt;int&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="n"&gt;EnumShapefileColumn&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;Area&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="c1"&gt;// 建立 Feature&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="kt"&gt;var&lt;/span&gt; &lt;span class="n"&gt;field&lt;/span&gt; &lt;span class="p"&gt;=&lt;/span&gt; &lt;span class="n"&gt;layer&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;GetLayerDefn&lt;/span&gt;&lt;span class="p"&gt;();&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="kt"&gt;var&lt;/span&gt; &lt;span class="n"&gt;feature&lt;/span&gt; &lt;span class="p"&gt;=&lt;/span&gt; &lt;span class="k"&gt;new&lt;/span&gt; &lt;span class="n"&gt;Feature&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;field&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="c1"&gt;// 設定內容&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="kt"&gt;var&lt;/span&gt; &lt;span class="n"&gt;bytes&lt;/span&gt; &lt;span class="p"&gt;=&lt;/span&gt; &lt;span class="n"&gt;Encoding&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;GetEncoding&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="m"&gt;950&lt;/span&gt;&lt;span class="p"&gt;).&lt;/span&gt;&lt;span class="n"&gt;GetBytes&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;&amp;#34;第二塊土地&amp;#34;&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="kt"&gt;var&lt;/span&gt; &lt;span class="n"&gt;hexString&lt;/span&gt; &lt;span class="p"&gt;=&lt;/span&gt; &lt;span class="n"&gt;Convert&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;ToHexString&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;bytes&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="n"&gt;feature&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;SetField&lt;/span&gt;&lt;span class="p"&gt;((&lt;/span&gt;&lt;span class="kt"&gt;int&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="n"&gt;EnumShapefileColumn&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;Id&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="m"&gt;1&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="n"&gt;feature&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;SetField&lt;/span&gt;&lt;span class="p"&gt;((&lt;/span&gt;&lt;span class="kt"&gt;int&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="n"&gt;EnumShapefileColumn&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;Name&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;hexString&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="n"&gt;feature&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;SetField&lt;/span&gt;&lt;span class="p"&gt;((&lt;/span&gt;&lt;span class="kt"&gt;int&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="n"&gt;EnumShapefileColumn&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;Area&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s"&gt;&amp;#34;123.4&amp;#34;&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="c1"&gt;// 設定空間資訊&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="kt"&gt;var&lt;/span&gt; &lt;span class="n"&gt;wkt&lt;/span&gt; &lt;span class="p"&gt;=&lt;/span&gt; &lt;span class="s"&gt;&amp;#34;POLYGON ((-1.13755980861244 0.746411483253589,-0.350478468899522 0.488038277511962,-1.06578947368421 -0.028708133971292,-1.13755980861244 0.746411483253589))&amp;#34;&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="kt"&gt;var&lt;/span&gt; &lt;span class="n"&gt;geometry&lt;/span&gt; &lt;span class="p"&gt;=&lt;/span&gt; &lt;span class="n"&gt;Geometry&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;CreateFromWkt&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;wkt&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="n"&gt;feature&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;SetGeometry&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;geometry&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="n"&gt;layer&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;CreateFeature&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;feature&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;感謝大家的觀看！有任何錯誤還請各位大大不吝指教，有任何問題也歡迎來信跟我討論喔 😉&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;參考文章&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a class="link" href="https://blog.csdn.net/qq_34045114/article/details/84133815" target="_blank" rel="noopener"
+&gt;gdal for android 開發包，字段屬性為中文出現亂碼&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;&lt;/blockquote&gt;</description></item><item><title>GDAL 操作 ShapeFile (2)</title><link>https://anthea-wu.github.io/post/gdal-shapefile-2/</link><pubDate>Sun, 24 Jul 2022 23:58:59 +0800</pubDate><guid>https://anthea-wu.github.io/post/gdal-shapefile-2/</guid><description>&lt;p&gt;&lt;img src="https://anthea-wu.github.io/post/gdal-shapefile-2/ShpError1.png"
 width="1100"
 height="219"
 srcset="https://anthea-wu.github.io/post/gdal-shapefile-2/ShpError1_hu_51f775485a0e3464.png 480w, https://anthea-wu.github.io/post/gdal-shapefile-2/ShpError1_hu_8345583c9332df9d.png 1024w"
@@ -314,16 +314,16 @@ loading="lazy"
 class="gallery-image"
 data-flex-grow="502"
 data-flex-basis="1205px"
->&lt;/p>
-&lt;p>&lt;a class="link" href="../gdal-shapefile-1" >上一篇&lt;/a>提到，輸出的結果中，欄位的名稱可以正常顯示，內容的值卻會變成亂碼。&lt;/p>
-&lt;h2 id="問題出在哪">問題出在哪
-&lt;/h2>&lt;p>上網找解法的時候發現有人遇到相似的狀況，但不同的是，我和對方的亂碼顯示是相反的：他的亂碼會出現在欄位名稱，內容的值反而是正常的。&lt;/p>
-&lt;p>雖然狀況有點不相同，但他在閱讀了原始碼後提出了一個觀點：&lt;/p>
-&lt;blockquote>
-&lt;p>對比 &lt;code>GetName&lt;/code> 和 &lt;code>GetFieldAsString&lt;/code> 兩個函數可以很明顯看出來，&lt;code>GetFieldAsString&lt;/code> 通過調用 &lt;code>Ogr.Utf8BytesToString&lt;/code> 將返回的 UTF8 編碼的位元組數組以 UTF8 方式解碼為字元串，所以能夠正常顯示；而 &lt;code>GetName&lt;/code> 則直接返回字元串（實際上編譯器隱性調用了 &lt;code>Encoding.Default.GetString&lt;/code> 解碼為字元串），由於沒有使用 UTF8 解碼導致顯示為亂碼。&lt;/p>&lt;span class="cite">&lt;span>― &lt;/span>&lt;span>gis0911178, &lt;/span>&lt;a href="https://www.cnblogs.com/litou/p/15035790.html">&lt;cite>CSDN / CC 4.0 BY-SA 協議&lt;/cite>&lt;/a>&lt;/span>&lt;/blockquote>
-&lt;h3 id="觀察原始碼">觀察原始碼
-&lt;/h3>&lt;p>為了證明，我利用反編譯的工具來檢視 &lt;code>Gdal.Core.dll&lt;/code>，可以看到像下面這樣的內容：&lt;/p>
-&lt;p>&lt;img src="https://anthea-wu.github.io/post/gdal-shapefile-2/GetName.png"
+&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a class="link" href="../gdal-shapefile-1" &gt;上一篇&lt;/a&gt;提到，輸出的結果中，欄位的名稱可以正常顯示，內容的值卻會變成亂碼。&lt;/p&gt;
+&lt;h2 id="問題出在哪"&gt;問題出在哪
+&lt;/h2&gt;&lt;p&gt;上網找解法的時候發現有人遇到相似的狀況，但不同的是，我和對方的亂碼顯示是相反的：他的亂碼會出現在欄位名稱，內容的值反而是正常的。&lt;/p&gt;
+&lt;p&gt;雖然狀況有點不相同，但他在閱讀了原始碼後提出了一個觀點：&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;對比 &lt;code&gt;GetName&lt;/code&gt; 和 &lt;code&gt;GetFieldAsString&lt;/code&gt; 兩個函數可以很明顯看出來，&lt;code&gt;GetFieldAsString&lt;/code&gt; 通過調用 &lt;code&gt;Ogr.Utf8BytesToString&lt;/code&gt; 將返回的 UTF8 編碼的位元組數組以 UTF8 方式解碼為字元串，所以能夠正常顯示；而 &lt;code&gt;GetName&lt;/code&gt; 則直接返回字元串（實際上編譯器隱性調用了 &lt;code&gt;Encoding.Default.GetString&lt;/code&gt; 解碼為字元串），由於沒有使用 UTF8 解碼導致顯示為亂碼。&lt;/p&gt;&lt;span class="cite"&gt;&lt;span&gt;― &lt;/span&gt;&lt;span&gt;gis0911178, &lt;/span&gt;&lt;a href="https://www.cnblogs.com/litou/p/15035790.html"&gt;&lt;cite&gt;CSDN / CC 4.0 BY-SA 協議&lt;/cite&gt;&lt;/a&gt;&lt;/span&gt;&lt;/blockquote&gt;
+&lt;h3 id="觀察原始碼"&gt;觀察原始碼
+&lt;/h3&gt;&lt;p&gt;為了證明，我利用反編譯的工具來檢視 &lt;code&gt;Gdal.Core.dll&lt;/code&gt;，可以看到像下面這樣的內容：&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://anthea-wu.github.io/post/gdal-shapefile-2/GetName.png"
 width="588"
 height="235"
 srcset="https://anthea-wu.github.io/post/gdal-shapefile-2/GetName_hu_8a1e34a65a922f86.png 480w, https://anthea-wu.github.io/post/gdal-shapefile-2/GetName_hu_271357c2755130c4.png 1024w"
@@ -331,8 +331,8 @@ loading="lazy"
 class="gallery-image"
 data-flex-grow="250"
 data-flex-basis="600px"
->&lt;/p>
-&lt;p>&lt;img src="https://anthea-wu.github.io/post/gdal-shapefile-2/GetFieldAsString.png"
+&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://anthea-wu.github.io/post/gdal-shapefile-2/GetFieldAsString.png"
 width="964"
 height="233"
 srcset="https://anthea-wu.github.io/post/gdal-shapefile-2/GetFieldAsString_hu_6ab1757c16500b8d.png 480w, https://anthea-wu.github.io/post/gdal-shapefile-2/GetFieldAsString_hu_742e405414d2a63a.png 1024w"
@@ -340,9 +340,9 @@ loading="lazy"
 class="gallery-image"
 data-flex-grow="413"
 data-flex-basis="992px"
->&lt;/p>
-&lt;p>從這兩張圖中可以看到，讀取內容值，調用 &lt;code>Feature.GetFieldAsString()&lt;/code> 的時候，會將結果進行轉換，&lt;code>Utf8BytesToString()&lt;/code> 的內容包含：&lt;/p>
-&lt;p>&lt;img src="https://anthea-wu.github.io/post/gdal-shapefile-2/Utf8BytesToString.png"
+&gt;&lt;/p&gt;
+&lt;p&gt;從這兩張圖中可以看到，讀取內容值，調用 &lt;code&gt;Feature.GetFieldAsString()&lt;/code&gt; 的時候，會將結果進行轉換，&lt;code&gt;Utf8BytesToString()&lt;/code&gt; 的內容包含：&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://anthea-wu.github.io/post/gdal-shapefile-2/Utf8BytesToString.png"
 width="603"
 height="328"
 srcset="https://anthea-wu.github.io/post/gdal-shapefile-2/Utf8BytesToString_hu_ec2b9af15538287f.png 480w, https://anthea-wu.github.io/post/gdal-shapefile-2/Utf8BytesToString_hu_2360a6a9a6d71dce.png 1024w"
@@ -350,12 +350,12 @@ loading="lazy"
 class="gallery-image"
 data-flex-grow="183"
 data-flex-basis="441px"
->&lt;/p>
-&lt;p>所以從結論來看，他的情況應該是正常的，只是不知道為甚麼我會是相反的狀況：有用 UTF8 解碼的內容，反而會是亂碼 😕&lt;/p>
-&lt;h3 id="gdalcore--maxrevgdalcore">&lt;code>Gdal.Core&lt;/code> → &lt;code>MaxRev.Gdal.Core&lt;/code>
-&lt;/h3>&lt;p>所以，按照他的假設，應該是要在取得欄位名稱的時候多調用 &lt;code>Utf8BytesToString()&lt;/code> 來讓字串正確顯示，但對於我的狀況來說，反而是要把 &lt;code>Utf8BytesToString()&lt;/code> 拿掉 😢 但我對於 dll 相關的技能樹是未開通的狀態，所以選擇放棄 &lt;code>Gdal.Core&lt;/code> 這個套件，轉而使用另外一個同樣使用 Gdal，但專門開發給 .NET Core 使用的套件－－ &lt;code>MaxRev.Gdal.Core&lt;/code>。&lt;/p>
-&lt;p>套件的使用方法和原本的 &lt;code>Gdal.Core&lt;/code> 一模一樣，只是要在原本的 &lt;code>Gdal.AllRegister();&lt;/code> 之前，加上 &lt;code>GdalBase.ConfigureAll();&lt;/code> 就可以了。更改套件之後運行的結果如下：&lt;/p>
-&lt;p>&lt;img src="https://anthea-wu.github.io/post/gdal-shapefile-2/ShpError2.png"
+&gt;&lt;/p&gt;
+&lt;p&gt;所以從結論來看，他的情況應該是正常的，只是不知道為甚麼我會是相反的狀況：有用 UTF8 解碼的內容，反而會是亂碼 😕&lt;/p&gt;
+&lt;h3 id="gdalcore--maxrevgdalcore"&gt;&lt;code&gt;Gdal.Core&lt;/code&gt; → &lt;code&gt;MaxRev.Gdal.Core&lt;/code&gt;
+&lt;/h3&gt;&lt;p&gt;所以，按照他的假設，應該是要在取得欄位名稱的時候多調用 &lt;code&gt;Utf8BytesToString()&lt;/code&gt; 來讓字串正確顯示，但對於我的狀況來說，反而是要把 &lt;code&gt;Utf8BytesToString()&lt;/code&gt; 拿掉 😢 但我對於 dll 相關的技能樹是未開通的狀態，所以選擇放棄 &lt;code&gt;Gdal.Core&lt;/code&gt; 這個套件，轉而使用另外一個同樣使用 Gdal，但專門開發給 .NET Core 使用的套件－－ &lt;code&gt;MaxRev.Gdal.Core&lt;/code&gt;。&lt;/p&gt;
+&lt;p&gt;套件的使用方法和原本的 &lt;code&gt;Gdal.Core&lt;/code&gt; 一模一樣，只是要在原本的 &lt;code&gt;Gdal.AllRegister();&lt;/code&gt; 之前，加上 &lt;code&gt;GdalBase.ConfigureAll();&lt;/code&gt; 就可以了。更改套件之後運行的結果如下：&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://anthea-wu.github.io/post/gdal-shapefile-2/ShpError2.png"
 width="1100"
 height="214"
 srcset="https://anthea-wu.github.io/post/gdal-shapefile-2/ShpError2_hu_99d79016c4df38a9.png 480w, https://anthea-wu.github.io/post/gdal-shapefile-2/ShpError2_hu_4e81d79ccd7f1354.png 1024w"
@@ -364,160 +364,160 @@ alt="終於是正常的 Bug 了 (?) 🎊"
 class="gallery-image"
 data-flex-grow="514"
 data-flex-basis="1233px"
->&lt;/p>
-&lt;hr>
-&lt;h2 id="修正中文亂碼">修正中文亂碼
-&lt;/h2>&lt;p>將情境還原之後就可以針對他所提出的方法進行修正了。我選擇最快也最好處理的方法－－直接調用原本 dll 中的方法再另外包一層 UTF8 解碼，完整的程式碼如下：&lt;/p>
-&lt;div class="highlight">&lt;div class="chroma">
-&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
-&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt"> 1
-&lt;/span>&lt;span class="lnt"> 2
-&lt;/span>&lt;span class="lnt"> 3
-&lt;/span>&lt;span class="lnt"> 4
-&lt;/span>&lt;span class="lnt"> 5
-&lt;/span>&lt;span class="lnt"> 6
-&lt;/span>&lt;span class="lnt"> 7
-&lt;/span>&lt;span class="lnt"> 8
-&lt;/span>&lt;span class="lnt"> 9
-&lt;/span>&lt;span class="lnt">10
-&lt;/span>&lt;span class="lnt">11
-&lt;/span>&lt;span class="lnt">12
-&lt;/span>&lt;span class="lnt">13
-&lt;/span>&lt;span class="lnt">14
-&lt;/span>&lt;span class="lnt">15
-&lt;/span>&lt;span class="lnt">16
-&lt;/span>&lt;span class="lnt">17
-&lt;/span>&lt;span class="lnt">18
-&lt;/span>&lt;span class="lnt">19
-&lt;/span>&lt;span class="lnt">20
-&lt;/span>&lt;span class="lnt">21
-&lt;/span>&lt;span class="lnt">22
-&lt;/span>&lt;span class="lnt">23
-&lt;/span>&lt;span class="lnt">24
-&lt;/span>&lt;span class="lnt">25
-&lt;/span>&lt;span class="lnt">26
-&lt;/span>&lt;span class="lnt">27
-&lt;/span>&lt;span class="lnt">28
-&lt;/span>&lt;span class="lnt">29
-&lt;/span>&lt;span class="lnt">30
-&lt;/span>&lt;span class="lnt">31
-&lt;/span>&lt;span class="lnt">32
-&lt;/span>&lt;span class="lnt">33
-&lt;/span>&lt;span class="lnt">34
-&lt;/span>&lt;span class="lnt">35
-&lt;/span>&lt;span class="lnt">36
-&lt;/span>&lt;span class="lnt">37
-&lt;/span>&lt;span class="lnt">38
-&lt;/span>&lt;span class="lnt">39
-&lt;/span>&lt;span class="lnt">40
-&lt;/span>&lt;span class="lnt">41
-&lt;/span>&lt;span class="lnt">42
-&lt;/span>&lt;span class="lnt">43
-&lt;/span>&lt;span class="lnt">44
-&lt;/span>&lt;span class="lnt">45
-&lt;/span>&lt;span class="lnt">46
-&lt;/span>&lt;span class="lnt">47
-&lt;/span>&lt;span class="lnt">48
-&lt;/span>&lt;span class="lnt">49
-&lt;/span>&lt;span class="lnt">50
-&lt;/span>&lt;span class="lnt">51
-&lt;/span>&lt;span class="lnt">52
-&lt;/span>&lt;span class="lnt">53
-&lt;/span>&lt;span class="lnt">54
-&lt;/span>&lt;span class="lnt">55
-&lt;/span>&lt;span class="lnt">56
-&lt;/span>&lt;span class="lnt">57
-&lt;/span>&lt;span class="lnt">58
-&lt;/span>&lt;span class="lnt">59
-&lt;/span>&lt;span class="lnt">60
-&lt;/span>&lt;span class="lnt">61
-&lt;/span>&lt;span class="lnt">62
-&lt;/span>&lt;span class="lnt">63
-&lt;/span>&lt;span class="lnt">64
-&lt;/span>&lt;span class="lnt">65
-&lt;/span>&lt;span class="lnt">66
-&lt;/span>&lt;span class="lnt">67
-&lt;/span>&lt;span class="lnt">68
-&lt;/span>&lt;span class="lnt">69
-&lt;/span>&lt;span class="lnt">70
-&lt;/span>&lt;span class="lnt">71
-&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
-&lt;td class="lntd">
-&lt;pre tabindex="0" class="chroma">&lt;code class="language-C#" data-lang="C#">&lt;span class="line">&lt;span class="cl">&lt;span class="c1">// 註冊 MaxRev.Gdal.Core&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="n">GdalBase&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="n">ConfigureAll&lt;/span>&lt;span class="p">();&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">// 註冊 GDAL&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="n">Gdal&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="n">SetConfigOption&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s">&amp;#34;SHAPE_ENCODING&amp;#34;&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="s">&amp;#34;big5&amp;#34;&lt;/span>&lt;span class="p">);&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="n">Gdal&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="n">AllRegister&lt;/span>&lt;span class="p">();&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="n">Ogr&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="n">RegisterAll&lt;/span>&lt;span class="p">();&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">// 開啟 SHP 檔案（0 - 讀取、1 - 讀寫）&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="kt">var&lt;/span> &lt;span class="n">source&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="n">Ogr&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="n">Open&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s">&amp;#34;files/simple/test.shp&amp;#34;&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="p">(&lt;/span>&lt;span class="kt">int&lt;/span>&lt;span class="p">)&lt;/span>&lt;span class="n">EnumShapefileOpen&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="n">ReadOnly&lt;/span>&lt;span class="p">);&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="kt">var&lt;/span> &lt;span class="n">layerCount&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="n">source&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="n">GetLayerCount&lt;/span>&lt;span class="p">();&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="k">for&lt;/span> &lt;span class="p">(&lt;/span>&lt;span class="kt">var&lt;/span> &lt;span class="n">i&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="m">0&lt;/span>&lt;span class="p">;&lt;/span> &lt;span class="n">i&lt;/span> &lt;span class="p">&amp;lt;&lt;/span> &lt;span class="n">layerCount&lt;/span>&lt;span class="p">;&lt;/span> &lt;span class="n">i&lt;/span>&lt;span class="p">++)&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">{&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="c1">// 讀取圖層 Layer 資訊&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="kt">var&lt;/span> &lt;span class="n">layer&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="n">source&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="n">GetLayerByIndex&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">i&lt;/span>&lt;span class="p">);&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="kt">var&lt;/span> &lt;span class="n">fieldCount&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="n">layer&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="n">GetLayerDefn&lt;/span>&lt;span class="p">().&lt;/span>&lt;span class="n">GetFieldCount&lt;/span>&lt;span class="p">();&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">for&lt;/span> &lt;span class="p">(&lt;/span>&lt;span class="kt">var&lt;/span> &lt;span class="n">j&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="m">0&lt;/span>&lt;span class="p">;&lt;/span> &lt;span class="n">j&lt;/span> &lt;span class="p">&amp;lt;&lt;/span> &lt;span class="n">fieldCount&lt;/span>&lt;span class="p">;&lt;/span> &lt;span class="n">j&lt;/span>&lt;span class="p">++)&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">{&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="kt">var&lt;/span> &lt;span class="n">field&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="n">layer&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="n">GetLayerDefn&lt;/span>&lt;span class="p">().&lt;/span>&lt;span class="n">GetFieldDefn&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">j&lt;/span>&lt;span class="p">);&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="kt">var&lt;/span> &lt;span class="n">fieldName&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="n">GetFieldDfnName&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">field&lt;/span>&lt;span class="p">);&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">Console&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="n">WriteLine&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s">$&amp;#34;欄位{j + 1}. {fieldName}&amp;#34;&lt;/span>&lt;span class="p">);&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">}&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="c1">// 讀取要素 Feature&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">Feature&lt;/span> &lt;span class="n">feature&lt;/span>&lt;span class="p">;&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">while&lt;/span> &lt;span class="p">((&lt;/span>&lt;span class="n">feature&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="n">layer&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="n">GetNextFeature&lt;/span>&lt;span class="p">())&lt;/span> &lt;span class="p">!=&lt;/span> &lt;span class="kc">null&lt;/span>&lt;span class="p">)&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">{&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="kt">var&lt;/span> &lt;span class="n">id&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="n">feature&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="n">GetFieldAsInteger&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="m">0&lt;/span>&lt;span class="p">);&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">Console&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="n">WriteLine&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s">$&amp;#34;內容1. {id}&amp;#34;&lt;/span>&lt;span class="p">);&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="kt">var&lt;/span> &lt;span class="n">name&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="n">feature&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="n">GetFieldAsString&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="m">1&lt;/span>&lt;span class="p">);&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">Console&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="n">WriteLine&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s">$&amp;#34;內容2. {name}&amp;#34;&lt;/span>&lt;span class="p">);&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="kt">var&lt;/span> &lt;span class="n">area&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="n">feature&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="n">GetFieldAsInteger64&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="m">2&lt;/span>&lt;span class="p">);&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">Console&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="n">WriteLine&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s">$&amp;#34;內容3. {area}&amp;#34;&lt;/span>&lt;span class="p">);&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="kt">var&lt;/span> &lt;span class="n">geometry&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="n">feature&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="n">GetGeometryRef&lt;/span>&lt;span class="p">();&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">geometry&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="n">ExportToWkt&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="k">out&lt;/span> &lt;span class="kt">var&lt;/span> &lt;span class="n">wkt&lt;/span>&lt;span class="p">);&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">Console&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="n">WriteLine&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s">$&amp;#34;- WKT: {wkt}&amp;#34;&lt;/span>&lt;span class="p">);&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">}&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">}&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="kd">static&lt;/span> &lt;span class="kt">string?&lt;/span> &lt;span class="n">Utf8BytesToString&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">IntPtr&lt;/span> &lt;span class="n">ptr&lt;/span>&lt;span class="p">)&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">{&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">if&lt;/span> &lt;span class="p">(&lt;/span>&lt;span class="n">ptr&lt;/span> &lt;span class="p">==&lt;/span> &lt;span class="n">IntPtr&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="n">Zero&lt;/span>&lt;span class="p">)&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">return&lt;/span> &lt;span class="kc">null&lt;/span>&lt;span class="p">;&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="kt">var&lt;/span> &lt;span class="n">ms&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="k">new&lt;/span> &lt;span class="n">MemoryStream&lt;/span>&lt;span class="p">();&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="kt">byte&lt;/span> &lt;span class="n">b&lt;/span>&lt;span class="p">;&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="kt">var&lt;/span> &lt;span class="n">ofs&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="m">0&lt;/span>&lt;span class="p">;&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">while&lt;/span> &lt;span class="p">((&lt;/span>&lt;span class="n">b&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="n">Marshal&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="n">ReadByte&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">ptr&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="n">ofs&lt;/span>&lt;span class="p">++))&lt;/span> &lt;span class="p">!=&lt;/span> &lt;span class="m">0&lt;/span>&lt;span class="p">)&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">{&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">ms&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="n">WriteByte&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">b&lt;/span>&lt;span class="p">);&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">}&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">return&lt;/span> &lt;span class="n">Encoding&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="n">UTF8&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="n">GetString&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">ms&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="n">ToArray&lt;/span>&lt;span class="p">());&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">}&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">// Dll 的位置要注意&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="na">[DllImport(&amp;#34;gdal/x64/gdal305.dll&amp;#34;, EntryPoint = &amp;#34;OGR_Fld_GetNameRef&amp;#34;, CallingConvention = CallingConvention.Cdecl)]&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="kd">static&lt;/span> &lt;span class="kd">extern&lt;/span> &lt;span class="n">IntPtr&lt;/span> &lt;span class="n">OGR_Fld_GetNameRef&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">HandleRef&lt;/span> &lt;span class="n">handle&lt;/span>&lt;span class="p">);&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="kd">static&lt;/span> &lt;span class="kt">string&lt;/span> &lt;span class="n">GetFieldDfnName&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">FieldDefn&lt;/span> &lt;span class="n">fieldDefn&lt;/span>&lt;span class="p">)&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">{&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">HandleRef&lt;/span> &lt;span class="n">handle&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="n">FieldDefn&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="n">getCPtr&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">fieldDefn&lt;/span>&lt;span class="p">);&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">IntPtr&lt;/span> &lt;span class="n">ptr&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="n">OGR_Fld_GetNameRef&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">handle&lt;/span>&lt;span class="p">);&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">return&lt;/span> &lt;span class="n">Utf8BytesToString&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">ptr&lt;/span>&lt;span class="p">);&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">}&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="kd">public&lt;/span> &lt;span class="kd">enum&lt;/span> &lt;span class="n">EnumShapefileOpen&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">{&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">ReadOnly&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">}&lt;/span>
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
-&lt;/div>
-&lt;/div>&lt;p>執行之後就可以看到我們把這個亂碼修好啦！&lt;/p>
-&lt;p>&lt;img src="https://anthea-wu.github.io/post/gdal-shapefile-2/Success.png"
+&gt;&lt;/p&gt;
+&lt;hr&gt;
+&lt;h2 id="修正中文亂碼"&gt;修正中文亂碼
+&lt;/h2&gt;&lt;p&gt;將情境還原之後就可以針對他所提出的方法進行修正了。我選擇最快也最好處理的方法－－直接調用原本 dll 中的方法再另外包一層 UTF8 解碼，完整的程式碼如下：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;div class="chroma"&gt;
+&lt;table class="lntable"&gt;&lt;tr&gt;&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code&gt;&lt;span class="lnt"&gt; 1
+&lt;/span&gt;&lt;span class="lnt"&gt; 2
+&lt;/span&gt;&lt;span class="lnt"&gt; 3
+&lt;/span&gt;&lt;span class="lnt"&gt; 4
+&lt;/span&gt;&lt;span class="lnt"&gt; 5
+&lt;/span&gt;&lt;span class="lnt"&gt; 6
+&lt;/span&gt;&lt;span class="lnt"&gt; 7
+&lt;/span&gt;&lt;span class="lnt"&gt; 8
+&lt;/span&gt;&lt;span class="lnt"&gt; 9
+&lt;/span&gt;&lt;span class="lnt"&gt;10
+&lt;/span&gt;&lt;span class="lnt"&gt;11
+&lt;/span&gt;&lt;span class="lnt"&gt;12
+&lt;/span&gt;&lt;span class="lnt"&gt;13
+&lt;/span&gt;&lt;span class="lnt"&gt;14
+&lt;/span&gt;&lt;span class="lnt"&gt;15
+&lt;/span&gt;&lt;span class="lnt"&gt;16
+&lt;/span&gt;&lt;span class="lnt"&gt;17
+&lt;/span&gt;&lt;span class="lnt"&gt;18
+&lt;/span&gt;&lt;span class="lnt"&gt;19
+&lt;/span&gt;&lt;span class="lnt"&gt;20
+&lt;/span&gt;&lt;span class="lnt"&gt;21
+&lt;/span&gt;&lt;span class="lnt"&gt;22
+&lt;/span&gt;&lt;span class="lnt"&gt;23
+&lt;/span&gt;&lt;span class="lnt"&gt;24
+&lt;/span&gt;&lt;span class="lnt"&gt;25
+&lt;/span&gt;&lt;span class="lnt"&gt;26
+&lt;/span&gt;&lt;span class="lnt"&gt;27
+&lt;/span&gt;&lt;span class="lnt"&gt;28
+&lt;/span&gt;&lt;span class="lnt"&gt;29
+&lt;/span&gt;&lt;span class="lnt"&gt;30
+&lt;/span&gt;&lt;span class="lnt"&gt;31
+&lt;/span&gt;&lt;span class="lnt"&gt;32
+&lt;/span&gt;&lt;span class="lnt"&gt;33
+&lt;/span&gt;&lt;span class="lnt"&gt;34
+&lt;/span&gt;&lt;span class="lnt"&gt;35
+&lt;/span&gt;&lt;span class="lnt"&gt;36
+&lt;/span&gt;&lt;span class="lnt"&gt;37
+&lt;/span&gt;&lt;span class="lnt"&gt;38
+&lt;/span&gt;&lt;span class="lnt"&gt;39
+&lt;/span&gt;&lt;span class="lnt"&gt;40
+&lt;/span&gt;&lt;span class="lnt"&gt;41
+&lt;/span&gt;&lt;span class="lnt"&gt;42
+&lt;/span&gt;&lt;span class="lnt"&gt;43
+&lt;/span&gt;&lt;span class="lnt"&gt;44
+&lt;/span&gt;&lt;span class="lnt"&gt;45
+&lt;/span&gt;&lt;span class="lnt"&gt;46
+&lt;/span&gt;&lt;span class="lnt"&gt;47
+&lt;/span&gt;&lt;span class="lnt"&gt;48
+&lt;/span&gt;&lt;span class="lnt"&gt;49
+&lt;/span&gt;&lt;span class="lnt"&gt;50
+&lt;/span&gt;&lt;span class="lnt"&gt;51
+&lt;/span&gt;&lt;span class="lnt"&gt;52
+&lt;/span&gt;&lt;span class="lnt"&gt;53
+&lt;/span&gt;&lt;span class="lnt"&gt;54
+&lt;/span&gt;&lt;span class="lnt"&gt;55
+&lt;/span&gt;&lt;span class="lnt"&gt;56
+&lt;/span&gt;&lt;span class="lnt"&gt;57
+&lt;/span&gt;&lt;span class="lnt"&gt;58
+&lt;/span&gt;&lt;span class="lnt"&gt;59
+&lt;/span&gt;&lt;span class="lnt"&gt;60
+&lt;/span&gt;&lt;span class="lnt"&gt;61
+&lt;/span&gt;&lt;span class="lnt"&gt;62
+&lt;/span&gt;&lt;span class="lnt"&gt;63
+&lt;/span&gt;&lt;span class="lnt"&gt;64
+&lt;/span&gt;&lt;span class="lnt"&gt;65
+&lt;/span&gt;&lt;span class="lnt"&gt;66
+&lt;/span&gt;&lt;span class="lnt"&gt;67
+&lt;/span&gt;&lt;span class="lnt"&gt;68
+&lt;/span&gt;&lt;span class="lnt"&gt;69
+&lt;/span&gt;&lt;span class="lnt"&gt;70
+&lt;/span&gt;&lt;span class="lnt"&gt;71
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-C#" data-lang="C#"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="c1"&gt;// 註冊 MaxRev.Gdal.Core&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="n"&gt;GdalBase&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;ConfigureAll&lt;/span&gt;&lt;span class="p"&gt;();&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="c1"&gt;// 註冊 GDAL&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="n"&gt;Gdal&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;SetConfigOption&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;&amp;#34;SHAPE_ENCODING&amp;#34;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s"&gt;&amp;#34;big5&amp;#34;&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="n"&gt;Gdal&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;AllRegister&lt;/span&gt;&lt;span class="p"&gt;();&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="n"&gt;Ogr&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;RegisterAll&lt;/span&gt;&lt;span class="p"&gt;();&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="c1"&gt;// 開啟 SHP 檔案（0 - 讀取、1 - 讀寫）&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="kt"&gt;var&lt;/span&gt; &lt;span class="n"&gt;source&lt;/span&gt; &lt;span class="p"&gt;=&lt;/span&gt; &lt;span class="n"&gt;Ogr&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;Open&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;&amp;#34;files/simple/test.shp&amp;#34;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="kt"&gt;int&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="n"&gt;EnumShapefileOpen&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;ReadOnly&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="kt"&gt;var&lt;/span&gt; &lt;span class="n"&gt;layerCount&lt;/span&gt; &lt;span class="p"&gt;=&lt;/span&gt; &lt;span class="n"&gt;source&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;GetLayerCount&lt;/span&gt;&lt;span class="p"&gt;();&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="k"&gt;for&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="kt"&gt;var&lt;/span&gt; &lt;span class="n"&gt;i&lt;/span&gt; &lt;span class="p"&gt;=&lt;/span&gt; &lt;span class="m"&gt;0&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="n"&gt;i&lt;/span&gt; &lt;span class="p"&gt;&amp;lt;&lt;/span&gt; &lt;span class="n"&gt;layerCount&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="n"&gt;i&lt;/span&gt;&lt;span class="p"&gt;++)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="p"&gt;{&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="c1"&gt;// 讀取圖層 Layer 資訊&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="kt"&gt;var&lt;/span&gt; &lt;span class="n"&gt;layer&lt;/span&gt; &lt;span class="p"&gt;=&lt;/span&gt; &lt;span class="n"&gt;source&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;GetLayerByIndex&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;i&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="kt"&gt;var&lt;/span&gt; &lt;span class="n"&gt;fieldCount&lt;/span&gt; &lt;span class="p"&gt;=&lt;/span&gt; &lt;span class="n"&gt;layer&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;GetLayerDefn&lt;/span&gt;&lt;span class="p"&gt;().&lt;/span&gt;&lt;span class="n"&gt;GetFieldCount&lt;/span&gt;&lt;span class="p"&gt;();&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="k"&gt;for&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="kt"&gt;var&lt;/span&gt; &lt;span class="n"&gt;j&lt;/span&gt; &lt;span class="p"&gt;=&lt;/span&gt; &lt;span class="m"&gt;0&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="n"&gt;j&lt;/span&gt; &lt;span class="p"&gt;&amp;lt;&lt;/span&gt; &lt;span class="n"&gt;fieldCount&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="n"&gt;j&lt;/span&gt;&lt;span class="p"&gt;++)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="kt"&gt;var&lt;/span&gt; &lt;span class="n"&gt;field&lt;/span&gt; &lt;span class="p"&gt;=&lt;/span&gt; &lt;span class="n"&gt;layer&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;GetLayerDefn&lt;/span&gt;&lt;span class="p"&gt;().&lt;/span&gt;&lt;span class="n"&gt;GetFieldDefn&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;j&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="kt"&gt;var&lt;/span&gt; &lt;span class="n"&gt;fieldName&lt;/span&gt; &lt;span class="p"&gt;=&lt;/span&gt; &lt;span class="n"&gt;GetFieldDfnName&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;field&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="n"&gt;Console&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;WriteLine&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;$&amp;#34;欄位{j + 1}. {fieldName}&amp;#34;&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="p"&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="c1"&gt;// 讀取要素 Feature&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="n"&gt;Feature&lt;/span&gt; &lt;span class="n"&gt;feature&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="k"&gt;while&lt;/span&gt; &lt;span class="p"&gt;((&lt;/span&gt;&lt;span class="n"&gt;feature&lt;/span&gt; &lt;span class="p"&gt;=&lt;/span&gt; &lt;span class="n"&gt;layer&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;GetNextFeature&lt;/span&gt;&lt;span class="p"&gt;())&lt;/span&gt; &lt;span class="p"&gt;!=&lt;/span&gt; &lt;span class="kc"&gt;null&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="kt"&gt;var&lt;/span&gt; &lt;span class="n"&gt;id&lt;/span&gt; &lt;span class="p"&gt;=&lt;/span&gt; &lt;span class="n"&gt;feature&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;GetFieldAsInteger&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="m"&gt;0&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="n"&gt;Console&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;WriteLine&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;$&amp;#34;內容1. {id}&amp;#34;&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="kt"&gt;var&lt;/span&gt; &lt;span class="n"&gt;name&lt;/span&gt; &lt;span class="p"&gt;=&lt;/span&gt; &lt;span class="n"&gt;feature&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;GetFieldAsString&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="n"&gt;Console&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;WriteLine&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;$&amp;#34;內容2. {name}&amp;#34;&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="kt"&gt;var&lt;/span&gt; &lt;span class="n"&gt;area&lt;/span&gt; &lt;span class="p"&gt;=&lt;/span&gt; &lt;span class="n"&gt;feature&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;GetFieldAsInteger64&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="m"&gt;2&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="n"&gt;Console&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;WriteLine&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;$&amp;#34;內容3. {area}&amp;#34;&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="kt"&gt;var&lt;/span&gt; &lt;span class="n"&gt;geometry&lt;/span&gt; &lt;span class="p"&gt;=&lt;/span&gt; &lt;span class="n"&gt;feature&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;GetGeometryRef&lt;/span&gt;&lt;span class="p"&gt;();&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="n"&gt;geometry&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;ExportToWkt&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="k"&gt;out&lt;/span&gt; &lt;span class="kt"&gt;var&lt;/span&gt; &lt;span class="n"&gt;wkt&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="n"&gt;Console&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;WriteLine&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;$&amp;#34;- WKT: {wkt}&amp;#34;&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="p"&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="p"&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="kd"&gt;static&lt;/span&gt; &lt;span class="kt"&gt;string?&lt;/span&gt; &lt;span class="n"&gt;Utf8BytesToString&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;IntPtr&lt;/span&gt; &lt;span class="n"&gt;ptr&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="p"&gt;{&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;ptr&lt;/span&gt; &lt;span class="p"&gt;==&lt;/span&gt; &lt;span class="n"&gt;IntPtr&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;Zero&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="kc"&gt;null&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="kt"&gt;var&lt;/span&gt; &lt;span class="n"&gt;ms&lt;/span&gt; &lt;span class="p"&gt;=&lt;/span&gt; &lt;span class="k"&gt;new&lt;/span&gt; &lt;span class="n"&gt;MemoryStream&lt;/span&gt;&lt;span class="p"&gt;();&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="kt"&gt;byte&lt;/span&gt; &lt;span class="n"&gt;b&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="kt"&gt;var&lt;/span&gt; &lt;span class="n"&gt;ofs&lt;/span&gt; &lt;span class="p"&gt;=&lt;/span&gt; &lt;span class="m"&gt;0&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="k"&gt;while&lt;/span&gt; &lt;span class="p"&gt;((&lt;/span&gt;&lt;span class="n"&gt;b&lt;/span&gt; &lt;span class="p"&gt;=&lt;/span&gt; &lt;span class="n"&gt;Marshal&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;ReadByte&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;ptr&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;ofs&lt;/span&gt;&lt;span class="p"&gt;++))&lt;/span&gt; &lt;span class="p"&gt;!=&lt;/span&gt; &lt;span class="m"&gt;0&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="n"&gt;ms&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;WriteByte&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;b&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="p"&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="n"&gt;Encoding&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;UTF8&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;GetString&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;ms&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;ToArray&lt;/span&gt;&lt;span class="p"&gt;());&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="p"&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="c1"&gt;// Dll 的位置要注意&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="na"&gt;[DllImport(&amp;#34;gdal/x64/gdal305.dll&amp;#34;, EntryPoint = &amp;#34;OGR_Fld_GetNameRef&amp;#34;, CallingConvention = CallingConvention.Cdecl)]&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="kd"&gt;static&lt;/span&gt; &lt;span class="kd"&gt;extern&lt;/span&gt; &lt;span class="n"&gt;IntPtr&lt;/span&gt; &lt;span class="n"&gt;OGR_Fld_GetNameRef&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;HandleRef&lt;/span&gt; &lt;span class="n"&gt;handle&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="kd"&gt;static&lt;/span&gt; &lt;span class="kt"&gt;string&lt;/span&gt; &lt;span class="n"&gt;GetFieldDfnName&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;FieldDefn&lt;/span&gt; &lt;span class="n"&gt;fieldDefn&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="p"&gt;{&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="n"&gt;HandleRef&lt;/span&gt; &lt;span class="n"&gt;handle&lt;/span&gt; &lt;span class="p"&gt;=&lt;/span&gt; &lt;span class="n"&gt;FieldDefn&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;getCPtr&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;fieldDefn&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="n"&gt;IntPtr&lt;/span&gt; &lt;span class="n"&gt;ptr&lt;/span&gt; &lt;span class="p"&gt;=&lt;/span&gt; &lt;span class="n"&gt;OGR_Fld_GetNameRef&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;handle&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="n"&gt;Utf8BytesToString&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;ptr&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="p"&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="kd"&gt;public&lt;/span&gt; &lt;span class="kd"&gt;enum&lt;/span&gt; &lt;span class="n"&gt;EnumShapefileOpen&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="p"&gt;{&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="n"&gt;ReadOnly&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="p"&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;執行之後就可以看到我們把這個亂碼修好啦！&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://anthea-wu.github.io/post/gdal-shapefile-2/Success.png"
 width="1100"
 height="214"
 srcset="https://anthea-wu.github.io/post/gdal-shapefile-2/Success_hu_47e26f00e5077cce.png 480w, https://anthea-wu.github.io/post/gdal-shapefile-2/Success_hu_7798435b3350d197.png 1024w"
@@ -525,49 +525,49 @@ loading="lazy"
 class="gallery-image"
 data-flex-grow="514"
 data-flex-basis="1233px"
->&lt;/p>
-&lt;blockquote>
-&lt;p>&lt;p>參考文章&lt;/p>
-&lt;ul>
-&lt;li>&lt;a class="link" href="https://www.cnblogs.com/litou/p/15035790.html" target="_blank" rel="noopener"
->C#中使用GDAL3（二）：Windows下读写Shape文件及超详细解决中文乱码问题&lt;/a>&lt;/li>
-&lt;/ul>&lt;/p>&lt;/blockquote></description></item><item><title>GDAL 操作 ShapeFile (1)</title><link>https://anthea-wu.github.io/post/gdal-shapefile-1/</link><pubDate>Sun, 24 Jul 2022 23:40:41 +0800</pubDate><guid>https://anthea-wu.github.io/post/gdal-shapefile-1/</guid><description>&lt;p>雖然公司的產品以 APP 為主，但身為一個後端工程師，名片上掛著 GIS 的頭銜，一些基本的地理資訊技術還是要稍微碰一下的。平常接觸最多的就是有紀錄空間資訊的 Shapefile，會需要進行的操作包含讀取它的空間資訊、每個空間資訊上的屬性，以及利用空間資訊做交集或包含的比對。&lt;/p>
-&lt;blockquote>
-&lt;p>&lt;p>一個 Shape 文件包括三個文件：一個主文件 &lt;code>.shp&lt;/code>，一個索引文件 &lt;code>.shx&lt;/code>，和一個 dBASE 表 &lt;code>.dbf&lt;/code>。&lt;/p>
-&lt;p>主文件是一個直接存取，變長度紀錄的文件，其中每個紀錄描述構成一個地理特征 Feature 的所有 vertices 座標值。&lt;br>
-在索引文件中，每條記錄包含對應主文件記錄距離主文件頭開始的偏移量。&lt;br>
-dBASE 表包含 SHP 文件中每一個 Feature 的特徵屬性，表中幾何紀錄和屬性數據之間的一一對應關係是基於記錄數目的 ID。在 dBASE 文件中的屬性記錄必須和主文件中的記錄顺序是相同的。圖形數據和屬性數據通過索引號建立一一對應的關係。&lt;/p>
-&lt;/p>&lt;span class="cite">&lt;span>― &lt;/span>&lt;span>gis0911178, &lt;/span>&lt;a href="https://blog.csdn.net/gis0911178/article/details/52162072">&lt;cite>CSDN / CC 4.0 BY-SA 協議&lt;/cite>&lt;/a>&lt;/span>&lt;/blockquote>
-&lt;p>我對 Shapefile 的理解也還不透徹，但從上面擷取的文章中可以看出一件事情是：一個正常的 Shapefile 檔案必須至少包含三個副檔名的檔案，而其中在我的工作上，會需要取得的資料，一是在 &lt;code>.shp&lt;/code> 中記錄的空間資訊，二是在 &lt;code>.dbf&lt;/code> 中記錄的其他屬性。不過要注意的是，&lt;code>.shp&lt;/code> 檔案是無法單獨被讀取的，如果要對 Shapefile 進行任何操作，&lt;strong>同一個資料夾&lt;/strong> 底下就必須同時存在上面所提到的三個檔案，才能夠順利讀取。&lt;/p>
-&lt;h2 id="dotspatial-vs-gdal-why-gdal">DotSpatial V.S. GDAL: why GDAL?
-&lt;/h2>&lt;p>前輩留下來的程式碼中，使用的都是 DotSpatial 這個套件，所以一開始我也跟著使用。但後來在執行程式的過程中，時不時會遇到一個奇怪的問題：把相同的程式碼部署在三個不同的環境上，產生出來的 Shapefile Feature 內容會不一樣。&lt;br>
-local 端有完整的 100 多個，移到正式環境上卻只剩下不到 10 個 😢 由於一直研究不出個所以然，決定果斷捨棄這個套件，改用今天要介紹的 GDAL。&lt;/p>
-&lt;h3 id="安裝套件">安裝套件
-&lt;/h3>&lt;p>.NET Framework 和 .NET 所安裝的 Nuget 套件不太相同：&lt;/p>
-&lt;table>
-&lt;thead>
-&lt;tr>
-&lt;th>&lt;/th>
-&lt;th>Nuget&lt;/th>
-&lt;th>Notes&lt;/th>
-&lt;/tr>
-&lt;/thead>
-&lt;tbody>
-&lt;tr>
-&lt;td>.NET Framework&lt;/td>
-&lt;td>&lt;code>Gdal&lt;/code> &amp;amp; &lt;code>Gdal.Native&lt;/code>&lt;/td>
-&lt;td>保留 &lt;code>.cs&lt;/code> 的 Configuration 檔案就好，移除另一個，並修改 &lt;code>namespace&lt;/code>&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>.NET&lt;/td>
-&lt;td>&lt;code>Gdal.Core&lt;/code>&lt;/td>
-&lt;td>&lt;/td>
-&lt;/tr>
-&lt;/tbody>
-&lt;/table>
-&lt;h3 id="讀取-shapefile-檔案">讀取 Shapefile 檔案
-&lt;/h3>&lt;p>我利用 QGIS 製作了一個簡單的 Shapefile 檔案，只有一個 Feature，包含的內容如下：&lt;/p>
-&lt;p>&lt;img src="https://anthea-wu.github.io/post/gdal-shapefile-1/Shp1.png"
+&gt;&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;p&gt;參考文章&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a class="link" href="https://www.cnblogs.com/litou/p/15035790.html" target="_blank" rel="noopener"
+&gt;C#中使用GDAL3（二）：Windows下读写Shape文件及超详细解决中文乱码问题&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;&lt;/p&gt;&lt;/blockquote&gt;</description></item><item><title>GDAL 操作 ShapeFile (1)</title><link>https://anthea-wu.github.io/post/gdal-shapefile-1/</link><pubDate>Sun, 24 Jul 2022 23:40:41 +0800</pubDate><guid>https://anthea-wu.github.io/post/gdal-shapefile-1/</guid><description>&lt;p&gt;雖然公司的產品以 APP 為主，但身為一個後端工程師，名片上掛著 GIS 的頭銜，一些基本的地理資訊技術還是要稍微碰一下的。平常接觸最多的就是有紀錄空間資訊的 Shapefile，會需要進行的操作包含讀取它的空間資訊、每個空間資訊上的屬性，以及利用空間資訊做交集或包含的比對。&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;p&gt;一個 Shape 文件包括三個文件：一個主文件 &lt;code&gt;.shp&lt;/code&gt;，一個索引文件 &lt;code&gt;.shx&lt;/code&gt;，和一個 dBASE 表 &lt;code&gt;.dbf&lt;/code&gt;。&lt;/p&gt;
+&lt;p&gt;主文件是一個直接存取，變長度紀錄的文件，其中每個紀錄描述構成一個地理特征 Feature 的所有 vertices 座標值。&lt;br&gt;
+在索引文件中，每條記錄包含對應主文件記錄距離主文件頭開始的偏移量。&lt;br&gt;
+dBASE 表包含 SHP 文件中每一個 Feature 的特徵屬性，表中幾何紀錄和屬性數據之間的一一對應關係是基於記錄數目的 ID。在 dBASE 文件中的屬性記錄必須和主文件中的記錄顺序是相同的。圖形數據和屬性數據通過索引號建立一一對應的關係。&lt;/p&gt;
+&lt;/p&gt;&lt;span class="cite"&gt;&lt;span&gt;― &lt;/span&gt;&lt;span&gt;gis0911178, &lt;/span&gt;&lt;a href="https://blog.csdn.net/gis0911178/article/details/52162072"&gt;&lt;cite&gt;CSDN / CC 4.0 BY-SA 協議&lt;/cite&gt;&lt;/a&gt;&lt;/span&gt;&lt;/blockquote&gt;
+&lt;p&gt;我對 Shapefile 的理解也還不透徹，但從上面擷取的文章中可以看出一件事情是：一個正常的 Shapefile 檔案必須至少包含三個副檔名的檔案，而其中在我的工作上，會需要取得的資料，一是在 &lt;code&gt;.shp&lt;/code&gt; 中記錄的空間資訊，二是在 &lt;code&gt;.dbf&lt;/code&gt; 中記錄的其他屬性。不過要注意的是，&lt;code&gt;.shp&lt;/code&gt; 檔案是無法單獨被讀取的，如果要對 Shapefile 進行任何操作，&lt;strong&gt;同一個資料夾&lt;/strong&gt; 底下就必須同時存在上面所提到的三個檔案，才能夠順利讀取。&lt;/p&gt;
+&lt;h2 id="dotspatial-vs-gdal-why-gdal"&gt;DotSpatial V.S. GDAL: why GDAL?
+&lt;/h2&gt;&lt;p&gt;前輩留下來的程式碼中，使用的都是 DotSpatial 這個套件，所以一開始我也跟著使用。但後來在執行程式的過程中，時不時會遇到一個奇怪的問題：把相同的程式碼部署在三個不同的環境上，產生出來的 Shapefile Feature 內容會不一樣。&lt;br&gt;
+local 端有完整的 100 多個，移到正式環境上卻只剩下不到 10 個 😢 由於一直研究不出個所以然，決定果斷捨棄這個套件，改用今天要介紹的 GDAL。&lt;/p&gt;
+&lt;h3 id="安裝套件"&gt;安裝套件
+&lt;/h3&gt;&lt;p&gt;.NET Framework 和 .NET 所安裝的 Nuget 套件不太相同：&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;&lt;/th&gt;
+&lt;th&gt;Nuget&lt;/th&gt;
+&lt;th&gt;Notes&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;.NET Framework&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;Gdal&lt;/code&gt; &amp;amp; &lt;code&gt;Gdal.Native&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;保留 &lt;code&gt;.cs&lt;/code&gt; 的 Configuration 檔案就好，移除另一個，並修改 &lt;code&gt;namespace&lt;/code&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;.NET&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;Gdal.Core&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;h3 id="讀取-shapefile-檔案"&gt;讀取 Shapefile 檔案
+&lt;/h3&gt;&lt;p&gt;我利用 QGIS 製作了一個簡單的 Shapefile 檔案，只有一個 Feature，包含的內容如下：&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://anthea-wu.github.io/post/gdal-shapefile-1/Shp1.png"
 width="432"
 height="142"
 srcset="https://anthea-wu.github.io/post/gdal-shapefile-1/Shp1_hu_23b6f774ab7b2595.png 480w, https://anthea-wu.github.io/post/gdal-shapefile-1/Shp1_hu_ecfa4ffdc64a0d65.png 1024w"
@@ -575,102 +575,102 @@ loading="lazy"
 class="gallery-image"
 data-flex-grow="304"
 data-flex-basis="730px"
->&lt;/p>
-&lt;p>讀取的程式碼如下：&lt;/p>
-&lt;div class="highlight">&lt;div class="chroma">
-&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
-&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt"> 1
-&lt;/span>&lt;span class="lnt"> 2
-&lt;/span>&lt;span class="lnt"> 3
-&lt;/span>&lt;span class="lnt"> 4
-&lt;/span>&lt;span class="lnt"> 5
-&lt;/span>&lt;span class="lnt"> 6
-&lt;/span>&lt;span class="lnt"> 7
-&lt;/span>&lt;span class="lnt"> 8
-&lt;/span>&lt;span class="lnt"> 9
-&lt;/span>&lt;span class="lnt">10
-&lt;/span>&lt;span class="lnt">11
-&lt;/span>&lt;span class="lnt">12
-&lt;/span>&lt;span class="lnt">13
-&lt;/span>&lt;span class="lnt">14
-&lt;/span>&lt;span class="lnt">15
-&lt;/span>&lt;span class="lnt">16
-&lt;/span>&lt;span class="lnt">17
-&lt;/span>&lt;span class="lnt">18
-&lt;/span>&lt;span class="lnt">19
-&lt;/span>&lt;span class="lnt">20
-&lt;/span>&lt;span class="lnt">21
-&lt;/span>&lt;span class="lnt">22
-&lt;/span>&lt;span class="lnt">23
-&lt;/span>&lt;span class="lnt">24
-&lt;/span>&lt;span class="lnt">25
-&lt;/span>&lt;span class="lnt">26
-&lt;/span>&lt;span class="lnt">27
-&lt;/span>&lt;span class="lnt">28
-&lt;/span>&lt;span class="lnt">29
-&lt;/span>&lt;span class="lnt">30
-&lt;/span>&lt;span class="lnt">31
-&lt;/span>&lt;span class="lnt">32
-&lt;/span>&lt;span class="lnt">33
-&lt;/span>&lt;span class="lnt">34
-&lt;/span>&lt;span class="lnt">35
-&lt;/span>&lt;span class="lnt">36
-&lt;/span>&lt;span class="lnt">37
-&lt;/span>&lt;span class="lnt">38
-&lt;/span>&lt;span class="lnt">39
-&lt;/span>&lt;span class="lnt">40
-&lt;/span>&lt;span class="lnt">41
-&lt;/span>&lt;span class="lnt">42
-&lt;/span>&lt;span class="lnt">43
-&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
-&lt;td class="lntd">
-&lt;pre tabindex="0" class="chroma">&lt;code class="language-C#" data-lang="C#">&lt;span class="line">&lt;span class="cl">&lt;span class="c1">// 註冊 GDAL&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="n">Gdal&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="n">AllRegister&lt;/span>&lt;span class="p">();&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="n">Ogr&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="n">RegisterAll&lt;/span>&lt;span class="p">();&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">// 開啟 SHP 檔案（0 - 讀取、1 - 讀寫）&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="kt">var&lt;/span> &lt;span class="n">source&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="n">Ogr&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="n">Open&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s">&amp;#34;files/simple/test.shp&amp;#34;&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="p">(&lt;/span>&lt;span class="kt">int&lt;/span>&lt;span class="p">)&lt;/span>&lt;span class="n">EnumShapefileOpen&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="n">ReadOnly&lt;/span>&lt;span class="p">);&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="kt">var&lt;/span> &lt;span class="n">layerCount&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="n">source&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="n">GetLayerCount&lt;/span>&lt;span class="p">();&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="k">for&lt;/span> &lt;span class="p">(&lt;/span>&lt;span class="kt">var&lt;/span> &lt;span class="n">i&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="m">0&lt;/span>&lt;span class="p">;&lt;/span> &lt;span class="n">i&lt;/span> &lt;span class="p">&amp;lt;&lt;/span> &lt;span class="n">layerCount&lt;/span>&lt;span class="p">;&lt;/span> &lt;span class="n">i&lt;/span>&lt;span class="p">++)&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">{&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="c1">// 讀取圖層 Layer 資訊&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="kt">var&lt;/span> &lt;span class="n">layer&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="n">source&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="n">GetLayerByIndex&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">i&lt;/span>&lt;span class="p">);&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="kt">var&lt;/span> &lt;span class="n">fieldCount&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="n">layer&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="n">GetLayerDefn&lt;/span>&lt;span class="p">().&lt;/span>&lt;span class="n">GetFieldCount&lt;/span>&lt;span class="p">();&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">for&lt;/span> &lt;span class="p">(&lt;/span>&lt;span class="kt">var&lt;/span> &lt;span class="n">j&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="m">0&lt;/span>&lt;span class="p">;&lt;/span> &lt;span class="n">j&lt;/span> &lt;span class="p">&amp;lt;&lt;/span> &lt;span class="n">fieldCount&lt;/span>&lt;span class="p">;&lt;/span> &lt;span class="n">j&lt;/span>&lt;span class="p">++)&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">{&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="kt">var&lt;/span> &lt;span class="n">field&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="n">layer&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="n">GetLayerDefn&lt;/span>&lt;span class="p">().&lt;/span>&lt;span class="n">GetFieldDefn&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">j&lt;/span>&lt;span class="p">);&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="kt">var&lt;/span> &lt;span class="n">fieldName&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="n">field&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="n">GetName&lt;/span>&lt;span class="p">();&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">Console&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="n">WriteLine&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s">$&amp;#34;欄位{j + 1}. {fieldName}&amp;#34;&lt;/span>&lt;span class="p">);&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">}&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="c1">// 讀取要素 Feature&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">Feature&lt;/span> &lt;span class="n">feature&lt;/span>&lt;span class="p">;&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">while&lt;/span> &lt;span class="p">((&lt;/span>&lt;span class="n">feature&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="n">layer&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="n">GetNextFeature&lt;/span>&lt;span class="p">())&lt;/span> &lt;span class="p">!=&lt;/span> &lt;span class="kc">null&lt;/span>&lt;span class="p">)&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">{&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="kt">var&lt;/span> &lt;span class="n">id&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="n">feature&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="n">GetFieldAsInteger&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="m">0&lt;/span>&lt;span class="p">);&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">Console&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="n">WriteLine&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s">$&amp;#34;內容1. Id: {id}&amp;#34;&lt;/span>&lt;span class="p">);&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="kt">var&lt;/span> &lt;span class="n">name&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="n">feature&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="n">GetFieldAsString&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="m">1&lt;/span>&lt;span class="p">);&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">Console&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="n">WriteLine&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s">$&amp;#34;內容2. 土地名稱: {name}&amp;#34;&lt;/span>&lt;span class="p">);&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="kt">var&lt;/span> &lt;span class="n">area&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="n">feature&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="n">GetFieldAsInteger64&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="m">2&lt;/span>&lt;span class="p">);&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">Console&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="n">WriteLine&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s">$&amp;#34;內容3. 土地面積: {area}&amp;#34;&lt;/span>&lt;span class="p">);&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="c1">// 轉換成 WKT 的值&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="kt">var&lt;/span> &lt;span class="n">geometry&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="n">feature&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="n">GetGeometryRef&lt;/span>&lt;span class="p">();&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">geometry&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="n">ExportToWkt&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="k">out&lt;/span> &lt;span class="kt">var&lt;/span> &lt;span class="n">wkt&lt;/span>&lt;span class="p">);&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">Console&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="n">WriteLine&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s">$&amp;#34;- WKT: {wkt}&amp;#34;&lt;/span>&lt;span class="p">);&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">}&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">}&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="kd">public&lt;/span> &lt;span class="kd">enum&lt;/span> &lt;span class="n">EnumShapefileOpen&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">{&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">ReadOnly&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">}&lt;/span>
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
-&lt;/div>
-&lt;/div>&lt;p>執行結果如下：&lt;/p>
-&lt;p>&lt;img src="https://anthea-wu.github.io/post/gdal-shapefile-1/Shp2.png"
+&gt;&lt;/p&gt;
+&lt;p&gt;讀取的程式碼如下：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;div class="chroma"&gt;
+&lt;table class="lntable"&gt;&lt;tr&gt;&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code&gt;&lt;span class="lnt"&gt; 1
+&lt;/span&gt;&lt;span class="lnt"&gt; 2
+&lt;/span&gt;&lt;span class="lnt"&gt; 3
+&lt;/span&gt;&lt;span class="lnt"&gt; 4
+&lt;/span&gt;&lt;span class="lnt"&gt; 5
+&lt;/span&gt;&lt;span class="lnt"&gt; 6
+&lt;/span&gt;&lt;span class="lnt"&gt; 7
+&lt;/span&gt;&lt;span class="lnt"&gt; 8
+&lt;/span&gt;&lt;span class="lnt"&gt; 9
+&lt;/span&gt;&lt;span class="lnt"&gt;10
+&lt;/span&gt;&lt;span class="lnt"&gt;11
+&lt;/span&gt;&lt;span class="lnt"&gt;12
+&lt;/span&gt;&lt;span class="lnt"&gt;13
+&lt;/span&gt;&lt;span class="lnt"&gt;14
+&lt;/span&gt;&lt;span class="lnt"&gt;15
+&lt;/span&gt;&lt;span class="lnt"&gt;16
+&lt;/span&gt;&lt;span class="lnt"&gt;17
+&lt;/span&gt;&lt;span class="lnt"&gt;18
+&lt;/span&gt;&lt;span class="lnt"&gt;19
+&lt;/span&gt;&lt;span class="lnt"&gt;20
+&lt;/span&gt;&lt;span class="lnt"&gt;21
+&lt;/span&gt;&lt;span class="lnt"&gt;22
+&lt;/span&gt;&lt;span class="lnt"&gt;23
+&lt;/span&gt;&lt;span class="lnt"&gt;24
+&lt;/span&gt;&lt;span class="lnt"&gt;25
+&lt;/span&gt;&lt;span class="lnt"&gt;26
+&lt;/span&gt;&lt;span class="lnt"&gt;27
+&lt;/span&gt;&lt;span class="lnt"&gt;28
+&lt;/span&gt;&lt;span class="lnt"&gt;29
+&lt;/span&gt;&lt;span class="lnt"&gt;30
+&lt;/span&gt;&lt;span class="lnt"&gt;31
+&lt;/span&gt;&lt;span class="lnt"&gt;32
+&lt;/span&gt;&lt;span class="lnt"&gt;33
+&lt;/span&gt;&lt;span class="lnt"&gt;34
+&lt;/span&gt;&lt;span class="lnt"&gt;35
+&lt;/span&gt;&lt;span class="lnt"&gt;36
+&lt;/span&gt;&lt;span class="lnt"&gt;37
+&lt;/span&gt;&lt;span class="lnt"&gt;38
+&lt;/span&gt;&lt;span class="lnt"&gt;39
+&lt;/span&gt;&lt;span class="lnt"&gt;40
+&lt;/span&gt;&lt;span class="lnt"&gt;41
+&lt;/span&gt;&lt;span class="lnt"&gt;42
+&lt;/span&gt;&lt;span class="lnt"&gt;43
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-C#" data-lang="C#"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="c1"&gt;// 註冊 GDAL&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="n"&gt;Gdal&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;AllRegister&lt;/span&gt;&lt;span class="p"&gt;();&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="n"&gt;Ogr&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;RegisterAll&lt;/span&gt;&lt;span class="p"&gt;();&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="c1"&gt;// 開啟 SHP 檔案（0 - 讀取、1 - 讀寫）&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="kt"&gt;var&lt;/span&gt; &lt;span class="n"&gt;source&lt;/span&gt; &lt;span class="p"&gt;=&lt;/span&gt; &lt;span class="n"&gt;Ogr&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;Open&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;&amp;#34;files/simple/test.shp&amp;#34;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="kt"&gt;int&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="n"&gt;EnumShapefileOpen&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;ReadOnly&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="kt"&gt;var&lt;/span&gt; &lt;span class="n"&gt;layerCount&lt;/span&gt; &lt;span class="p"&gt;=&lt;/span&gt; &lt;span class="n"&gt;source&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;GetLayerCount&lt;/span&gt;&lt;span class="p"&gt;();&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="k"&gt;for&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="kt"&gt;var&lt;/span&gt; &lt;span class="n"&gt;i&lt;/span&gt; &lt;span class="p"&gt;=&lt;/span&gt; &lt;span class="m"&gt;0&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="n"&gt;i&lt;/span&gt; &lt;span class="p"&gt;&amp;lt;&lt;/span&gt; &lt;span class="n"&gt;layerCount&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="n"&gt;i&lt;/span&gt;&lt;span class="p"&gt;++)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="p"&gt;{&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="c1"&gt;// 讀取圖層 Layer 資訊&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="kt"&gt;var&lt;/span&gt; &lt;span class="n"&gt;layer&lt;/span&gt; &lt;span class="p"&gt;=&lt;/span&gt; &lt;span class="n"&gt;source&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;GetLayerByIndex&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;i&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="kt"&gt;var&lt;/span&gt; &lt;span class="n"&gt;fieldCount&lt;/span&gt; &lt;span class="p"&gt;=&lt;/span&gt; &lt;span class="n"&gt;layer&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;GetLayerDefn&lt;/span&gt;&lt;span class="p"&gt;().&lt;/span&gt;&lt;span class="n"&gt;GetFieldCount&lt;/span&gt;&lt;span class="p"&gt;();&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="k"&gt;for&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="kt"&gt;var&lt;/span&gt; &lt;span class="n"&gt;j&lt;/span&gt; &lt;span class="p"&gt;=&lt;/span&gt; &lt;span class="m"&gt;0&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="n"&gt;j&lt;/span&gt; &lt;span class="p"&gt;&amp;lt;&lt;/span&gt; &lt;span class="n"&gt;fieldCount&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="n"&gt;j&lt;/span&gt;&lt;span class="p"&gt;++)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="kt"&gt;var&lt;/span&gt; &lt;span class="n"&gt;field&lt;/span&gt; &lt;span class="p"&gt;=&lt;/span&gt; &lt;span class="n"&gt;layer&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;GetLayerDefn&lt;/span&gt;&lt;span class="p"&gt;().&lt;/span&gt;&lt;span class="n"&gt;GetFieldDefn&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;j&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="kt"&gt;var&lt;/span&gt; &lt;span class="n"&gt;fieldName&lt;/span&gt; &lt;span class="p"&gt;=&lt;/span&gt; &lt;span class="n"&gt;field&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;GetName&lt;/span&gt;&lt;span class="p"&gt;();&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="n"&gt;Console&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;WriteLine&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;$&amp;#34;欄位{j + 1}. {fieldName}&amp;#34;&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="p"&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="c1"&gt;// 讀取要素 Feature&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="n"&gt;Feature&lt;/span&gt; &lt;span class="n"&gt;feature&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="k"&gt;while&lt;/span&gt; &lt;span class="p"&gt;((&lt;/span&gt;&lt;span class="n"&gt;feature&lt;/span&gt; &lt;span class="p"&gt;=&lt;/span&gt; &lt;span class="n"&gt;layer&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;GetNextFeature&lt;/span&gt;&lt;span class="p"&gt;())&lt;/span&gt; &lt;span class="p"&gt;!=&lt;/span&gt; &lt;span class="kc"&gt;null&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="kt"&gt;var&lt;/span&gt; &lt;span class="n"&gt;id&lt;/span&gt; &lt;span class="p"&gt;=&lt;/span&gt; &lt;span class="n"&gt;feature&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;GetFieldAsInteger&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="m"&gt;0&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="n"&gt;Console&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;WriteLine&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;$&amp;#34;內容1. Id: {id}&amp;#34;&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="kt"&gt;var&lt;/span&gt; &lt;span class="n"&gt;name&lt;/span&gt; &lt;span class="p"&gt;=&lt;/span&gt; &lt;span class="n"&gt;feature&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;GetFieldAsString&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="n"&gt;Console&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;WriteLine&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;$&amp;#34;內容2. 土地名稱: {name}&amp;#34;&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="kt"&gt;var&lt;/span&gt; &lt;span class="n"&gt;area&lt;/span&gt; &lt;span class="p"&gt;=&lt;/span&gt; &lt;span class="n"&gt;feature&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;GetFieldAsInteger64&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="m"&gt;2&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="n"&gt;Console&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;WriteLine&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;$&amp;#34;內容3. 土地面積: {area}&amp;#34;&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="c1"&gt;// 轉換成 WKT 的值&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="kt"&gt;var&lt;/span&gt; &lt;span class="n"&gt;geometry&lt;/span&gt; &lt;span class="p"&gt;=&lt;/span&gt; &lt;span class="n"&gt;feature&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;GetGeometryRef&lt;/span&gt;&lt;span class="p"&gt;();&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="n"&gt;geometry&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;ExportToWkt&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="k"&gt;out&lt;/span&gt; &lt;span class="kt"&gt;var&lt;/span&gt; &lt;span class="n"&gt;wkt&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="n"&gt;Console&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;WriteLine&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;$&amp;#34;- WKT: {wkt}&amp;#34;&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="p"&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="p"&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="kd"&gt;public&lt;/span&gt; &lt;span class="kd"&gt;enum&lt;/span&gt; &lt;span class="n"&gt;EnumShapefileOpen&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="p"&gt;{&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="n"&gt;ReadOnly&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="p"&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;執行結果如下：&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://anthea-wu.github.io/post/gdal-shapefile-1/Shp2.png"
 width="1100"
 height="219"
 srcset="https://anthea-wu.github.io/post/gdal-shapefile-1/Shp2_hu_51f775485a0e3464.png 480w, https://anthea-wu.github.io/post/gdal-shapefile-1/Shp2_hu_8345583c9332df9d.png 1024w"
@@ -678,12 +678,12 @@ loading="lazy"
 class="gallery-image"
 data-flex-grow="502"
 data-flex-basis="1205px"
->&lt;/p>
-&lt;p>從執行結果中可以發現，明明我在 QGIS 編輯的時候值是中文，到了 C# 這邊卻變成了亂碼。同時，欄位的名稱明明也是中文，卻可以正常地顯示。WHY？&lt;/p>
-&lt;p>讓我們在&lt;a class="link" href="../gdal-shapefile-2" >下回分曉&lt;/a>。&lt;/p>
-&lt;blockquote>
-&lt;p>&lt;p>參考文章&lt;/p>
-&lt;ul>
-&lt;li>&lt;a class="link" href="https://blog.csdn.net/gis0911178/article/details/52162072" target="_blank" rel="noopener"
->C#不用ArcEngine，生成Shp文件(一) — — — — -shapefile数据说明&lt;/a>&lt;/li>
-&lt;/ul>&lt;/p>&lt;/blockquote></description></item></channel></rss>
+&gt;&lt;/p&gt;
+&lt;p&gt;從執行結果中可以發現，明明我在 QGIS 編輯的時候值是中文，到了 C# 這邊卻變成了亂碼。同時，欄位的名稱明明也是中文，卻可以正常地顯示。WHY？&lt;/p&gt;
+&lt;p&gt;讓我們在&lt;a class="link" href="../gdal-shapefile-2" &gt;下回分曉&lt;/a&gt;。&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;p&gt;參考文章&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a class="link" href="https://blog.csdn.net/gis0911178/article/details/52162072" target="_blank" rel="noopener"
+&gt;C#不用ArcEngine，生成Shp文件(一) — — — — -shapefile数据说明&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;&lt;/p&gt;&lt;/blockquote&gt;</description></item></channel></rss>

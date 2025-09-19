@@ -1,12 +1,12 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Google API on Anthea's Blog</title><link>https://anthea-wu.github.io/tags/google-api/</link><description>Recent content in Google API on Anthea's Blog</description><generator>Hugo -- gohugo.io</generator><language>en</language><lastBuildDate>Sat, 14 May 2022 21:55:35 +0800</lastBuildDate><atom:link href="https://anthea-wu.github.io/tags/google-api/index.xml" rel="self" type="application/rss+xml"/><item><title>Google Calendar API</title><link>https://anthea-wu.github.io/post/google-calendar-api/</link><pubDate>Sat, 14 May 2022 21:55:35 +0800</pubDate><guid>https://anthea-wu.github.io/post/google-calendar-api/</guid><description>&lt;p>最近開始思考有什麼樣的需求可以當作小小的 side project 練習，剛好最近疫情的關係比較多人請假，我就把腦筋動到了請假系統身上。在目前的請假流程中，有一個部分是填寫 google 表單，送出之後會自動新增到 google calendar 上，只要有加入這個日曆的人都可以看到。所以決定以這個為主題，爬了一下文，順便紀錄一下使用 google calendar 的過程。&lt;/p>
-&lt;h2 id="使用前的準備">使用前的準備
-&lt;/h2>&lt;p>Google API 都是透過 token 來操作的，所以在正式使用前需要先申請好 token，並跟我們自己的 google calendar 連動。&lt;/p>
-&lt;h3 id="申請-token">申請 Token
-&lt;/h3>&lt;ol>
-&lt;li>進入 &lt;a class="link" href="https://console.cloud.google.com/" target="_blank" rel="noopener"
->Google Cloud Platform&lt;/a>，預設會幫你建立一個新的專案，如果要更改可以點選畫面上方的 &lt;code>My First Project&lt;/code>。不需要的話，直接點選畫面左側的選單，從 &lt;code>API 與服務&lt;/code> 中選擇 &lt;code>程式庫&lt;/code>。&lt;/li>
-&lt;/ol>
-&lt;p>&lt;img src="https://anthea-wu.github.io/post/google-calendar-api/Token1.png"
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Google API on Anthea's Blog</title><link>https://anthea-wu.github.io/tags/google-api/</link><description>Recent content in Google API on Anthea's Blog</description><generator>Hugo -- gohugo.io</generator><language>en</language><lastBuildDate>Sat, 14 May 2022 21:55:35 +0800</lastBuildDate><atom:link href="https://anthea-wu.github.io/tags/google-api/index.xml" rel="self" type="application/rss+xml"/><item><title>Google Calendar API</title><link>https://anthea-wu.github.io/post/google-calendar-api/</link><pubDate>Sat, 14 May 2022 21:55:35 +0800</pubDate><guid>https://anthea-wu.github.io/post/google-calendar-api/</guid><description>&lt;p&gt;最近開始思考有什麼樣的需求可以當作小小的 side project 練習，剛好最近疫情的關係比較多人請假，我就把腦筋動到了請假系統身上。在目前的請假流程中，有一個部分是填寫 google 表單，送出之後會自動新增到 google calendar 上，只要有加入這個日曆的人都可以看到。所以決定以這個為主題，爬了一下文，順便紀錄一下使用 google calendar 的過程。&lt;/p&gt;
+&lt;h2 id="使用前的準備"&gt;使用前的準備
+&lt;/h2&gt;&lt;p&gt;Google API 都是透過 token 來操作的，所以在正式使用前需要先申請好 token，並跟我們自己的 google calendar 連動。&lt;/p&gt;
+&lt;h3 id="申請-token"&gt;申請 Token
+&lt;/h3&gt;&lt;ol&gt;
+&lt;li&gt;進入 &lt;a class="link" href="https://console.cloud.google.com/" target="_blank" rel="noopener"
+&gt;Google Cloud Platform&lt;/a&gt;，預設會幫你建立一個新的專案，如果要更改可以點選畫面上方的 &lt;code&gt;My First Project&lt;/code&gt;。不需要的話，直接點選畫面左側的選單，從 &lt;code&gt;API 與服務&lt;/code&gt; 中選擇 &lt;code&gt;程式庫&lt;/code&gt;。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;&lt;img src="https://anthea-wu.github.io/post/google-calendar-api/Token1.png"
 width="1100"
 height="489"
 srcset="https://anthea-wu.github.io/post/google-calendar-api/Token1_hu_1dc1f43baf320a5e.png 480w, https://anthea-wu.github.io/post/google-calendar-api/Token1_hu_3fbb305ab8f8999e.png 1024w"
@@ -14,11 +14,11 @@ loading="lazy"
 class="gallery-image"
 data-flex-grow="224"
 data-flex-basis="539px"
->&lt;/p>
-&lt;ol start="2">
-&lt;li>搜尋 &lt;code>Google Calendar API&lt;/code> 並啟用，等 loading 跑完後會出現 &lt;code>管理&lt;/code> 的按鈕，或是從選單的 &lt;code>API 與服務&lt;/code> 中找到 &lt;code>憑證&lt;/code>，點選畫面上方的 &lt;code>新增憑證&lt;/code>，選擇 &lt;code>服務帳戶&lt;/code> 的選項。&lt;/li>
-&lt;/ol>
-&lt;p>&lt;img src="https://anthea-wu.github.io/post/google-calendar-api/Token2.png"
+&gt;&lt;/p&gt;
+&lt;ol start="2"&gt;
+&lt;li&gt;搜尋 &lt;code&gt;Google Calendar API&lt;/code&gt; 並啟用，等 loading 跑完後會出現 &lt;code&gt;管理&lt;/code&gt; 的按鈕，或是從選單的 &lt;code&gt;API 與服務&lt;/code&gt; 中找到 &lt;code&gt;憑證&lt;/code&gt;，點選畫面上方的 &lt;code&gt;新增憑證&lt;/code&gt;，選擇 &lt;code&gt;服務帳戶&lt;/code&gt; 的選項。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;&lt;img src="https://anthea-wu.github.io/post/google-calendar-api/Token2.png"
 width="1400"
 height="665"
 srcset="https://anthea-wu.github.io/post/google-calendar-api/Token2_hu_446d732f2d75be2a.png 480w, https://anthea-wu.github.io/post/google-calendar-api/Token2_hu_7cb4deb5011d3555.png 1024w"
@@ -27,11 +27,11 @@ alt="可以看到頁面最下方的服務帳戶列表，已經有我之前新增
 class="gallery-image"
 data-flex-grow="210"
 data-flex-basis="505px"
->&lt;/p>
-&lt;ol start="3">
-&lt;li>輸入 &lt;code>服務帳戶詳細資料&lt;/code> 後按下送出，接著會回到憑證頁面，找到最下面的 &lt;code>服務帳戶&lt;/code> 那一列，點選右側的編輯，找到畫面上方的 &lt;code>金鑰&lt;/code>，點擊 &lt;code>新增金鑰&lt;/code>，選擇 &lt;code>JSON&lt;/code> 的格式後按下建立，瀏覽器會自動下載這份檔案，&lt;strong>請不要隨意刪除，如果遺失了只能重新產生一份金鑰&lt;/strong>。&lt;/li>
-&lt;/ol>
-&lt;p>&lt;img src="https://anthea-wu.github.io/post/google-calendar-api/Token3.png"
+&gt;&lt;/p&gt;
+&lt;ol start="3"&gt;
+&lt;li&gt;輸入 &lt;code&gt;服務帳戶詳細資料&lt;/code&gt; 後按下送出，接著會回到憑證頁面，找到最下面的 &lt;code&gt;服務帳戶&lt;/code&gt; 那一列，點選右側的編輯，找到畫面上方的 &lt;code&gt;金鑰&lt;/code&gt;，點擊 &lt;code&gt;新增金鑰&lt;/code&gt;，選擇 &lt;code&gt;JSON&lt;/code&gt; 的格式後按下建立，瀏覽器會自動下載這份檔案，&lt;strong&gt;請不要隨意刪除，如果遺失了只能重新產生一份金鑰&lt;/strong&gt;。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;&lt;img src="https://anthea-wu.github.io/post/google-calendar-api/Token3.png"
 width="1400"
 height="665"
 srcset="https://anthea-wu.github.io/post/google-calendar-api/Token3_hu_9d0ccb038ef880fc.png 480w, https://anthea-wu.github.io/post/google-calendar-api/Token3_hu_18f5578b02d1a7b3.png 1024w"
@@ -40,13 +40,13 @@ alt="或是參考畫面左側的標題和分類，從選單進入也可以。"
 class="gallery-image"
 data-flex-grow="210"
 data-flex-basis="505px"
->&lt;/p>
-&lt;h3 id="建立-calerdar">建立 Calerdar
-&lt;/h3>&lt;ol>
-&lt;li>進入 &lt;a class="link" href="https://calendar.google.com/calendar" target="_blank" rel="noopener"
->Google Calendar&lt;/a> 後選擇一個建立好的日曆，從 &lt;code>設定和共用&lt;/code> 進入日曆的設定。&lt;/li>
-&lt;/ol>
-&lt;p>&lt;img src="https://anthea-wu.github.io/post/google-calendar-api/Calendar1.png"
+&gt;&lt;/p&gt;
+&lt;h3 id="建立-calerdar"&gt;建立 Calerdar
+&lt;/h3&gt;&lt;ol&gt;
+&lt;li&gt;進入 &lt;a class="link" href="https://calendar.google.com/calendar" target="_blank" rel="noopener"
+&gt;Google Calendar&lt;/a&gt; 後選擇一個建立好的日曆，從 &lt;code&gt;設定和共用&lt;/code&gt; 進入日曆的設定。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;&lt;img src="https://anthea-wu.github.io/post/google-calendar-api/Calendar1.png"
 width="1400"
 height="711"
 srcset="https://anthea-wu.github.io/post/google-calendar-api/Calendar1_hu_db94d011f0e0167d.png 480w, https://anthea-wu.github.io/post/google-calendar-api/Calendar1_hu_a7bae9fa07eb1adf.png 1024w"
@@ -55,11 +55,11 @@ alt="移動到日立上方的話會出現三個點，點下去找到設定和共
 class="gallery-image"
 data-flex-grow="196"
 data-flex-basis="472px"
->&lt;/p>
-&lt;ol start="2">
-&lt;li>找到 &lt;code>與特定使用者共用日曆&lt;/code> 的選項，點選 &lt;code>新增邀請對象&lt;/code>。這裡的 email 要輸入剛才那份金鑰 JSON 檔中，&lt;code>client_email_form&lt;/code> 的欄位內容，權限要記得調整成 &lt;code>進行變更並管理共用設定&lt;/code>。&lt;/li>
-&lt;/ol>
-&lt;p>&lt;img src="https://anthea-wu.github.io/post/google-calendar-api/Calendar2.png"
+&gt;&lt;/p&gt;
+&lt;ol start="2"&gt;
+&lt;li&gt;找到 &lt;code&gt;與特定使用者共用日曆&lt;/code&gt; 的選項，點選 &lt;code&gt;新增邀請對象&lt;/code&gt;。這裡的 email 要輸入剛才那份金鑰 JSON 檔中，&lt;code&gt;client_email_form&lt;/code&gt; 的欄位內容，權限要記得調整成 &lt;code&gt;進行變更並管理共用設定&lt;/code&gt;。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;&lt;img src="https://anthea-wu.github.io/post/google-calendar-api/Calendar2.png"
 width="720"
 height="237"
 srcset="https://anthea-wu.github.io/post/google-calendar-api/Calendar2_hu_75d43700c74c61de.png 480w, https://anthea-wu.github.io/post/google-calendar-api/Calendar2_hu_e96d2963aeee1527.png 1024w"
@@ -68,11 +68,11 @@ alt="剛剛下載完成的那份金鑰 JSON 檔內容。"
 class="gallery-image"
 data-flex-grow="303"
 data-flex-basis="729px"
->&lt;/p>
-&lt;ol start="3">
-&lt;li>接著把網頁往下拉，找到 &lt;code>整合日曆&lt;/code> 的區塊，記下這個 &lt;code>日曆 ID&lt;/code>，接下來會使用到。&lt;/li>
-&lt;/ol>
-&lt;p>&lt;img src="https://anthea-wu.github.io/post/google-calendar-api/Calendar3.png"
+&gt;&lt;/p&gt;
+&lt;ol start="3"&gt;
+&lt;li&gt;接著把網頁往下拉，找到 &lt;code&gt;整合日曆&lt;/code&gt; 的區塊，記下這個 &lt;code&gt;日曆 ID&lt;/code&gt;，接下來會使用到。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;&lt;img src="https://anthea-wu.github.io/post/google-calendar-api/Calendar3.png"
 width="720"
 height="390"
 srcset="https://anthea-wu.github.io/post/google-calendar-api/Calendar3_hu_3d7623a0f96e44a6.png 480w, https://anthea-wu.github.io/post/google-calendar-api/Calendar3_hu_8762fd604f76b719.png 1024w"
@@ -80,88 +80,88 @@ loading="lazy"
 class="gallery-image"
 data-flex-grow="184"
 data-flex-basis="443px"
->&lt;/p>
-&lt;p>到目前為止，需要使用的部分都準備完成了，接下來要進入到程式的部分。&lt;/p>
-&lt;h2 id="新增一個活動">新增一個活動
-&lt;/h2>&lt;p>新增好一個專案之後，從 Nuget 將 &lt;code>Google.Apis.Calendar.v3&lt;/code> 新增到專案內，並加入下列程式碼：&lt;/p>
-&lt;div class="highlight">&lt;div class="chroma">
-&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
-&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt"> 1
-&lt;/span>&lt;span class="lnt"> 2
-&lt;/span>&lt;span class="lnt"> 3
-&lt;/span>&lt;span class="lnt"> 4
-&lt;/span>&lt;span class="lnt"> 5
-&lt;/span>&lt;span class="lnt"> 6
-&lt;/span>&lt;span class="lnt"> 7
-&lt;/span>&lt;span class="lnt"> 8
-&lt;/span>&lt;span class="lnt"> 9
-&lt;/span>&lt;span class="lnt">10
-&lt;/span>&lt;span class="lnt">11
-&lt;/span>&lt;span class="lnt">12
-&lt;/span>&lt;span class="lnt">13
-&lt;/span>&lt;span class="lnt">14
-&lt;/span>&lt;span class="lnt">15
-&lt;/span>&lt;span class="lnt">16
-&lt;/span>&lt;span class="lnt">17
-&lt;/span>&lt;span class="lnt">18
-&lt;/span>&lt;span class="lnt">19
-&lt;/span>&lt;span class="lnt">20
-&lt;/span>&lt;span class="lnt">21
-&lt;/span>&lt;span class="lnt">22
-&lt;/span>&lt;span class="lnt">23
-&lt;/span>&lt;span class="lnt">24
-&lt;/span>&lt;span class="lnt">25
-&lt;/span>&lt;span class="lnt">26
-&lt;/span>&lt;span class="lnt">27
-&lt;/span>&lt;span class="lnt">28
-&lt;/span>&lt;span class="lnt">29
-&lt;/span>&lt;span class="lnt">30
-&lt;/span>&lt;span class="lnt">31
-&lt;/span>&lt;span class="lnt">32
-&lt;/span>&lt;span class="lnt">33
-&lt;/span>&lt;span class="lnt">34
-&lt;/span>&lt;span class="lnt">35
-&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
-&lt;td class="lntd">
-&lt;pre tabindex="0" class="chroma">&lt;code class="language-C#" data-lang="C#">&lt;span class="line">&lt;span class="cl">&lt;span class="k">using&lt;/span> &lt;span class="nn">Google.Apis.Auth.OAuth2&lt;/span>&lt;span class="p">;&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="k">using&lt;/span> &lt;span class="nn">Google.Apis.Calendar.v3&lt;/span>&lt;span class="p">;&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="k">using&lt;/span> &lt;span class="nn">Google.Apis.Calendar.v3.Data&lt;/span>&lt;span class="p">;&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="k">using&lt;/span> &lt;span class="nn">Google.Apis.Services&lt;/span>&lt;span class="p">;&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="kd">const&lt;/span> &lt;span class="kt">string&lt;/span> &lt;span class="n">jsonFile&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="s">&amp;#34;key.json&amp;#34;&lt;/span>&lt;span class="p">;&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="kd">const&lt;/span> &lt;span class="kt">string&lt;/span> &lt;span class="n">calendarId&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="s">&amp;#34;id@group.calendar.google.com&amp;#34;&lt;/span>&lt;span class="p">;&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="n">GoogleCredential&lt;/span> &lt;span class="n">credential&lt;/span>&lt;span class="p">;&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="k">using&lt;/span> &lt;span class="nn">var&lt;/span> &lt;span class="n">stream&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="k">new&lt;/span> &lt;span class="n">FileStream&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">jsonFile&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="n">FileMode&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="n">Open&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="n">FileAccess&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="n">Read&lt;/span>&lt;span class="p">);&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="n">credential&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="n">GoogleCredential&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="n">FromStream&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">stream&lt;/span>&lt;span class="p">).&lt;/span>&lt;span class="n">CreateScoped&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">CalendarService&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="n">Scope&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="n">Calendar&lt;/span>&lt;span class="p">);&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="kt">var&lt;/span> &lt;span class="n">service&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="k">new&lt;/span> &lt;span class="n">CalendarService&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="k">new&lt;/span> &lt;span class="n">BaseClientService&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="n">Initializer&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">{&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">HttpClientInitializer&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="n">credential&lt;/span>&lt;span class="p">,&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">ApplicationName&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="s">&amp;#34;test project&amp;#34;&lt;/span>&lt;span class="p">,&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">});&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="kt">var&lt;/span> &lt;span class="n">newEvent&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="k">new&lt;/span> &lt;span class="n">Event&lt;/span>&lt;span class="p">()&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">{&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">Id&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="n">Guid&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="n">NewGuid&lt;/span>&lt;span class="p">().&lt;/span>&lt;span class="n">ToString&lt;/span>&lt;span class="p">().&lt;/span>&lt;span class="n">Replace&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s">&amp;#34;-&amp;#34;&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="s">&amp;#34;&amp;#34;&lt;/span>&lt;span class="p">),&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">Summary&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="s">&amp;#34;Anthea 外出(逢甲大學)&amp;#34;&lt;/span>&lt;span class="p">,&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">Start&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="k">new&lt;/span> &lt;span class="n">EventDateTime&lt;/span>&lt;span class="p">()&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">{&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">DateTime&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="k">new&lt;/span> &lt;span class="n">DateTime&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="m">2022&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="m">05&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="m">15&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="m">09&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="m">30&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="m">0&lt;/span>&lt;span class="p">),&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">TimeZone&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="s">&amp;#34;Asia/Taipei&amp;#34;&lt;/span> &lt;span class="c1">// Can refer to https://stackoverflow.com/questions/22526635/list-of-acceptable-google-calendar-api-time-zones&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">},&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">End&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="k">new&lt;/span> &lt;span class="n">EventDateTime&lt;/span>&lt;span class="p">()&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">{&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">DateTime&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="k">new&lt;/span> &lt;span class="n">DateTime&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="m">2022&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="m">05&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="m">15&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="m">10&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="m">30&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="m">0&lt;/span>&lt;span class="p">),&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">TimeZone&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="s">&amp;#34;Asia/Taipei&amp;#34;&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">}&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">};&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="kt">var&lt;/span> &lt;span class="n">insert&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="n">service&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="n">Events&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="n">Insert&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">newEvent&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="n">calendarId&lt;/span>&lt;span class="p">).&lt;/span>&lt;span class="n">Execute&lt;/span>&lt;span class="p">();&lt;/span>
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
-&lt;/div>
-&lt;/div>&lt;p>執行之後回到日歷的頁面，就會看到剛剛新增上去的活動了！&lt;/p>
-&lt;p>&lt;img src="https://anthea-wu.github.io/post/google-calendar-api/Insert.png"
+&gt;&lt;/p&gt;
+&lt;p&gt;到目前為止，需要使用的部分都準備完成了，接下來要進入到程式的部分。&lt;/p&gt;
+&lt;h2 id="新增一個活動"&gt;新增一個活動
+&lt;/h2&gt;&lt;p&gt;新增好一個專案之後，從 Nuget 將 &lt;code&gt;Google.Apis.Calendar.v3&lt;/code&gt; 新增到專案內，並加入下列程式碼：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;div class="chroma"&gt;
+&lt;table class="lntable"&gt;&lt;tr&gt;&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code&gt;&lt;span class="lnt"&gt; 1
+&lt;/span&gt;&lt;span class="lnt"&gt; 2
+&lt;/span&gt;&lt;span class="lnt"&gt; 3
+&lt;/span&gt;&lt;span class="lnt"&gt; 4
+&lt;/span&gt;&lt;span class="lnt"&gt; 5
+&lt;/span&gt;&lt;span class="lnt"&gt; 6
+&lt;/span&gt;&lt;span class="lnt"&gt; 7
+&lt;/span&gt;&lt;span class="lnt"&gt; 8
+&lt;/span&gt;&lt;span class="lnt"&gt; 9
+&lt;/span&gt;&lt;span class="lnt"&gt;10
+&lt;/span&gt;&lt;span class="lnt"&gt;11
+&lt;/span&gt;&lt;span class="lnt"&gt;12
+&lt;/span&gt;&lt;span class="lnt"&gt;13
+&lt;/span&gt;&lt;span class="lnt"&gt;14
+&lt;/span&gt;&lt;span class="lnt"&gt;15
+&lt;/span&gt;&lt;span class="lnt"&gt;16
+&lt;/span&gt;&lt;span class="lnt"&gt;17
+&lt;/span&gt;&lt;span class="lnt"&gt;18
+&lt;/span&gt;&lt;span class="lnt"&gt;19
+&lt;/span&gt;&lt;span class="lnt"&gt;20
+&lt;/span&gt;&lt;span class="lnt"&gt;21
+&lt;/span&gt;&lt;span class="lnt"&gt;22
+&lt;/span&gt;&lt;span class="lnt"&gt;23
+&lt;/span&gt;&lt;span class="lnt"&gt;24
+&lt;/span&gt;&lt;span class="lnt"&gt;25
+&lt;/span&gt;&lt;span class="lnt"&gt;26
+&lt;/span&gt;&lt;span class="lnt"&gt;27
+&lt;/span&gt;&lt;span class="lnt"&gt;28
+&lt;/span&gt;&lt;span class="lnt"&gt;29
+&lt;/span&gt;&lt;span class="lnt"&gt;30
+&lt;/span&gt;&lt;span class="lnt"&gt;31
+&lt;/span&gt;&lt;span class="lnt"&gt;32
+&lt;/span&gt;&lt;span class="lnt"&gt;33
+&lt;/span&gt;&lt;span class="lnt"&gt;34
+&lt;/span&gt;&lt;span class="lnt"&gt;35
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-C#" data-lang="C#"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="k"&gt;using&lt;/span&gt; &lt;span class="nn"&gt;Google.Apis.Auth.OAuth2&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="k"&gt;using&lt;/span&gt; &lt;span class="nn"&gt;Google.Apis.Calendar.v3&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="k"&gt;using&lt;/span&gt; &lt;span class="nn"&gt;Google.Apis.Calendar.v3.Data&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="k"&gt;using&lt;/span&gt; &lt;span class="nn"&gt;Google.Apis.Services&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="kd"&gt;const&lt;/span&gt; &lt;span class="kt"&gt;string&lt;/span&gt; &lt;span class="n"&gt;jsonFile&lt;/span&gt; &lt;span class="p"&gt;=&lt;/span&gt; &lt;span class="s"&gt;&amp;#34;key.json&amp;#34;&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="kd"&gt;const&lt;/span&gt; &lt;span class="kt"&gt;string&lt;/span&gt; &lt;span class="n"&gt;calendarId&lt;/span&gt; &lt;span class="p"&gt;=&lt;/span&gt; &lt;span class="s"&gt;&amp;#34;id@group.calendar.google.com&amp;#34;&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="n"&gt;GoogleCredential&lt;/span&gt; &lt;span class="n"&gt;credential&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="k"&gt;using&lt;/span&gt; &lt;span class="nn"&gt;var&lt;/span&gt; &lt;span class="n"&gt;stream&lt;/span&gt; &lt;span class="p"&gt;=&lt;/span&gt; &lt;span class="k"&gt;new&lt;/span&gt; &lt;span class="n"&gt;FileStream&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;jsonFile&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;FileMode&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;Open&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;FileAccess&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;Read&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="n"&gt;credential&lt;/span&gt; &lt;span class="p"&gt;=&lt;/span&gt; &lt;span class="n"&gt;GoogleCredential&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;FromStream&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;stream&lt;/span&gt;&lt;span class="p"&gt;).&lt;/span&gt;&lt;span class="n"&gt;CreateScoped&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;CalendarService&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;Scope&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;Calendar&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="kt"&gt;var&lt;/span&gt; &lt;span class="n"&gt;service&lt;/span&gt; &lt;span class="p"&gt;=&lt;/span&gt; &lt;span class="k"&gt;new&lt;/span&gt; &lt;span class="n"&gt;CalendarService&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="k"&gt;new&lt;/span&gt; &lt;span class="n"&gt;BaseClientService&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;Initializer&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="p"&gt;{&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="n"&gt;HttpClientInitializer&lt;/span&gt; &lt;span class="p"&gt;=&lt;/span&gt; &lt;span class="n"&gt;credential&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="n"&gt;ApplicationName&lt;/span&gt; &lt;span class="p"&gt;=&lt;/span&gt; &lt;span class="s"&gt;&amp;#34;test project&amp;#34;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="p"&gt;});&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="kt"&gt;var&lt;/span&gt; &lt;span class="n"&gt;newEvent&lt;/span&gt; &lt;span class="p"&gt;=&lt;/span&gt; &lt;span class="k"&gt;new&lt;/span&gt; &lt;span class="n"&gt;Event&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="p"&gt;{&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="n"&gt;Id&lt;/span&gt; &lt;span class="p"&gt;=&lt;/span&gt; &lt;span class="n"&gt;Guid&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;NewGuid&lt;/span&gt;&lt;span class="p"&gt;().&lt;/span&gt;&lt;span class="n"&gt;ToString&lt;/span&gt;&lt;span class="p"&gt;().&lt;/span&gt;&lt;span class="n"&gt;Replace&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;&amp;#34;-&amp;#34;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s"&gt;&amp;#34;&amp;#34;&lt;/span&gt;&lt;span class="p"&gt;),&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="n"&gt;Summary&lt;/span&gt; &lt;span class="p"&gt;=&lt;/span&gt; &lt;span class="s"&gt;&amp;#34;Anthea 外出(逢甲大學)&amp;#34;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="n"&gt;Start&lt;/span&gt; &lt;span class="p"&gt;=&lt;/span&gt; &lt;span class="k"&gt;new&lt;/span&gt; &lt;span class="n"&gt;EventDateTime&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="n"&gt;DateTime&lt;/span&gt; &lt;span class="p"&gt;=&lt;/span&gt; &lt;span class="k"&gt;new&lt;/span&gt; &lt;span class="n"&gt;DateTime&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="m"&gt;2022&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="m"&gt;05&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="m"&gt;15&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="m"&gt;09&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="m"&gt;30&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="m"&gt;0&lt;/span&gt;&lt;span class="p"&gt;),&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="n"&gt;TimeZone&lt;/span&gt; &lt;span class="p"&gt;=&lt;/span&gt; &lt;span class="s"&gt;&amp;#34;Asia/Taipei&amp;#34;&lt;/span&gt; &lt;span class="c1"&gt;// Can refer to https://stackoverflow.com/questions/22526635/list-of-acceptable-google-calendar-api-time-zones&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="p"&gt;},&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="n"&gt;End&lt;/span&gt; &lt;span class="p"&gt;=&lt;/span&gt; &lt;span class="k"&gt;new&lt;/span&gt; &lt;span class="n"&gt;EventDateTime&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="n"&gt;DateTime&lt;/span&gt; &lt;span class="p"&gt;=&lt;/span&gt; &lt;span class="k"&gt;new&lt;/span&gt; &lt;span class="n"&gt;DateTime&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="m"&gt;2022&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="m"&gt;05&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="m"&gt;15&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="m"&gt;10&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="m"&gt;30&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="m"&gt;0&lt;/span&gt;&lt;span class="p"&gt;),&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="n"&gt;TimeZone&lt;/span&gt; &lt;span class="p"&gt;=&lt;/span&gt; &lt;span class="s"&gt;&amp;#34;Asia/Taipei&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="p"&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="p"&gt;};&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="kt"&gt;var&lt;/span&gt; &lt;span class="n"&gt;insert&lt;/span&gt; &lt;span class="p"&gt;=&lt;/span&gt; &lt;span class="n"&gt;service&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;Events&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;Insert&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;newEvent&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;calendarId&lt;/span&gt;&lt;span class="p"&gt;).&lt;/span&gt;&lt;span class="n"&gt;Execute&lt;/span&gt;&lt;span class="p"&gt;();&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;執行之後回到日歷的頁面，就會看到剛剛新增上去的活動了！&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://anthea-wu.github.io/post/google-calendar-api/Insert.png"
 width="720"
 height="303"
 srcset="https://anthea-wu.github.io/post/google-calendar-api/Insert_hu_bb3451e1483fdc87.png 480w, https://anthea-wu.github.io/post/google-calendar-api/Insert_hu_9b8cc37e68c1fd72.png 1024w"
@@ -169,30 +169,30 @@ loading="lazy"
 class="gallery-image"
 data-flex-grow="237"
 data-flex-basis="570px"
->&lt;/p>
-&lt;h2 id="debug-紀錄">Debug 紀錄
-&lt;/h2>&lt;h3 id="invalid-resource-id-value">Invalid resource id value
-&lt;/h3>&lt;div class="highlight">&lt;div class="chroma">
-&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
-&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
-&lt;/span>&lt;span class="lnt">2
-&lt;/span>&lt;span class="lnt">3
-&lt;/span>&lt;span class="lnt">4
-&lt;/span>&lt;span class="lnt">5
-&lt;/span>&lt;span class="lnt">6
-&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
-&lt;td class="lntd">
-&lt;pre tabindex="0" class="chroma">&lt;code class="language-fallback" data-lang="fallback">&lt;span class="line">&lt;span class="cl">Google.Apis.Requests.RequestError
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">Invalid resource id value. [400]
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">Errors [
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> Message[Invalid resource id value.] Location[ - ]
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> Reason[invalid] Domain[global]
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">]
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
-&lt;/div>
-&lt;/div>&lt;p>測試的過程中有出現這個 error，看了&lt;a class="link" href="https://developers.google.com/calendar/api/v3/reference/events/insert" target="_blank" rel="noopener"
->官方文件&lt;/a>之後發現問題是出在 Event 上，於是選擇另用比較不容易重複的 GUID 去作為參數帶上去。另外，文件上有提到只能使用小寫的英文字母和數字，要記得注意。&lt;/p>
-&lt;p>&lt;img src="https://anthea-wu.github.io/post/google-calendar-api/IdDoc.png"
+&gt;&lt;/p&gt;
+&lt;h2 id="debug-紀錄"&gt;Debug 紀錄
+&lt;/h2&gt;&lt;h3 id="invalid-resource-id-value"&gt;Invalid resource id value
+&lt;/h3&gt;&lt;div class="highlight"&gt;&lt;div class="chroma"&gt;
+&lt;table class="lntable"&gt;&lt;tr&gt;&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code&gt;&lt;span class="lnt"&gt;1
+&lt;/span&gt;&lt;span class="lnt"&gt;2
+&lt;/span&gt;&lt;span class="lnt"&gt;3
+&lt;/span&gt;&lt;span class="lnt"&gt;4
+&lt;/span&gt;&lt;span class="lnt"&gt;5
+&lt;/span&gt;&lt;span class="lnt"&gt;6
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-fallback" data-lang="fallback"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;Google.Apis.Requests.RequestError
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;Invalid resource id value. [400]
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;Errors [
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; Message[Invalid resource id value.] Location[ - ]
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; Reason[invalid] Domain[global]
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;]
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;測試的過程中有出現這個 error，看了&lt;a class="link" href="https://developers.google.com/calendar/api/v3/reference/events/insert" target="_blank" rel="noopener"
+&gt;官方文件&lt;/a&gt;之後發現問題是出在 Event 上，於是選擇另用比較不容易重複的 GUID 去作為參數帶上去。另外，文件上有提到只能使用小寫的英文字母和數字，要記得注意。&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://anthea-wu.github.io/post/google-calendar-api/IdDoc.png"
 width="1076"
 height="473"
 srcset="https://anthea-wu.github.io/post/google-calendar-api/IdDoc_hu_5c16acc11e0d2e4c.png 480w, https://anthea-wu.github.io/post/google-calendar-api/IdDoc_hu_14f8a70f3d1fc27e.png 1024w"
@@ -201,18 +201,18 @@ alt="https://developers.google.com/calendar/api/v3/reference/events/insert"
 class="gallery-image"
 data-flex-grow="227"
 data-flex-basis="545px"
->&lt;/p>
-&lt;h2 id="小結">小結
-&lt;/h2>&lt;p>除了範例裡提到的 Insert 之外，基本的 CRUD 都有 API 可以接，但我目前的系統還沒有這部分的功能要實作，所以沒有特別研究。&lt;/p>
-&lt;p>另外，官方文件所提供的註冊方法，使用的憑證類別和範例中的不太一樣，我個人認為比較麻煩，所以選擇了服務帳戶的方法。雖然大部分的功能都可以使用，但像是 Event.Attendees 這個邀請參與者的部分，就需要另外設定好權限才可以使用。&lt;/p>
-&lt;p>以上就是這次的內容，如果有任何使用上的疑問，或是解釋上的錯誤，都歡迎跟我說喔！我們下次見。&lt;/p>
-&lt;blockquote>
-&lt;p>&lt;p>參考文章&lt;/p>
-&lt;ul>
-&lt;li>&lt;a class="link" href="https://stackoverflow.com/questions/22526635/list-of-acceptable-google-calendar-api-time-zones" target="_blank" rel="noopener"
->TimeZone List&lt;/a>&lt;/li>
-&lt;li>&lt;a class="link" href="https://stackoverflow.com/questions/54066564/google-calendar-api-with-asp-net" target="_blank" rel="noopener"
->Google Calendar Api with .NET&lt;/a>&lt;/li>
-&lt;li>&lt;a class="link" href="https://stackoverflow.com/questions/28825860/google-oauth-error-at-least-one-client-secrets-installed-or-web-should-be-set" target="_blank" rel="noopener"
->At least one client secrets (Installed or Web) should be set&lt;/a>&lt;/li>
-&lt;/ul>&lt;/p>&lt;/blockquote></description></item></channel></rss>
+&gt;&lt;/p&gt;
+&lt;h2 id="小結"&gt;小結
+&lt;/h2&gt;&lt;p&gt;除了範例裡提到的 Insert 之外，基本的 CRUD 都有 API 可以接，但我目前的系統還沒有這部分的功能要實作，所以沒有特別研究。&lt;/p&gt;
+&lt;p&gt;另外，官方文件所提供的註冊方法，使用的憑證類別和範例中的不太一樣，我個人認為比較麻煩，所以選擇了服務帳戶的方法。雖然大部分的功能都可以使用，但像是 Event.Attendees 這個邀請參與者的部分，就需要另外設定好權限才可以使用。&lt;/p&gt;
+&lt;p&gt;以上就是這次的內容，如果有任何使用上的疑問，或是解釋上的錯誤，都歡迎跟我說喔！我們下次見。&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;p&gt;參考文章&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a class="link" href="https://stackoverflow.com/questions/22526635/list-of-acceptable-google-calendar-api-time-zones" target="_blank" rel="noopener"
+&gt;TimeZone List&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a class="link" href="https://stackoverflow.com/questions/54066564/google-calendar-api-with-asp-net" target="_blank" rel="noopener"
+&gt;Google Calendar Api with .NET&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a class="link" href="https://stackoverflow.com/questions/28825860/google-oauth-error-at-least-one-client-secrets-installed-or-web-should-be-set" target="_blank" rel="noopener"
+&gt;At least one client secrets (Installed or Web) should be set&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;&lt;/p&gt;&lt;/blockquote&gt;</description></item></channel></rss>
